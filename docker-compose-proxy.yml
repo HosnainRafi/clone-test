@@ -1,0 +1,30 @@
+version: '3'
+
+services:
+  caddy-proxy:
+    image: caddy:2
+    container_name: mbstu-caddy-proxy
+    ports:
+      - "80:80"
+      - "443:443"
+    volumes:
+      - ./proxy/caddy/Caddyfile:/etc/caddy/Caddyfile
+      - caddy_data:/data
+      - caddy_config:/config
+    restart: unless-stopped
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
+    environment:
+      - DOMAIN=mbstu.dev
+      - DOMAIN_SUB_CSE=cse.mbstu.dev
+      - DOMAIN_SUB_ICT=ict.mbstu.dev
+    networks:
+      - mbstu-network
+
+volumes:
+  caddy_data:
+  caddy_config:
+
+networks:
+  mbstu-network:
+    driver: bridge

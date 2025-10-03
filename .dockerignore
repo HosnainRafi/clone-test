@@ -1,0 +1,7 @@
+# Ignore the node_modules directory inside the 'codes' folder
+codes/node_modules
+
+# It's also a good idea to ignore these
+.git
+.vscode
+npm-debug.log

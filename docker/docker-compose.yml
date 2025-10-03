@@ -1,0 +1,23 @@
+name: mbstu-app
+services:
+  app:
+    build:
+      context: ..
+      dockerfile: ./docker/Dockerfile
+    image: mbstu-app
+    container_name: mbstu-app
+    restart: no
+    volumes:
+      - ./nginx/default.conf:/etc/nginx/sites-available/default
+      - ../codes:/var/www/html
+      - ./docker/php/local.ini:/usr/local/etc/php/conf.d/local.ini
+    ports:
+      - "8820:80"
+      - "5175:5175"
+    networks:
+      - default
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
+networks:
+  default:
+    driver: bridge

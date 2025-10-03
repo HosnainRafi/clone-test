@@ -1,0 +1,60 @@
+# Laravel specific
+laravel-vue/vendor/
+laravel-vue/node_modules/
+laravel-vue/storage/*.key
+laravel-vue/.env
+laravel-vue/.env.backup
+laravel-vue/.env.production
+laravel-vue/public/build
+laravel-vue/public/hot
+laravel-vue/public/storage
+laravel-vue/storage/app/public/
+laravel-vue/bootstrap/cache/
+
+# Laravel logs
+laravel-vue/storage/logs/*
+!laravel-vue/storage/logs/.gitkeep
+
+# Vue & Node
+laravel-vue/.pnpm-store/
+
+# Laravel Mix
+laravel-vue/public/css/
+laravel-vue/public/js/
+laravel-vue/public/mix-manifest.json
+
+# Build directory
+laravel-vue/build/
+
+# Environment files
+.env
+.env.backup
+.env.production
+
+# Cache and compiled files
+*.log
+*.cache
+.phpunit.result.cache
+
+# Composer
+composer.phar
+laravel-vue/composer.lock
+
+# IDE specific files
+.idea/
+.vscode/
+*.sublime-project
+*.sublime-workspace
+.DS_Store
+
+# Docker
+.docker/data/
+
+# Testing
+laravel-vue/coverage/
+laravel-vue/.phpunit.cache/
+
+# Misc
+Thumbs.db
+node_modules
+storage

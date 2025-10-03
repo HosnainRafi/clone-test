@@ -1,0 +1,19 @@
+# Very simple Caddyfile to handle all domains
+
+# Main domain
+mbstu.dev {
+    tls internal
+    reverse_proxy http://host.docker.internal:8000
+}
+
+# ICT subdomain
+ict.mbstu.dev {
+    tls internal
+    reverse_proxy http://host.docker.internal:8000
+}
+
+# CSE subdomain
+cse.mbstu.dev {
+    tls internal
+    reverse_proxy http://host.docker.internal:8000
+}
