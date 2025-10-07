@@ -28,11 +28,11 @@ import Separator from "@/components/user/ui/separator/Separator.vue";
         <!-- University Logo & Info -->
         <div class="lg:col-span-2">
           <div class="flex items-center mb-6">
-            <div class="w-12 h-12 bg-gradient-to-br from-blue-600 to-blue-800 rounded-lg flex items-center justify-center mr-4">
+            <div class="w-12 h-12 bg-[hsl(var(--primary))] rounded-lg flex items-center justify-center mr-4">
               <GraduationCap class="w-7 h-7 text-white" />
             </div>
             <div>
-              <h3 class="text-xl font-bold text-gray-800">MBSTU CSE</h3>
+              <h3 class="text-xl font-bold text-[hsl(var(--secondary))]">MBSTU CSE</h3>
               <p class="text-sm text-gray-600">Department of Computer Science & Engineering</p>
             </div>
           </div>
@@ -45,15 +45,15 @@ import Separator from "@/components/user/ui/separator/Separator.vue";
           <!-- Contact Info -->
           <div class="space-y-3">
             <div class="flex items-center text-gray-600">
-              <MapPin class="w-4 h-4 mr-3 text-blue-600" />
+              <MapPin class="w-4 h-4 mr-3 text-[hsl(var(--secondary))] " />
               <span class="text-sm">Santosh, Tangail-1902, Bangladesh</span>
             </div>
             <div class="flex items-center text-gray-600">
-              <Phone class="w-4 h-4 mr-3 text-blue-600" />
+              <Phone class="w-4 h-4 mr-3 text-[hsl(var(--secondary))] " />
               <span class="text-sm">+880-921-55399</span>
             </div>
             <div class="flex items-center text-gray-600">
-              <Mail class="w-4 h-4 mr-3 text-blue-600" />
+              <Mail class="w-4 h-4 mr-3 text-[hsl(var(--secondary))] " />
               <span class="text-sm">info.cse@mbstu.ac.bd</span>
             </div>
           </div>
@@ -61,27 +61,27 @@ import Separator from "@/components/user/ui/separator/Separator.vue";
 
         <!-- Quick Links -->
         <div>
-          <h4 class="font-bold text-lg text-gray-800 mb-4">Quick Links</h4>
+          <h4 class="font-bold text-lg text-[hsl(var(--secondary))] mb-4">Quick Links</h4>
           <div class="space-y-2">
-            <a href="/about" class="block text-gray-600 hover:text-blue-600 transition-colors duration-200 text-sm">
+            <a href="/about" class="block text-gray-600 hover:text-[hsl(var(--secondary))]  transition-colors duration-200 text-sm">
               About Department
             </a>
-            <a href="/faculty" class="block text-gray-600 hover:text-blue-600 transition-colors duration-200 text-sm">
+            <a href="/faculty" class="block text-gray-600 hover:text-[hsl(var(--secondary))]  transition-colors duration-200 text-sm">
               Faculty Members
             </a>
-            <a href="/programs" class="block text-gray-600 hover:text-blue-600 transition-colors duration-200 text-sm">
+            <a href="/programs" class="block text-gray-600 hover:text-[hsl(var(--secondary))]  transition-colors duration-200 text-sm">
               Academic Programs
             </a>
-            <a href="/research" class="block text-gray-600 hover:text-blue-600 transition-colors duration-200 text-sm">
+            <a href="/research" class="block text-gray-600 hover:text-[hsl(var(--secondary))]  transition-colors duration-200 text-sm">
               Research Areas
             </a>
-            <a href="/labs" class="block text-gray-600 hover:text-blue-600 transition-colors duration-200 text-sm">
+            <a href="/labs" class="block text-gray-600 hover:text-[hsl(var(--secondary))]  transition-colors duration-200 text-sm">
               Laboratories
             </a>
-            <a href="/admissions" class="block text-gray-600 hover:text-blue-600 transition-colors duration-200 text-sm">
+            <a href="/admissions" class="block text-gray-600 hover:text-[hsl(var(--secondary))]  transition-colors duration-200 text-sm">
               Admissions
             </a>
-            <a href="/publications" class="block text-gray-600 hover:text-blue-600 transition-colors duration-200 text-sm">
+            <a href="/publications" class="block text-gray-600 hover:text-[hsl(var(--secondary))]  transition-colors duration-200 text-sm">
               Publications
             </a>
           </div>
@@ -89,27 +89,27 @@ import Separator from "@/components/user/ui/separator/Separator.vue";
 
         <!-- Resources -->
         <div>
-          <h4 class="font-bold text-lg text-gray-800 mb-4">Resources</h4>
+          <h4 class="font-bold text-lg text-[hsl(var(--secondary))] mb-4">Resources</h4>
           <div class="space-y-2">
-            <a href="/library" class="block text-gray-600 hover:text-blue-600 transition-colors duration-200 text-sm">
+            <a href="/library" class="block text-gray-600 hover:text-[hsl(var(--secondary))]  transition-colors duration-200 text-sm">
               Digital Library
             </a>
-            <a href="/curriculum" class="block text-gray-600 hover:text-blue-600 transition-colors duration-200 text-sm">
+            <a href="/curriculum" class="block text-gray-600 hover:text-[hsl(var(--secondary))]  transition-colors duration-200 text-sm">
               Course Curriculum
             </a>
-            <a href="/thesis" class="block text-gray-600 hover:text-blue-600 transition-colors duration-200 text-sm">
+            <a href="/thesis" class="block text-gray-600 hover:text-[hsl(var(--secondary))]  transition-colors duration-200 text-sm">
               Thesis Repository
             </a>
-            <a href="/conferences" class="block text-gray-600 hover:text-blue-600 transition-colors duration-200 text-sm">
+            <a href="/conferences" class="block text-gray-600 hover:text-[hsl(var(--secondary))]  transition-colors duration-200 text-sm">
               Conferences
             </a>
-            <a href="/journals" class="block text-gray-600 hover:text-blue-600 transition-colors duration-200 text-sm">
+            <a href="/journals" class="block text-gray-600 hover:text-[hsl(var(--secondary))]  transition-colors duration-200 text-sm">
               Academic Journals
             </a>
-            <a href="/events" class="block text-gray-600 hover:text-blue-600 transition-colors duration-200 text-sm">
+            <a href="/events" class="block text-gray-600 hover:text-[hsl(var(--secondary))]  transition-colors duration-200 text-sm">
               Events & Seminars
             </a>
-            <a href="/career" class="block text-gray-600 hover:text-blue-600 transition-colors duration-200 text-sm">
+            <a href="/career" class="block text-gray-600 hover:text-[hsl(var(--secondary))]  transition-colors duration-200 text-sm">
               Career Services
             </a>
           </div>
@@ -124,7 +124,7 @@ import Separator from "@/components/user/ui/separator/Separator.vue";
           <div class="flex items-center space-x-4 mb-6 md:mb-0">
             <span class="text-gray-600 text-sm font-medium">Follow Us:</span>
             <div class="flex space-x-3">
-              <a href="#" class="w-10 h-10 bg-blue-600 hover:bg-blue-700 rounded-lg flex items-center justify-center transition-colors duration-200">
+              <a href="#" class="w-10 h-10 bg-[hsl(var(--secondary))] hover:bg-[hsl(var(--primary))] rounded-lg flex items-center justify-center transition-colors duration-200">
                 <Facebook class="w-5 h-5 text-white" />
               </a>
               <a href="#" class="w-10 h-10 bg-sky-500 hover:bg-sky-600 rounded-lg flex items-center justify-center transition-colors duration-200">
@@ -148,11 +148,11 @@ import Separator from "@/components/user/ui/separator/Separator.vue";
               © 2024 Department of Computer Science & Engineering, MBSTU
             </p>
             <div class="flex items-center justify-center md:justify-end space-x-4 text-xs text-gray-500">
-              <a href="/privacy" class="hover:text-blue-600 transition-colors duration-200">Privacy Policy</a>
+              <a href="/privacy" class="hover:text-[hsl(var(--secondary))]  transition-colors duration-200">Privacy Policy</a>
               <span>•</span>
-              <a href="/terms" class="hover:text-blue-600 transition-colors duration-200">Terms of Service</a>
+              <a href="/terms" class="hover:text-[hsl(var(--secondary))]  transition-colors duration-200">Terms of Service</a>
               <span>•</span>
-              <a href="/sitemap" class="hover:text-blue-600 transition-colors duration-200">Sitemap</a>
+              <a href="/sitemap" class="hover:text-[hsl(var(--secondary))]  transition-colors duration-200">Sitemap</a>
             </div>
           </div>
         </div>

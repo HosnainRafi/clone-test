@@ -29,8 +29,10 @@ RUN docker-php-ext-install pdo_pgsql pgsql mbstring exif pcntl bcmath gd
 # Install composer
 RUN curl -sS https://getcomposer.org/installer | php -- --install-dir=/usr/local/bin --filename=composer
 
-# Install Node.js and npm
-RUN curl -sL https://deb.nodesource.com/setup_16.x | bash -
+# --- START OF CHANGES ---
+
+# Install Node.js v20 (CHANGED FROM v16)
+RUN curl -fsSL https://deb.nodesource.com/setup_20.x | bash -
 RUN apt-get install -y nodejs
 
 # Add user for laravel application
@@ -44,8 +46,17 @@ RUN chmod +x /usr/local/bin/startup.sh
 # Copy only the Laravel project directory
 COPY --chown=www:www ./laravel-vue /var/www
 
-# Install npm dependencies
+# --- NEW PERMISSIONS FIX ---
+# Change ownership of the project directory to the 'www' user
+# This ensures npm has permission to create node_modules
+RUN chown -R www:www /var/www
+
+# Switch to the 'www' user
 USER www
+
+# --- END OF CHANGES ---
+
+# Install npm dependencies (this will now run as 'www' user with correct permissions)
 WORKDIR /var/www
 RUN npm install
 
@@ -54,3 +65,4 @@ EXPOSE 9000 5173
 
 # Run startup script that starts both PHP-FPM and npm dev server
 CMD ["/usr/local/bin/startup.sh"]
+

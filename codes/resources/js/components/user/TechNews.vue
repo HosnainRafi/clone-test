@@ -182,7 +182,7 @@ const getCategoryColor = (category: string): string => {
     'Partnership': 'bg-indigo-100 text-indigo-800 hover:bg-indigo-200',
     'Open Source': 'bg-teal-100 text-teal-800 hover:bg-teal-200'
   };
-  return colors[category] || 'bg-gray-100 text-gray-800 hover:bg-gray-200';
+  return colors[category] || 'bg-gray-100 text-[hsl(var(--secondary))] hover:bg-gray-200';
 };
 </script>
 
@@ -192,7 +192,7 @@ const getCategoryColor = (category: string): string => {
     class="container pt-24"
   >
     <div class="text-center mb-8">
-      <h2 class="text-3xl md:text-4xl text-center font-bold mb-4">
+      <h2 class="text-3xl md:text-4xl text-center text-[hsl(var(--secondary))] font-bold mb-4">
         Latest Technology News & Insights
       </h2>
       
@@ -253,7 +253,7 @@ const getCategoryColor = (category: string): string => {
                 <span>{{ news.readTime }} read</span>
               </div>
               
-              <CardTitle class="text-lg font-bold line-clamp-2 group-hover:text-primary transition-colors duration-200">
+              <CardTitle class="text-lg font-bold line-clamp-2 text-[hsl(var(--secondary))] group-hover:[hsl(var(--primary))] transition-colors duration-200">
                 {{ news.title }}
               </CardTitle>
               
@@ -271,7 +271,7 @@ const getCategoryColor = (category: string): string => {
                   </span>
                 </div>
                 <div class="flex-1 min-w-0">
-                  <div class="text-sm font-medium text-foreground">{{ news.author }}</div>
+                  <div class="text-sm font-medium text-[hsl(var(--secondary))]">{{ news.author }}</div>
                   <div class="text-xs text-muted-foreground">{{ news.authorRole }}</div>
                 </div>
               </div>
@@ -307,7 +307,7 @@ const getCategoryColor = (category: string): string => {
               <div class="flex gap-2">
                 <Button 
                   size="sm" 
-                  class="flex-1 group-hover:bg-primary group-hover:text-primary-foreground transition-all duration-200"
+                  class="flex-1 text-xs text-[hsl(var(--secondary))] hover:bg-[hsl(var(--primary))] hover:text-[hsl(var(--primary-foreground))] transition-all duration-200"
                   variant="outline"
                 >
                   Read More

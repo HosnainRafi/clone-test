@@ -57,7 +57,7 @@ const allHeadlines = headlines
 </script>
 
 <template>
-  <div class="bg-gradient-to-r from-blue-900 via-blue-800 to-blue-900 text-white py-3 border-b border-blue-700 shadow-lg">
+  <div class="text-white py-3 border-b bg-[hsl(var(--quaternary))] shadow-lg">
     <div class="max-w-7xl mx-auto px-4">
       <!-- Breaking News Label -->
       <div class="flex items-center">
@@ -88,12 +88,7 @@ const allHeadlines = headlines
                 >
                   <a
                     :href="headline.link"
-                    class="hover:text-blue-200 transition-colors duration-200 font-medium"
-                    :class="{
-                      'text-yellow-300': headline.priority === 'high',
-                      'text-green-300': headline.priority === 'medium',
-                      'text-blue-100': headline.priority === 'low'
-                    }"
+                    class="hover:text-[hsl(var(--primary))] text-[hsl(var(--secondary))] transition-colors duration-200 font-medium"
                   >
                     {{ headline.text }}
                   </a>
@@ -127,13 +122,13 @@ const allHeadlines = headlines
         <div class="hidden md:flex items-center space-x-2 ml-4 flex-shrink-0">
           <a
             href="/notices"
-            class="text-xs px-3 py-1 bg-blue-700 hover:bg-blue-600 rounded-md transition-colors duration-200 font-medium"
+            class="text-xs px-3 py-1 bg-[hsl(var(--secondary))] hover:bg-[hsl(var(--primary))] rounded-md transition-colors duration-200 font-medium"
           >
             All Notices
           </a>
           <a
             href="/news"
-            class="text-xs px-3 py-1 bg-blue-700 hover:bg-blue-600 rounded-md transition-colors duration-200 font-medium"
+            class="text-xs px-3 py-1 bg-[hsl(var(--secondary))] hover:bg-[hsl(var(--primary))] rounded-md transition-colors duration-200 font-medium"
           >
             All News
           </a>
@@ -199,8 +194,4 @@ a:hover {
   }
 }
 
-/* Ensure proper contrast */
-.bg-gradient-to-r {
-  background-image: linear-gradient(to right, #1e3a8a 0%, #1e40af 50%, #1e3a8a 100%);
-}
 </style>

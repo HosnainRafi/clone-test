@@ -20,6 +20,7 @@ class Theme extends Model
     protected $fillable = [
         'name',
         'description',
+        'content',
         'primary_color',
         'secondary_color',
         'font_family',
@@ -35,6 +36,7 @@ class Theme extends Model
      * @var array<string, string>
      */
     protected $casts = [
+        'content' => 'json',
         'settings' => 'json',
         'is_active' => 'boolean',
     ];

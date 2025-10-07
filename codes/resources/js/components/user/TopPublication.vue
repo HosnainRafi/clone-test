@@ -226,7 +226,7 @@ const getCategoryColor = (category: string): string => {
     'IoT & Edge Computing': 'bg-teal-100 text-teal-800 hover:bg-teal-200',
     'Computer Vision': 'bg-orange-100 text-orange-800 hover:bg-orange-200'
   };
-  return colors[category] || 'bg-gray-100 text-gray-800 hover:bg-gray-200';
+  return colors[category] || 'bg-gray-100 text-[hsl(var(--secondary))] hover:bg-gray-200';
 };
 
 const getRankColor = (rank: string): string => {
@@ -234,9 +234,9 @@ const getRankColor = (rank: string): string => {
     'Q1': 'bg-emerald-100 text-emerald-800 border-emerald-300',
     'Q2': 'bg-blue-100 text-blue-800 border-blue-300',
     'Q3': 'bg-amber-100 text-amber-800 border-amber-300',
-    'Q4': 'bg-gray-100 text-gray-800 border-gray-300'
+    'Q4': 'bg-gray-100 text-[hsl(var(--secondary))] border-gray-300'
   };
-  return colors[rank] || 'bg-gray-100 text-gray-800 border-gray-300';
+  return colors[rank] || 'bg-gray-100 text-[hsl(var(--secondary))] border-gray-300';
 };
 </script>
 
@@ -246,7 +246,7 @@ const getRankColor = (rank: string): string => {
     class="container pt-24"
   >
     <div class="text-center mb-8">
-      <h2 class="text-3xl md:text-4xl text-center font-bold mb-4">
+      <h2 class="text-3xl md:text-4xl text-center text-[hsl(var(--secondary))] font-bold mb-4">
         Top Research Publications & Papers
       </h2>
       
@@ -319,7 +319,7 @@ const getRankColor = (rank: string): string => {
                 </div>
               </div>
               
-              <CardTitle class="text-base font-bold line-clamp-2 group-hover:text-primary transition-colors duration-200 leading-tight">
+              <CardTitle class="text-base font-bold line-clamp-2 text-[hsl(var(--secondary))] hover:[hsl(var(--primary))] transition-colors duration-200 leading-tight">
                 {{ publication.title }}
               </CardTitle>
               
@@ -331,7 +331,7 @@ const getRankColor = (rank: string): string => {
             <CardContent class="pt-0 space-y-4">
               <!-- Journal Info -->
               <div class="space-y-2">
-                <div class="text-sm font-medium text-foreground">{{ publication.journal }}</div>
+                <div class="text-sm font-medium text-[hsl(var(--secondary))]">{{ publication.journal }}</div>
                 <div v-if="publication.volume" class="text-xs text-muted-foreground">
                   Vol. {{ publication.volume }}{{ publication.issue ? `, Issue ${publication.issue}` : '' }}{{ publication.pages ? `, pp. ${publication.pages}` : '' }}
                 </div>
@@ -347,8 +347,8 @@ const getRankColor = (rank: string): string => {
               <!-- Authors -->
               <div class="space-y-1">
                 <div class="text-xs font-medium text-muted-foreground">Authors:</div>
-                <div class="text-sm text-foreground">
-                  <span class="font-medium">{{ publication.correspondingAuthor }}</span>
+                <div class="text-sm text-[hsl(var(--secondary))]">
+                  <span class="font-medium text-[hsl(var(--secondary))]">{{ publication.correspondingAuthor }}</span>
                   <span v-if="publication.authors.length > 1" class="text-muted-foreground">
                     + {{ publication.authors.length - 1 }} co-authors
                   </span>
@@ -383,7 +383,7 @@ const getRankColor = (rank: string): string => {
               <div class="flex gap-2">
                 <Button 
                   size="sm" 
-                  class="flex-1 text-xs group-hover:bg-primary group-hover:text-primary-foreground transition-all duration-200"
+                  class="flex-1 text-xs text-[hsl(var(--secondary))] hover:bg-[hsl(var(--primary))] hover:text-[hsl(var(--primary-foreground))] transition-all duration-200"
                   variant="outline"
                 >
                   <FileText class="h-3 w-3 mr-1" />

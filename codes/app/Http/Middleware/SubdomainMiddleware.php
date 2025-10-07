@@ -43,7 +43,8 @@ class SubdomainMiddleware
                 
                 // Parse theme content if it exists
                 if ($theme->content) {
-                    $themeContent = json_decode($theme->content, true);
+                    // Content is already decoded as array due to JSON casting in the model
+                    $themeContent = is_array($theme->content) ? $theme->content : json_decode($theme->content, true);
                     if ($themeContent) {
                         $theme->name = $themeContent['websiteTitle'] ?? $theme->name;
                         $theme->banner_title = $themeContent['bannerTitle'] ?? null;

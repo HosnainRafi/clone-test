@@ -1,0 +1,75 @@
+# Dependencies
+node_modules
+vendor
+
+# Environment files
+.env.local
+.env.development
+# Keep .env for production
+!.env
+!.env.example
+
+# Git
+.git
+.gitignore
+.gitattributes
+.github
+
+# IDE
+.vscode
+.idea
+*.swp
+*.swo
+*~
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Logs
+npm-debug.log
+yarn-error.log
+*.log
+
+# Testing
+.nyc_output
+coverage
+.phpunit.result.cache
+tests
+
+# Cache and temporary files
+storage/app/*
+!storage/app/.gitignore
+!storage/app/public
+storage/framework/cache/*
+!storage/framework/cache/.gitignore
+storage/framework/sessions/*
+!storage/framework/sessions/.gitignore
+storage/framework/testing/*
+!storage/framework/testing/.gitignore
+storage/framework/views/*
+!storage/framework/views/.gitignore
+storage/logs/*
+!storage/logs/.gitignore
+bootstrap/cache/*
+!bootstrap/cache/.gitignore
+
+# Documentation
+README.md
+DEPLOYMENT.md
+*.md
+
+# Docker
+docker-compose*.yml
+Dockerfile
+.dockerignore
+
+# Build artifacts
+# public/hot - KEEP THIS for Vite detection
+public/storage
+
+# Keep build directory for production assets
+!public/build/
+
+# Backups
+backups

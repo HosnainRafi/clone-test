@@ -204,15 +204,16 @@ const isOpen = ref<boolean>(false);
 defineProps<{
   message?: string;
 }>();
+const isDepartmentPage = ref<boolean>(true);
 </script>
 
 <template>
   <!-- <span> POC message from navbar {{message}} </span> -->
   <header class="bg-white border-b border-gray-200 shadow-sm sticky top-0 z-50">
-    <!-- Top Bar with University Info (Hidden on mobile) -->
-    <div class="hidden md:block bg-[hsl(var(--secondary))] text-[hsl(var(--secondary-foreground))] py-2 px-4 text-sm">
+    <!-- Top Bar with University Info -->
+    <div v-if="isDepartmentPage" class="block bg-[hsl(var(--secondary))] text-[hsl(var(--secondary-foreground))] py-2 text-sm">
       <div class="container mx-auto flex justify-between items-center">
-        <div class="flex items-center space-x-6">
+        <div class="hidden md:flex items-center space-x-6">
           <span class="flex items-center">
             <svg class="w-4 h-4 mr-1" fill="currentColor" viewBox="0 0 20 20">
               <path d="M2.003 5.884L10 9.882l7.997-3.998A2 2 0 0016 4H4a2 2 0 00-1.997 1.884z"/>
@@ -227,24 +228,55 @@ defineProps<{
             Santosh, Tangail, Bangladesh
           </span>
         </div>
-        <div class="hidden md:block">
-          <span class="text-xs">{{ 'Mawlana Bhashani Science and Technology University' }}</span>
+        <div class="block">
+          <span class="text-xs">Mawlana Bhashani Science and Technology University</span>
         </div>
       </div>
     </div>
-
+    <div v-else class="block bg-[hsl(var(--secondary))] text-[hsl(var(--secondary-foreground))] py-2 text-sm">
+      <div class="container mx-auto flex justify-between items-center">
+        <div class="flex items-center flex-wrap space-x-1 2xsm:space-x-0 text-xs">
+          <a href="https://mbstu.ac.bd/form-download/" class="hover:text-[hsl(var(--primary))] transition-colors px-2 py-1 rounded border-r border-gray-300 last:border-r-0">
+            Forms & Services
+          </a>
+          <a href="https://mbstu.ac.bd/international-students/" class="hover:text-[hsl(var(--primary))] transition-colors px-2 py-1 rounded border-r border-gray-300 last:border-r-0">
+            Int'l Students
+          </a>
+          <a href="https://mbstu.ac.bd/noc/" class="hover:text-[hsl(var(--primary))] transition-colors px-2 py-1 rounded border-r border-gray-300 last:border-r-0">
+            NOC
+          </a>
+          <a href="https://mbstu.ac.bd/noc/" class="hover:text-[hsl(var(--primary))] transition-colors px-2 py-1 rounded border-r border-gray-300 last:border-r-0">
+            IP Phone
+          </a>
+          <a href="https://mbstu.ac.bd/noc/" class="hover:text-[hsl(var(--primary))] transition-colors px-2 py-1 rounded border-r border-gray-300 last:border-r-0">
+            UCAM
+          </a>
+          <a href="http://ucam.mbstu.ac.bd/Security/LogIn.aspx" target="_blank" class="hover:text-[hsl(var(--primary))] transition-colors px-2 py-1 rounded border-r border-gray-300 last:border-r-0">
+            Contact
+          </a>
+          <a href="http://ucam.mbstu.ac.bd/Security/LogIn.aspx" target="_blank" class="hover:text-[hsl(var(--primary))] transition-colors px-2 py-1 rounded border-r border-gray-300 last:border-r-0">
+            Departments
+          </a>
+        </div>
+        <div class="flex items-center space-x-1 text-xs">
+          <a href="https://mbstu.ac.bd/account/" class="hover:text-[hsl(var(--primary))] transition-colors px-2 py-1 rounded border-r border-gray-300 last:border-r-0">
+            LOGIN
+          </a>
+        </div>
+      </div>
+    </div>
     <!-- Main Navigation Bar -->
-    <div class="px-4">
+    <div class="w-full">
       <div class="container flex items-center justify-between h-20">
         <!-- Logo and Department Name -->
         <div class="flex items-center space-x-4">
           <div class="flex items-center">
-        <div class="w-16 h-16 bg-[hsl(var(--primary))] rounded-lg flex items-center justify-center mr-4">
-          <GraduationCap class="h-8 w-8 text-[hsl(var(--primary-foreground))]" />
-        </div>
-        <div>
-          <h1 class="text-xl font-bold text-[hsl(var(--primary))] leading-tight">Computer Science and Engineering</h1>
-        </div>
+            <div class="w-16 h-16 bg-[hsl(var(--primary))] rounded-lg flex items-center justify-center mr-4">
+              <GraduationCap class="h-8 w-8 text-[hsl(var(--primary-foreground))]" />
+            </div>
+            <div>
+              <h1 class="text-xl font-bold text-[hsl(var(--primary))] leading-tight">Computer Science and Engineering</h1>
+            </div>
           </div>
         </div>
 
@@ -255,7 +287,7 @@ defineProps<{
             <li>
               <a 
                 href="/" 
-                class="bg-transparent hover:bg-blue-50 text-gray-700 hover:text-blue-900 px-4 py-2 rounded-md text-sm font-medium transition-colors inline-flex items-center"
+                class="bg-transparent hover:bg-[hsl(var(--tertiary-hover))] hover:bg-opacity-60 text-gray-700 hover:text-[hsl(var(--primary))]  px-4 py-2 rounded-md text-sm font-medium transition-colors inline-flex items-center"
               >
                 Home
               </a>
@@ -278,10 +310,10 @@ defineProps<{
                     <div 
                       v-for="subItem in aboutItems" 
                       :key="subItem.title"
-                      class="group/item rounded-lg p-3 hover:bg-gray-50 transition-colors"
+                      class="group/item rounded-lg p-3 hover:bg-[hsl(var(--tertiary-hover))] transition-colors"
                     >
                       <a :href="subItem.href" class="block">
-                        <h3 class="font-medium text-gray-900 group-hover/item:text-blue-900 mb-1 text-sm">
+                        <h3 class="font-medium text-[hsl(var(--secondary))] group-hover/item:text-[hsl(var(--primary))]  mb-1 text-sm">
                           {{ subItem.title }}
                         </h3>
                         <p class="text-xs text-gray-600 leading-snug">
@@ -297,7 +329,7 @@ defineProps<{
             <!-- Academic (with dropdown) -->
             <li class="relative group">
               <button 
-                class="bg-transparent hover:bg-blue-50 text-gray-700 hover:text-blue-900 px-4 py-2 rounded-md text-sm font-medium transition-colors inline-flex items-center"
+                class="bg-transparent hover:bg-[hsl(var(--tertiary-hover))] hover:bg-opacity-60 text-gray-700 hover:text-[hsl(var(--primary))]  px-4 py-2 rounded-md text-sm font-medium transition-colors inline-flex items-center"
               >
                 Academic
                 <svg class="ml-1 h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -311,10 +343,10 @@ defineProps<{
                     <div 
                       v-for="subItem in academicItems" 
                       :key="subItem.title"
-                      class="group/item rounded-lg p-3 hover:bg-gray-50 transition-colors"
+                      class="group/item rounded-lg p-3 hover:bg-[hsl(var(--tertiary-hover))] transition-colors"
                     >
                       <a :href="subItem.href" class="block">
-                        <h3 class="font-medium text-gray-900 group-hover/item:text-blue-900 mb-1 text-sm">
+                        <h3 class="font-medium text-[hsl(var(--secondary))] group-hover/item:text-[hsl(var(--primary))]  mb-1 text-sm">
                           {{ subItem.title }}
                         </h3>
                         <p class="text-xs text-gray-600 leading-snug">
@@ -330,7 +362,7 @@ defineProps<{
             <!-- Research (with dropdown) -->
             <li class="relative group">
               <button 
-                class="bg-transparent hover:bg-blue-50 text-gray-700 hover:text-blue-900 px-4 py-2 rounded-md text-sm font-medium transition-colors inline-flex items-center"
+                class="bg-transparent hover:bg-[hsl(var(--tertiary-hover))] hover:bg-opacity-60 text-gray-700 hover:text-[hsl(var(--primary))]  px-4 py-2 rounded-md text-sm font-medium transition-colors inline-flex items-center"
               >
                 Research
                 <svg class="ml-1 h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -344,10 +376,10 @@ defineProps<{
                     <div 
                       v-for="subItem in researchItems" 
                       :key="subItem.title"
-                      class="group/item rounded-lg p-3 hover:bg-gray-50 transition-colors"
+                      class="group/item rounded-lg p-3 hover:bg-[hsl(var(--tertiary-hover))] transition-colors"
                     >
                       <a :href="subItem.href" class="block">
-                        <h3 class="font-medium text-gray-900 group-hover/item:text-blue-900 mb-1">
+                        <h3 class="font-medium text-[hsl(var(--secondary))] group-hover/item:text-[hsl(var(--primary))]  mb-1">
                           {{ subItem.title }}
                         </h3>
                         <p class="text-sm text-gray-600 leading-snug">
@@ -363,7 +395,7 @@ defineProps<{
             <!-- People (with dropdown) -->
             <li class="relative group">
               <button 
-                class="bg-transparent hover:bg-blue-50 text-gray-700 hover:text-blue-900 px-4 py-2 rounded-md text-sm font-medium transition-colors inline-flex items-center"
+                class="bg-transparent hover:bg-[hsl(var(--tertiary-hover))] hover:bg-opacity-60 text-gray-700 hover:text-[hsl(var(--primary))]  px-4 py-2 rounded-md text-sm font-medium transition-colors inline-flex items-center"
               >
                 People
                 <svg class="ml-1 h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -376,25 +408,25 @@ defineProps<{
                   <div class="grid grid-cols-1 gap-2">
                     <a 
                       href="/people/faculty"
-                      class="block px-3 py-2 rounded-md text-sm text-gray-700 hover:bg-gray-50 hover:text-blue-900 transition-colors"
+                      class="block px-3 py-2 rounded-md text-sm text-gray-700 hover:bg-[hsl(var(--tertiary-hover))] hover:text-[hsl(var(--primary))]  transition-colors"
                     >
                       Faculty
                     </a>
                     <a 
                       href="/people/staff"
-                      class="block px-3 py-2 rounded-md text-sm text-gray-700 hover:bg-gray-50 hover:text-blue-900 transition-colors"
+                      class="block px-3 py-2 rounded-md text-sm text-gray-700 hover:bg-[hsl(var(--tertiary-hover))] hover:text-[hsl(var(--primary))]  transition-colors"
                     >
                       Staff
                     </a>
                     <a 
                       href="/people/students"
-                      class="block px-3 py-2 rounded-md text-sm text-gray-700 hover:bg-gray-50 hover:text-blue-900 transition-colors"
+                      class="block px-3 py-2 rounded-md text-sm text-gray-700 hover:bg-[hsl(var(--tertiary-hover))] hover:text-[hsl(var(--primary))]  transition-colors"
                     >
                       Current Students
                     </a>
                     <a 
                       href="/people/alumni"
-                      class="block px-3 py-2 rounded-md text-sm text-gray-700 hover:bg-gray-50 hover:text-blue-900 transition-colors"
+                      class="block px-3 py-2 rounded-md text-sm text-gray-700 hover:bg-[hsl(var(--tertiary-hover))] hover:text-[hsl(var(--primary))]  transition-colors"
                     >
                       Alumni
                     </a>
@@ -407,7 +439,7 @@ defineProps<{
             <li>
               <a 
                 href="/notices" 
-                class="bg-transparent hover:bg-blue-50 text-gray-700 hover:text-blue-900 px-4 py-2 rounded-md text-sm font-medium transition-colors inline-flex items-center"
+                class="bg-transparent hover:bg-[hsl(var(--tertiary-hover))] hover:bg-opacity-60 text-gray-700 hover:text-[hsl(var(--primary))]  px-4 py-2 rounded-md text-sm font-medium transition-colors inline-flex items-center"
               >
                 Notice
               </a>
@@ -417,7 +449,7 @@ defineProps<{
             <li>
               <a 
                 href="/news" 
-                class="bg-transparent hover:bg-blue-50 text-gray-700 hover:text-blue-900 px-4 py-2 rounded-md text-sm font-medium transition-colors inline-flex items-center"
+                class="bg-transparent hover:bg-[hsl(var(--tertiary-hover))] hover:bg-opacity-60 text-gray-700 hover:text-[hsl(var(--primary))]  px-4 py-2 rounded-md text-sm font-medium transition-colors inline-flex items-center"
               >
                 News
               </a>
@@ -427,7 +459,7 @@ defineProps<{
             <li>
               <a 
                 href="/publications" 
-                class="bg-transparent hover:bg-blue-50 text-gray-700 hover:text-blue-900 px-4 py-2 rounded-md text-sm font-medium transition-colors inline-flex items-center"
+                class="bg-transparent hover:bg-[hsl(var(--tertiary-hover))] hover:bg-opacity-60 text-gray-700 hover:text-[hsl(var(--primary))]  px-4 py-2 rounded-md text-sm font-medium transition-colors inline-flex items-center"
               >
                 Publications
               </a>
@@ -437,7 +469,7 @@ defineProps<{
             <li>
               <a 
                 href="/projects" 
-                class="bg-transparent hover:bg-blue-50 text-gray-700 hover:text-blue-900 px-4 py-2 rounded-md text-sm font-medium transition-colors inline-flex items-center"
+                class="bg-transparent hover:bg-[hsl(var(--tertiary-hover))] hover:bg-opacity-60 text-gray-700 hover:text-[hsl(var(--primary))]  px-4 py-2 rounded-md text-sm font-medium transition-colors inline-flex items-center"
               >
                 Projects
               </a>
@@ -447,7 +479,7 @@ defineProps<{
             <li>
               <a 
                 href="/contact" 
-                class="bg-transparent hover:bg-blue-50 text-gray-700 hover:text-blue-900 px-4 py-2 rounded-md text-sm font-medium transition-colors inline-flex items-center"
+                class="bg-transparent hover:bg-[hsl(var(--tertiary-hover))] hover:bg-opacity-60 text-gray-700 hover:text-[hsl(var(--primary))]  px-4 py-2 rounded-md text-sm font-medium transition-colors inline-flex items-center"
               >
                 Contact
               </a>
@@ -463,7 +495,7 @@ defineProps<{
                 variant="ghost" 
                 size="sm"
                 @click="isOpen = true"
-                class="p-2 hover:bg-blue-50"
+                class="p-2 hover:bg-[hsl(var(--tertiary-hover))] hover:bg-opacity-60"
               >
                 <Menu class="h-6 w-6 text-gray-700" />
                 <span class="sr-only">Open main menu</span>
@@ -472,7 +504,7 @@ defineProps<{
 
             <SheetContent side="left" class="w-full sm:w-80 bg-white p-0 h-full flex flex-col">
               <!-- Mobile Header -->
-              <div class="bg-blue-900 text-white p-4 flex-shrink-0 relative">
+              <div class="bg-[hsl(var(--primary))] text-white p-4 flex-shrink-0 relative">
                 <SheetHeader class="text-left">
                   <SheetTitle class="flex items-center justify-between text-white text-lg">
                     <div class="flex items-center">
@@ -502,7 +534,7 @@ defineProps<{
                     <a 
                       href="/"
                       @click="isOpen = false"
-                      class="flex items-center px-4 py-3 text-blue-900 font-semibold text-sm uppercase tracking-wide mobile-section-title">
+                      class="flex items-center px-4 py-3 text-[hsl(var(--primary))]  font-semibold text-sm uppercase tracking-wide mobile-section-title">
                       <svg class="w-5 h-5 mr-3 mobile-nav-icon flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6" />
                       </svg>
@@ -511,7 +543,7 @@ defineProps<{
                   </div>
                   <!-- About Section -->
                   <div class="mb-4 mobile-nav-section">
-                    <div class="flex items-center px-4 py-3 text-blue-900 font-semibold text-sm uppercase tracking-wide mobile-section-title">
+                    <div class="flex items-center px-4 py-3 text-[hsl(var(--primary))]  font-semibold text-sm uppercase tracking-wide mobile-section-title">
                       <svg class="w-5 h-5 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
                       </svg>
@@ -523,7 +555,7 @@ defineProps<{
                         :key="item.title"
                         :href="item.href"
                         @click="isOpen = false"
-                        class="block px-4 py-2 text-sm text-gray-600 hover:text-blue-900 hover:bg-gray-50 rounded-md transition-colors mobile-nav-item"
+                        class="block px-4 py-2 text-sm text-gray-600 hover:text-[hsl(var(--primary))]  hover:bg-[hsl(var(--tertiary-hover))] rounded-md transition-colors mobile-nav-item"
                       >
                         {{ item.title }}
                       </a>
@@ -532,7 +564,7 @@ defineProps<{
 
                   <!-- Academic Section -->
                   <div class="mb-4 mobile-nav-section">
-                    <div class="flex items-center px-4 py-3 text-blue-900 font-semibold text-sm uppercase tracking-wide mobile-section-title">
+                    <div class="flex items-center px-4 py-3 text-[hsl(var(--primary))]  font-semibold text-sm uppercase tracking-wide mobile-section-title">
                       <svg class="w-5 h-5 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253" />
                       </svg>
@@ -544,7 +576,7 @@ defineProps<{
                         :key="item.title"
                         :href="item.href"
                         @click="isOpen = false"
-                        class="block px-4 py-2 text-sm text-gray-600 hover:text-blue-900 hover:bg-gray-50 rounded-md transition-colors mobile-nav-item"
+                        class="block px-4 py-2 text-sm text-gray-600 hover:text-[hsl(var(--primary))]  hover:bg-[hsl(var(--tertiary-hover))] rounded-md transition-colors mobile-nav-item"
                       >
                         {{ item.title }}
                       </a>
@@ -553,7 +585,7 @@ defineProps<{
 
                   <!-- Research Section -->
                   <div class="mb-4 mobile-nav-section">
-                    <div class="flex items-center px-4 py-3 text-blue-900 font-semibold text-sm uppercase tracking-wide mobile-section-title">
+                    <div class="flex items-center px-4 py-3 text-[hsl(var(--primary))]  font-semibold text-sm uppercase tracking-wide mobile-section-title">
                       <svg class="w-5 h-5 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4M7.835 4.697a3.42 3.42 0 001.946-.806 3.42 3.42 0 014.438 0 3.42 3.42 0 001.946.806 3.42 3.42 0 013.138 3.138 3.42 3.42 0 00.806 1.946 3.42 3.42 0 010 4.438 3.42 3.42 0 00-.806 1.946 3.42 3.42 0 01-3.138 3.138 3.42 3.42 0 00-1.946.806 3.42 3.42 0 01-4.438 0 3.42 3.42 0 00-1.946-.806 3.42 3.42 0 01-3.138-3.138 3.42 3.42 0 00-.806-1.946 3.42 3.42 0 010-4.438 3.42 3.42 0 00.806-1.946 3.42 3.42 0 013.138-3.138z" />
                       </svg>
@@ -565,7 +597,7 @@ defineProps<{
                         :key="item.title"
                         :href="item.href"
                         @click="isOpen = false"
-                        class="block px-4 py-2 text-sm text-gray-600 hover:text-blue-900 hover:bg-gray-50 rounded-md transition-colors mobile-nav-item"
+                        class="block px-4 py-2 text-sm text-gray-600 hover:text-[hsl(var(--primary))]  hover:bg-[hsl(var(--tertiary-hover))] rounded-md transition-colors mobile-nav-item"
                       >
                         {{ item.title }}
                       </a>
@@ -574,7 +606,7 @@ defineProps<{
 
                   <!-- People Section -->
                   <div class="mb-4 mobile-nav-section">
-                    <div class="flex items-center px-4 py-3 text-blue-900 font-semibold text-sm uppercase tracking-wide mobile-section-title">
+                    <div class="flex items-center px-4 py-3 text-[hsl(var(--primary))]  font-semibold text-sm uppercase tracking-wide mobile-section-title">
                       <svg class="w-5 h-5 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z" />
                       </svg>
@@ -584,28 +616,28 @@ defineProps<{
                       <a
                         href="/people/faculty"
                         @click="isOpen = false"
-                        class="block px-4 py-2 text-sm text-gray-600 hover:text-blue-900 hover:bg-gray-50 rounded-md transition-colors mobile-nav-item"
+                        class="block px-4 py-2 text-sm text-gray-600 hover:text-[hsl(var(--primary))]  hover:bg-[hsl(var(--tertiary-hover))] rounded-md transition-colors mobile-nav-item"
                       >
                         Faculty
                       </a>
                       <a
                         href="/people/staff"
                         @click="isOpen = false"
-                        class="block px-4 py-2 text-sm text-gray-600 hover:text-blue-900 hover:bg-gray-50 rounded-md transition-colors mobile-nav-item"
+                        class="block px-4 py-2 text-sm text-gray-600 hover:text-[hsl(var(--primary))]  hover:bg-[hsl(var(--tertiary-hover))] rounded-md transition-colors mobile-nav-item"
                       >
                         Staff
                       </a>
                       <a
                         href="/people/students"
                         @click="isOpen = false"
-                        class="block px-4 py-2 text-sm text-gray-600 hover:text-blue-900 hover:bg-gray-50 rounded-md transition-colors mobile-nav-item"
+                        class="block px-4 py-2 text-sm text-gray-600 hover:text-[hsl(var(--primary))]  hover:bg-[hsl(var(--tertiary-hover))] rounded-md transition-colors mobile-nav-item"
                       >
                         Current Students
                       </a>
                       <a
                         href="/people/alumni"
                         @click="isOpen = false"
-                        class="block px-4 py-2 text-sm text-gray-600 hover:text-blue-900 hover:bg-gray-50 rounded-md transition-colors mobile-nav-item"
+                        class="block px-4 py-2 text-sm text-gray-600 hover:text-[hsl(var(--primary))]  hover:bg-[hsl(var(--tertiary-hover))] rounded-md transition-colors mobile-nav-item"
                       >
                         Alumni
                       </a>
@@ -616,7 +648,7 @@ defineProps<{
                       <a 
                         href="/notices"
                         @click="isOpen = false"
-                        class="flex items-center px-4 py-3 text-blue-900 font-semibold text-sm uppercase tracking-wide mobile-section-title">
+                        class="flex items-center px-4 py-3 text-[hsl(var(--primary))]  font-semibold text-sm uppercase tracking-wide mobile-section-title">
                         <svg class="w-5 h-5 mr-3 mobile-nav-icon flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                           <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 17h5l-5 5v-5zM9 2v5H4L9 2zm0 0l5 5M4 12h16m-7 7h7" />
                         </svg>
@@ -627,7 +659,7 @@ defineProps<{
                       <a 
                         href="/news"
                         @click="isOpen = false"
-                        class="flex items-center px-4 py-3 text-blue-900 font-semibold text-sm uppercase tracking-wide mobile-section-title">
+                        class="flex items-center px-4 py-3 text-[hsl(var(--primary))]  font-semibold text-sm uppercase tracking-wide mobile-section-title">
                         <svg class="w-5 h-5 mr-3 mobile-nav-icon flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                           <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 20H5a2 2 0 01-2-2V6a2 2 0 012-2h10a2 2 0 012 2v1m2 13a2 2 0 01-2-2V7m2 13a2 2 0 002-2V9.5a2 2 0 00-2-2h-2m-4-3H9M7 16h6M7 8h6v4H7V8z" />
                         </svg>
@@ -638,7 +670,7 @@ defineProps<{
                       <a 
                         href="/publications"
                         @click="isOpen = false"
-                        class="flex items-center px-4 py-3 text-blue-900 font-semibold text-sm uppercase tracking-wide mobile-section-title">
+                        class="flex items-center px-4 py-3 text-[hsl(var(--primary))]  font-semibold text-sm uppercase tracking-wide mobile-section-title">
                         <svg class="w-5 h-5 mr-3 mobile-nav-icon flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                           <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
                         </svg>
@@ -649,7 +681,7 @@ defineProps<{
                       <a 
                         href="/projects"
                         @click="isOpen = false"
-                        class="flex items-center px-4 py-3 text-blue-900 font-semibold text-sm uppercase tracking-wide mobile-section-title">
+                        class="flex items-center px-4 py-3 text-[hsl(var(--primary))]  font-semibold text-sm uppercase tracking-wide mobile-section-title">
                         <svg class="w-5 h-5 mr-3 mobile-nav-icon flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                           <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10" />
                         </svg>
@@ -660,7 +692,7 @@ defineProps<{
                       <a 
                         href="/contact"
                         @click="isOpen = false"
-                        class="flex items-center px-4 py-3 text-blue-900 font-semibold text-sm uppercase tracking-wide mobile-section-title">
+                        class="flex items-center px-4 py-3 text-[hsl(var(--primary))]  font-semibold text-sm uppercase tracking-wide mobile-section-title">
                         <svg class="w-5 h-5 mr-3 mobile-nav-icon flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                           <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
                         </svg>
@@ -671,7 +703,7 @@ defineProps<{
               </div>
 
               <!-- Mobile Footer -->
-              <div class="border-t border-gray-200 p-4 bg-gray-50 flex-shrink-0 mobile-footer">
+              <div class="border-t border-gray-200 p-4 bg-[hsl(var(--tertiary-hover))] flex-shrink-0 mobile-footer">
                 <div class="text-center">
                   <div class="text-xs text-gray-500 mb-2">
                     © 2025 CSE, MBSTU. All rights reserved.

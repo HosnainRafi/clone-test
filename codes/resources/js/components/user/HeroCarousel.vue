@@ -162,7 +162,7 @@ onUnmounted(() => {
                   <!-- Call to Action Button -->
                   <a
                     :href="slide.ctaLink"
-                    class="inline-flex items-center px-8 py-4 bg-blue-600 hover:bg-blue-700 text-white font-semibold text-lg rounded-lg transition-all duration-300 transform hover:scale-105 shadow-lg hover:shadow-xl"
+                    class="inline-flex items-center px-8 py-4 bg-[hsl(var(--secondary))] hover:bg-[hsl(var(--primary))] text-white font-semibold text-lg rounded-lg transition-all duration-300 transform hover:scale-105 shadow-lg hover:shadow-xl"
                   >
                     {{ slide.ctaText }}
                     <ChevronRight class="ml-2 h-5 w-5" />

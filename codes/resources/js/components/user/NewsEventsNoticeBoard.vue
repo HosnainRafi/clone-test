@@ -203,14 +203,14 @@ const getPriorityColor = (priority: string) => {
   switch (priority) {
     case 'high': return 'text-red-600 bg-red-50 border-red-200'
     case 'medium': return 'text-yellow-600 bg-yellow-50 border-yellow-200'
-    default: return 'text-blue-600 bg-blue-50 border-blue-200'
+    default: return 'text-[hsl(var(--secondary))]  bg-blue-50 border-blue-200'
   }
 }
 
 const getEventStatus = (status: string) => {
   switch (status) {
     case 'upcoming': return 'text-green-600 bg-green-50'
-    case 'ongoing': return 'text-blue-600 bg-blue-50'
+    case 'ongoing': return 'text-[hsl(var(--secondary))]  bg-blue-50'
     case 'completed': return 'text-gray-600 bg-gray-50'
     default: return 'text-gray-600 bg-gray-50'
   }
@@ -221,7 +221,7 @@ const getEventStatus = (status: string) => {
   <section class="container pt-24">
     <!-- Section Header -->
     <div class="text-center mb-12">
-    <h2 class="text-3xl md:text-4xl font-bold text-gray-900 mb-4">
+    <h2 class="text-3xl md:text-4xl font-bold text-[hsl(var(--secondary))] mb-4">
         News, Events & Notices
     </h2>
     <p class="text-lg text-gray-600 max-w-3xl mx-auto">
@@ -235,10 +235,10 @@ const getEventStatus = (status: string) => {
         <button
         @click="activeTab = 'news'"
         :class="[
-            'flex items-center px-6 py-3 rounded-md text-sm font-medium transition-all duration-200',
+            'flex items-center md:px-6 2xsm:px-1 md:py-3 xsm:py-2 rounded-md md:text-sm xsm:text-xs font-medium transition-all duration-200',
             activeTab === 'news'
-            ? 'bg-blue-600 text-white shadow-sm'
-            : 'text-gray-600 hover:text-blue-600 hover:bg-blue-50'
+            ? 'bg-[hsl(var(--tertiary))] text-white shadow-sm'
+            : 'text-gray-600 hover:bg-[hsl(var(--tertiary-hover))] hover:bg-opacity-60 hover:text-[hsl(var(--primary))] '
         ]"
         >
         <Newspaper class="w-4 h-4 mr-2" />
@@ -246,7 +246,7 @@ const getEventStatus = (status: string) => {
         <span :class="[
             'ml-2 px-2 py-0.5 text-xs rounded-full font-semibold',
             activeTab === 'news' 
-            ? 'bg-white text-blue-600' 
+            ? 'bg-white text-[hsl(var(--secondary))] ' 
             : 'bg-blue-100 text-blue-700'
         ]">
             {{ newsData.length }}
@@ -255,10 +255,10 @@ const getEventStatus = (status: string) => {
         <button
         @click="activeTab = 'events'"
         :class="[
-            'flex items-center px-6 py-3 rounded-md text-sm font-medium transition-all duration-200',
+            'flex items-center md:px-6 2xsm:px-1 md:py-3 xsm:py-2 rounded-md md:text-sm xsm:text-xs font-medium transition-all duration-200',
             activeTab === 'events'
-            ? 'bg-blue-600 text-white shadow-sm'
-            : 'text-gray-600 hover:text-blue-600 hover:bg-blue-50'
+            ? 'bg-[hsl(var(--tertiary))] text-white shadow-sm'
+            : 'text-gray-600 hover:bg-[hsl(var(--tertiary-hover))] hover:bg-opacity-60 hover:text-[hsl(var(--primary))] '
         ]"
         >
         <Calendar class="w-4 h-4 mr-2" />
@@ -266,7 +266,7 @@ const getEventStatus = (status: string) => {
         <span :class="[
             'ml-2 px-2 py-0.5 text-xs rounded-full font-semibold',
             activeTab === 'events' 
-            ? 'bg-white text-blue-600' 
+            ? 'bg-white text-[hsl(var(--secondary))] ' 
             : 'bg-green-100 text-green-700'
         ]">
             {{ eventsData.filter(e => e.status === 'upcoming').length }}
@@ -275,10 +275,10 @@ const getEventStatus = (status: string) => {
         <button
         @click="activeTab = 'notices'"
         :class="[
-            'flex items-center px-6 py-3 rounded-md text-sm font-medium transition-all duration-200',
+            'flex items-center md:px-6 2xsm:px-1 md:py-3 xsm:py-2 rounded-md md:text-sm xsm:text-xs font-medium transition-all duration-200',
             activeTab === 'notices'
-            ? 'bg-blue-600 text-white shadow-sm'
-            : 'text-gray-600 hover:text-blue-600 hover:bg-blue-50'
+            ? 'bg-[hsl(var(--tertiary))] text-white shadow-sm'
+            : 'text-gray-600 hover:bg-[hsl(var(--tertiary-hover))] hover:bg-opacity-60 hover:text-[hsl(var(--primary))] '
         ]"
         >
         <Bell class="w-4 h-4 mr-2" />
@@ -286,7 +286,7 @@ const getEventStatus = (status: string) => {
         <span :class="[
             'ml-2 px-2 py-0.5 text-xs rounded-full font-semibold',
             activeTab === 'notices' 
-            ? 'bg-white text-blue-600' 
+            ? 'bg-white text-[hsl(var(--secondary))] ' 
             : 'bg-red-100 text-red-700'
         ]">
             {{ noticesData.filter(n => n.priority === 'high').length }}
@@ -328,9 +328,9 @@ const getEventStatus = (status: string) => {
                     <Clock class="w-4 h-4 mr-1" />
                     {{ formatDate(item.date) }}
                 </div>
-                <span class="text-sm text-blue-600 font-medium">{{ item.readTime }}</span>
+                <span class="text-sm text-[hsl(var(--secondary))] font-medium">{{ item.readTime }}</span>
                 </div>
-                <h3 class="text-xl font-semibold text-gray-900 mb-3 group-hover:text-blue-600 transition-colors">
+                <h3 class="text-xl font-semibold text-[hsl(var(--secondary))] mb-3 group-hover:text-[hsl(var(--primary))] transition-colors">
                 {{ item.title }}
                 </h3>
                 <p class="text-gray-600 mb-4 line-clamp-2">
@@ -338,7 +338,7 @@ const getEventStatus = (status: string) => {
                 </p>
                 <div class="flex items-center justify-between">
                 <span class="text-sm text-gray-500">By {{ item.author }}</span>
-                <a href="#" class="inline-flex items-center text-blue-600 hover:text-blue-700 font-medium">
+                <a href="#" class="inline-flex items-center text-[hsl(var(--secondary))] hover:text-[hsl(var(--primary))] font-medium">
                     Read More
                     <ChevronRight class="w-4 h-4 ml-1" />
                 </a>
@@ -358,10 +358,10 @@ const getEventStatus = (status: string) => {
             <div class="flex items-start justify-between mb-4">
             <div class="flex items-center">
                 <div class="bg-blue-100 p-3 rounded-lg mr-4">
-                <Calendar class="w-6 h-6 text-blue-600" />
+                <Calendar class="w-6 h-6 text-[hsl(var(--secondary))] " />
                 </div>
                 <div>
-                <h3 class="text-xl font-semibold text-gray-900 mb-2">{{ event.title }}</h3>
+                <h3 class="text-xl font-semibold text-[hsl(var(--secondary))] mb-2">{{ event.title }}</h3>
                 <div class="flex items-center text-sm text-gray-500 space-x-4">
                     <span class="flex items-center">
                     <Clock class="w-4 h-4 mr-1" />
@@ -384,25 +384,25 @@ const getEventStatus = (status: string) => {
             <p class="text-gray-600 mb-4">{{ event.description }}</p>
             <div class="grid grid-cols-2 md:grid-cols-4 gap-4 text-sm">
             <div>
-                <span class="font-medium text-gray-900">Category:</span>
+                <span class="font-medium text-[hsl(var(--secondary))]">Category:</span>
                 <p class="text-gray-600">{{ event.category }}</p>
             </div>
             <div>
-                <span class="font-medium text-gray-900">Registration:</span>
+                <span class="font-medium text-[hsl(var(--secondary))]">Registration:</span>
                 <p class="text-gray-600">{{ event.registration }}</p>
             </div>
             <div>
-                <span class="font-medium text-gray-900">Fee:</span>
+                <span class="font-medium text-[hsl(var(--secondary))]">Fee:</span>
                 <p class="text-gray-600">{{ event.fee }}</p>
             </div>
             <div>
-                <span class="font-medium text-gray-900">Participants:</span>
+                <span class="font-medium text-[hsl(var(--secondary))]">Participants:</span>
                 <p class="text-gray-600">{{ event.participants }}</p>
             </div>
             </div>
             <div class="mt-4 pt-4 border-t border-gray-100 flex justify-between items-center">
             <span class="text-sm text-gray-500">Organized by {{ event.organizer }}</span>
-            <a href="#" class="inline-flex items-center text-blue-600 hover:text-blue-700 font-medium">
+            <a href="#" class="inline-flex items-center text-[hsl(var(--secondary))] hover:text-[hsl(var(--primary))] font-medium">
                 View Details
                 <ExternalLink class="w-4 h-4 ml-1" />
             </a>
@@ -425,11 +425,11 @@ const getEventStatus = (status: string) => {
                 ]">
                 <Bell :class="[
                     'w-5 h-5',
-                    notice.priority === 'high' ? 'text-red-600' : 'text-blue-600'
+                    notice.priority === 'high' ? 'text-red-600' : 'text-[hsl(var(--secondary))] '
                 ]" />
                 </div>
                 <div>
-                <h3 class="text-lg font-semibold text-gray-900">{{ notice.title }}</h3>
+                <h3 class="text-lg font-semibold text-[hsl(var(--secondary))]">{{ notice.title }}</h3>
                 <div class="flex items-center text-sm text-gray-500 space-x-4 mt-1">
                     <span>{{ formatDate(notice.date) }}</span>
                     <span>{{ notice.department }}</span>
@@ -445,7 +445,7 @@ const getEventStatus = (status: string) => {
             </div>
             <p class="text-gray-600 mb-4">{{ notice.content }}</p>
             <div v-if="notice.attachments.length > 0" class="mb-4">
-            <h4 class="text-sm font-medium text-gray-900 mb-2">Attachments:</h4>
+            <h4 class="text-sm font-medium text-[hsl(var(--secondary))] mb-2">Attachments:</h4>
             <div class="flex flex-wrap gap-2">
                 <span
                 v-for="attachment in notice.attachments"
@@ -467,11 +467,11 @@ const getEventStatus = (status: string) => {
     <div class="space-y-6">
         <!-- Quick Stats -->
         <div class="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
-        <h3 class="text-lg font-semibold text-gray-900 mb-4">Quick Stats</h3>
+        <h3 class="text-lg font-semibold text-[hsl(var(--secondary))] mb-4">Quick Stats</h3>
         <div class="space-y-4">
             <div class="flex items-center justify-between">
             <span class="text-gray-600">Total News</span>
-            <span class="font-semibold text-blue-600">{{ newsData.length }}</span>
+            <span class="font-semibold text-[hsl(var(--secondary))] ">{{ newsData.length }}</span>
             </div>
             <div class="flex items-center justify-between">
             <span class="text-gray-600">Upcoming Events</span>
@@ -486,13 +486,13 @@ const getEventStatus = (status: string) => {
 
         <!-- Recent Updates -->
         <div class="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
-        <h3 class="text-lg font-semibold text-gray-900 mb-4 flex items-center">
+        <h3 class="text-lg font-semibold text-[hsl(var(--secondary))] mb-4 flex items-center">
             <Star class="w-5 h-5 mr-2 text-yellow-500" />
             Recent Updates
         </h3>
         <div class="space-y-3">
-            <div v-for="item in [...newsData.slice(0, 2), ...eventsData.slice(0, 1)]" :key="`recent-${item.id}`" class="border-l-3 border-blue-500 pl-3">
-            <h4 class="font-medium text-gray-900 text-sm line-clamp-2">{{ item.title }}</h4>
+            <div v-for="item in [...newsData.slice(0, 2), ...eventsData.slice(0, 1)]" :key="`recent-${item.id}`" class="border-l-3 border-l-[hsl(var(--secondary))] pl-3">
+            <h4 class="font-medium text-[hsl(var(--secondary))] text-sm line-clamp-2">{{ item.title }}</h4>
             <p class="text-xs text-gray-500 mt-1">{{ getTimeAgo(item.date) }}</p>
             </div>
         </div>
@@ -500,18 +500,18 @@ const getEventStatus = (status: string) => {
 
         <!-- Quick Links -->
         <div class="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
-        <h3 class="text-lg font-semibold text-gray-900 mb-4">Quick Links</h3>
+        <h3 class="text-lg font-semibold text-[hsl(var(--secondary))] mb-4">Quick Links</h3>
         <div class="space-y-2">
-            <a href="/news" class="block text-blue-600 hover:text-blue-700 text-sm font-medium hover:underline">
+            <a href="/news" class="block text-[hsl(var(--secondary))] hover:text-[hsl(var(--primary))] text-sm font-medium hover:underline">
             View All News →
             </a>
-            <a href="/events" class="block text-blue-600 hover:text-blue-700 text-sm font-medium hover:underline">
+            <a href="/events" class="block text-[hsl(var(--secondary))] hover:text-[hsl(var(--primary))] text-sm font-medium hover:underline">
             Event Calendar →
             </a>
-            <a href="/notices" class="block text-blue-600 hover:text-blue-700 text-sm font-medium hover:underline">
+            <a href="/notices" class="block text-[hsl(var(--secondary))] hover:text-[hsl(var(--primary))] text-sm font-medium hover:underline">
             All Notices →
             </a>
-            <a href="/announcements" class="block text-blue-600 hover:text-blue-700 text-sm font-medium hover:underline">
+            <a href="/announcements" class="block text-[hsl(var(--secondary))] hover:text-[hsl(var(--primary))] text-sm font-medium hover:underline">
             Announcements →
             </a>
         </div>
@@ -549,7 +549,7 @@ const getEventStatus = (status: string) => {
   transition: all 0.3s ease;
 }
 
-.group-hover\:text-blue-600:hover {
+.group:hover .group-hover\:text-blue-600 {
   transition: color 0.2s ease;
 }
 

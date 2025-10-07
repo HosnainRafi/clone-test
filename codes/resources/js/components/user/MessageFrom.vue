@@ -59,7 +59,7 @@ const toggleMessage = () => {
   <section class="container pt-24">
     <!-- Section Header -->
     <div class="text-center mb-12">
-    <h2 class="text-3xl md:text-4xl font-bold text-gray-800 mb-4">
+    <h2 class="text-3xl md:text-4xl font-bold text-[hsl(var(--secondary))] mb-4">
         Message from Chairman
     </h2>
     <p class="text-lg text-gray-600 max-w-2xl mx-auto">
@@ -92,7 +92,7 @@ const toggleMessage = () => {
 
         <!-- Chairman Details -->
         <div class="text-center">
-            <h3 class="text-xl font-bold mb-2 text-gray-800">{{ chairmanData.name }}</h3>
+            <h3 class="text-xl font-bold mb-2 text-[hsl(var(--secondary))]">{{ chairmanData.name }}</h3>
             <p class="text-gray-600 text-lg font-medium mb-1">{{ chairmanData.title }}</p>
             <p class="text-gray-500 text-sm mb-6">{{ chairmanData.department }}</p>
             
@@ -113,7 +113,7 @@ const toggleMessage = () => {
             </div>
 
             <!-- Experience Badge -->
-            <div class="mt-6 inline-block bg-blue-50 text-blue-700 px-4 py-2 rounded-full text-sm font-medium">
+            <div class="mt-6 inline-block bg-[hsl(var(--tertiary))] text-[hsl(var(--primary))] px-4 py-2 rounded-full text-sm font-medium">
             {{ chairmanData.experience }} Experience
             </div>
         </div>
@@ -123,7 +123,7 @@ const toggleMessage = () => {
         <div class="lg:w-2/3 p-8 lg:p-10 bg-white">
         <!-- Greeting -->
         <div class="mb-6">
-            <h4 class="text-2xl font-bold text-gray-800 mb-4">
+            <h4 class="text-2xl font-bold text-[hsl(var(--secondary))] mb-4">
             {{ chairmanData.message.greeting }}
             </h4>
         </div>
@@ -151,7 +151,7 @@ const toggleMessage = () => {
             <!-- Read More/Less Button -->
             <button
                 @click="toggleMessage"
-                class="inline-flex items-center text-blue-600 hover:text-blue-700 font-medium transition-colors duration-200 text-sm"
+                class="inline-flex items-center text-[hsl(var(--secondary))] hover:text-[hsl(var(--primary))] font-medium transition-colors duration-200 text-sm"
             >
                 {{ isExpanded ? 'Read Less' : 'Read More' }}
                 <ChevronRight 
@@ -178,7 +178,7 @@ const toggleMessage = () => {
         <div class="mt-8 flex flex-col sm:flex-row gap-3">
             <a
             href="/about/chairman"
-            class="inline-flex items-center justify-center px-5 py-2.5 bg-blue-600 hover:bg-blue-700 text-white font-medium rounded-lg transition-colors duration-200"
+            class="inline-flex items-center justify-center px-5 py-2.5 bg-[hsl(var(--secondary))] hover:bg-[hsl(var(--primary))] text-white font-medium rounded-lg transition-colors duration-200"
             >
             Learn More
             <ExternalLink class="w-4 h-4 ml-2" />
@@ -200,8 +200,8 @@ const toggleMessage = () => {
     
     <!-- Qualifications -->
     <div class="bg-white rounded-xl p-6 border border-gray-200 shadow-sm">
-        <h4 class="text-lg font-bold text-gray-800 mb-4 flex items-center">
-        <div class="w-8 h-8 bg-blue-50 text-blue-600 rounded-lg flex items-center justify-center mr-3 text-sm">
+        <h4 class="text-lg font-bold text-[hsl(var(--secondary))] mb-4 flex items-center">
+        <div class="w-8 h-8 bg-blue-50 text-[hsl(var(--secondary))]  rounded-lg flex items-center justify-center mr-3 text-sm">
             🎓
         </div>
         Academic Qualifications
@@ -217,7 +217,7 @@ const toggleMessage = () => {
 
     <!-- Specializations -->
     <div class="bg-white rounded-xl p-6 border border-gray-200 shadow-sm">
-        <h4 class="text-lg font-bold text-gray-800 mb-4 flex items-center">
+        <h4 class="text-lg font-bold text-[hsl(var(--secondary))] mb-4 flex items-center">
         <div class="w-8 h-8 bg-green-50 text-green-600 rounded-lg flex items-center justify-center mr-3 text-sm">
             🔬
         </div>
@@ -232,7 +232,7 @@ const toggleMessage = () => {
         
         <!-- Achievements -->
         <div>
-        <h5 class="font-semibold text-gray-800 mb-3 text-sm">Key Achievements:</h5>
+        <h5 class="font-semibold text-[hsl(var(--secondary))] mb-3 text-sm">Key Achievements:</h5>
         <ul class="space-y-1 text-xs text-gray-600">
             <li v-for="achievement in chairmanData.achievements" :key="achievement"
                 class="flex items-start">

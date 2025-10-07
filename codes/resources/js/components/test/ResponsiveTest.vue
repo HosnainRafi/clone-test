@@ -30,9 +30,9 @@
       <!-- Desktop navigation -->
       <nav class="hidden lg:block">
         <div class="flex space-x-4">
-          <a href="#" class="text-blue-600 hover:underline">Home</a>
-          <a href="#" class="text-blue-600 hover:underline">About</a>
-          <a href="#" class="text-blue-600 hover:underline">Contact</a>
+          <a href="#" class="text-[hsl(var(--secondary))]  hover:underline">Home</a>
+          <a href="#" class="text-[hsl(var(--secondary))]  hover:underline">About</a>
+          <a href="#" class="text-[hsl(var(--secondary))]  hover:underline">Contact</a>
         </div>
       </nav>
     </div>

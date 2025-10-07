@@ -253,11 +253,13 @@
         margin-right: auto;
         padding-left: 1.5rem;
         padding-right: 1.5rem;
+        overflow-x: hidden;
     }
     
     @media (min-width: 1400px) {
         .container {
             max-width: 1400px;
+            overflow-x: visible;
         }
     }
 
@@ -642,6 +644,11 @@ html {
 }
 
 @layer base {
+    html {
+        overflow-x: hidden;
+        max-width: 100%;
+    }
+    
     body {
         @apply relative z-1 bg-[hsl(var(--background))] text-base font-normal text-body dark:text-bodydark dark:bg-boxdark-2;
     }

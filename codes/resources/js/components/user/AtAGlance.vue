@@ -84,7 +84,7 @@ const formatNumber = (number: number) => {
 const getColorClasses = (color: string) => {
   const colorMap = {
     blue: {
-      icon: 'text-blue-600',
+      icon: 'text-[hsl(var(--secondary))] ',
       border: 'border-blue-200',
       bg: 'bg-blue-50'
     },
@@ -136,7 +136,7 @@ onMounted(() => {
   <section class="at-a-glance-section container pt-24">
     <!-- Section Header -->
     <div class="text-center mb-12">
-    <h2 class="text-3xl md:text-4xl font-bold text-gray-900 mb-4">
+    <h2 class="text-3xl md:text-4xl font-bold text-[hsl(var(--secondary))] mb-4">
         At a Glance
     </h2>
     <p class="text-lg text-gray-600 max-w-2xl mx-auto">
@@ -173,7 +173,7 @@ onMounted(() => {
         <!-- Number -->
         <div class="relative z-10 mb-4">
         <div class="flex items-baseline">
-            <span class="text-4xl md:text-5xl font-bold text-gray-900 tabular-nums">
+            <span class="text-4xl md:text-5xl font-bold text-[hsl(var(--secondary))] tabular-nums">
             {{ formatNumber(animatedNumbers[index]) }}
             </span>
             <span class="text-2xl font-bold text-gray-600 ml-1">
@@ -184,7 +184,7 @@ onMounted(() => {
 
         <!-- Label and Description -->
         <div class="relative z-10">
-        <h3 class="text-xl font-bold text-gray-900 mb-2 group-hover:text-blue-600 transition-colors duration-300">
+        <h3 class="text-xl font-bold text-[hsl(var(--secondary))] mb-2 group-hover:text-[hsl(var(--primary))] transition-colors duration-300">
             {{ stat.label }}
         </h3>
         <p class="text-gray-600 text-sm leading-relaxed">

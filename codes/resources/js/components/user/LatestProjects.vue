@@ -150,7 +150,7 @@ const getStatusColor = (status: string) => {
     case 'Research':
       return 'bg-purple-100 text-purple-800 hover:bg-purple-200'
     default:
-      return 'bg-gray-100 text-gray-800 hover:bg-gray-200'
+      return 'bg-gray-100 text-[hsl(var(--secondary))] hover:bg-gray-200'
   }
 }
 
@@ -170,7 +170,7 @@ const getCategoryIcon = (category: string) => {
   <section class="pt-24 container">
     <!-- Section Header -->
     <div class="text-center mb-12">
-    <h2 class="text-3xl md:text-4xl font-bold text-gray-900 mb-4">
+    <h2 class="text-3xl md:text-4xl font-bold text-[hsl(var(--secondary))] mb-4">
         Latest Projects
     </h2>
     <p class="text-lg text-gray-600 max-w-3xl mx-auto">
@@ -207,7 +207,7 @@ const getCategoryIcon = (category: string) => {
             
             <!-- Category Badge -->
             <div class="absolute top-4 left-4">
-                <Badge class="bg-white/90 text-gray-800 hover:bg-white">
+                <Badge class="bg-white/90 text-[hsl(var(--secondary))] hover:bg-white">
                 {{ getCategoryIcon(project.category) }} {{ project.category }}
                 </Badge>
             </div>
@@ -221,7 +221,7 @@ const getCategoryIcon = (category: string) => {
 
             <!-- Project Year -->
             <div class="absolute bottom-4 right-4">
-                <div class="bg-blue-600 text-white px-3 py-1 rounded-full text-sm font-semibold">
+                <div class="bg-[hsl(var(--tertiary))] text-white px-3 py-1 rounded-full text-sm font-semibold">
                 {{ project.year }}
                 </div>
             </div>
@@ -229,7 +229,7 @@ const getCategoryIcon = (category: string) => {
 
             <CardHeader class="pb-3">
             <div class="flex items-start justify-between mb-2">
-                <CardTitle class="text-xl font-bold text-gray-900 line-clamp-2 group-hover:text-blue-600 transition-colors">
+                <CardTitle class="text-xl font-bold text-[hsl(var(--secondary))] line-clamp-2 group-hover:text-[hsl(var(--primary))] transition-colors">
                 {{ project.title }}
                 </CardTitle>
             </div>
@@ -243,7 +243,7 @@ const getCategoryIcon = (category: string) => {
             <!-- Project Details -->
             <div class="space-y-3 mb-4">
                 <div class="flex items-center text-sm text-gray-600">
-                <Calendar class="w-4 h-4 mr-2 text-blue-600" />
+                <Calendar class="w-4 h-4 mr-2 text-[hsl(var(--secondary))] " />
                 <span>Duration: {{ project.duration }}</span>
                 </div>
                 
@@ -294,20 +294,20 @@ const getCategoryIcon = (category: string) => {
             <!-- Supervisor -->
             <div class="mb-4 p-3 bg-gray-50 rounded-lg">
                 <div class="text-xs text-gray-500 mb-1">Supervised by</div>
-                <div class="font-medium text-gray-900">{{ project.supervisor }}</div>
+                <div class="font-medium text-[hsl(var(--secondary))]">{{ project.supervisor }}</div>
             </div>
             </CardContent>
         </Card>
         </CarouselItem>
     </CarouselContent>
     
-    <CarouselPrevious class="-left-12 bg-white border-2 border-gray-200 hover:bg-blue-50 hover:border-blue-300" />
-    <CarouselNext class="-right-12 bg-white border-2 border-gray-200 hover:bg-blue-50 hover:border-blue-300" />
+    <CarouselPrevious class="hidden sm:flex -left-12 lg:-left-16" />
+    <CarouselNext class="hidden sm:flex -right-12 lg:-right-16" />
     </Carousel>
 
     <!-- View All Projects Button -->
     <div class="text-center mt-12">
-    <Button size="lg" class="bg-blue-600 hover:bg-blue-700 text-white px-8 py-3">
+    <Button size="lg" class="bg-[hsl(var(--secondary))] hover:bg-[hsl(var(--primary))] text-white px-8 py-3">
         <GitBranch class="w-5 h-5 mr-2" />
         View All Projects
     </Button>
