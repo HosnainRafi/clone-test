@@ -149,7 +149,47 @@ const menuGroups = ref([
                 label: 'Welcome video',
                 route: '/welcome-section',
             },
-
+            {
+                icon: `<svg
+                  class="fill-current"
+                  width="18"
+                  height="18"
+                  viewBox="0 0 18 18"
+                  fill="none"
+                  xmlns="http://www.w3.org/2000/svg"
+                >
+                  <path
+                    d="M2.25 4.5h13.5M2.25 9h13.5M2.25 13.5h13.5"
+                    stroke="currentColor"
+                    stroke-width="1.5"
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                  />
+                </svg>`,
+                label: 'Campus Life',
+                route: '/campus-life-section',
+            },
+            //campus-glance-management
+            {
+                icon: `<svg
+                  class="fill-current"
+                  width="18"
+                  height="18"
+                  viewBox="0 0 18 18"
+                  fill="none"
+                  xmlns="http://www.w3.org/2000/svg"
+                >
+                  <path
+                    d="M2.25 4.5h13.5M2.25 9h13.5M2.25 13.5h13.5"
+                    stroke="currentColor"
+                    stroke-width="1.5"
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                  />
+                </svg>`,
+                label: 'Campus Glance',
+                route: '/campus-glance',
+            },
             {
                 icon: `<svg
                   class="fill-current"

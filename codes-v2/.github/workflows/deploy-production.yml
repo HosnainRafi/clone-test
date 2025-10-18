@@ -1,0 +1,81 @@
+name: Deploy to Production
+
+on:
+  push:
+    branches:
+      - main
+  workflow_dispatch:
+
+jobs:
+  deploy:
+    name: Deploy to Production Server
+    runs-on: ubuntu-latest
+    
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup SSH
+        uses: webfactory/ssh-agent@v0.9.0
+        with:
+          ssh-private-key: ${{ secrets.SSH_PRIVATE_KEY }}
+
+      - name: Add server to known hosts
+        run: |
+          mkdir -p ~/.ssh
+          ssh-keyscan -H ${{ secrets.SERVER_HOST }} >> ~/.ssh/known_hosts
+
+      - name: Deploy to server
+        env:
+          SERVER_HOST: ${{ secrets.SERVER_HOST }}
+          SERVER_USER: ${{ secrets.SERVER_USER }}
+          DEPLOY_PATH: ${{ secrets.DEPLOY_PATH }}
+        run: |
+          ssh $SERVER_USER@$SERVER_HOST << 'EOF'
+            cd ${{ secrets.DEPLOY_PATH }}
+            
+            echo "📥 Pulling latest changes..."
+            git pull origin main
+            
+            echo "🔨 Building Docker images..."
+            docker-compose -f docker-compose.prod.yml build
+            
+            echo "🔄 Restarting services..."
+            docker-compose -f docker-compose.prod.yml down
+            docker-compose -f docker-compose.prod.yml up -d
+            
+            echo "⏳ Waiting for services to start..."
+            sleep 15
+            
+            echo "🗄️ Running migrations..."
+            docker-compose -f docker-compose.prod.yml exec -T app php artisan migrate --force
+            
+            echo "🧹 Clearing caches..."
+            docker-compose -f docker-compose.prod.yml exec -T app php artisan optimize:clear
+            
+            echo "⚡ Optimizing application..."
+            docker-compose -f docker-compose.prod.yml exec -T app php artisan config:cache
+            docker-compose -f docker-compose.prod.yml exec -T app php artisan route:cache
+            docker-compose -f docker-compose.prod.yml exec -T app php artisan view:cache
+            
+            echo "✅ Deployment completed successfully!"
+          EOF
+
+      - name: Verify deployment
+        env:
+          SERVER_HOST: ${{ secrets.SERVER_HOST }}
+          SERVER_USER: ${{ secrets.SERVER_USER }}
+          DEPLOY_PATH: ${{ secrets.DEPLOY_PATH }}
+        run: |
+          ssh $SERVER_USER@$SERVER_HOST << 'EOF'
+            cd ${{ secrets.DEPLOY_PATH }}
+            docker-compose -f docker-compose.prod.yml ps
+          EOF
+
+      - name: Notify on success
+        if: success()
+        run: echo "✅ Deployment to production completed successfully!"
+
+      - name: Notify on failure
+        if: failure()
+        run: echo "❌ Deployment to production failed!"

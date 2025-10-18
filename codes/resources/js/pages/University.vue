@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import CampusLife from '@/components/user/CampusLife.vue';
+import DynamicCampusLife from '@/components/user/DynamicCampusLife.vue';
 import DynamicFacultiesCarousel from '@/components/user/DynamicFacultiesCarousel.vue';
 import DynamicHeadlineMarquee from '@/components/user/DynamicHeadlineMarquee.vue';
 import DynamicHeroCarousel from '@/components/user/DynamicHeroCarousel.vue';
@@ -125,6 +125,32 @@ interface WelcomeItem {
     displayOrder: number;
 }
 
+interface CampusLifeItem {
+    id: number;
+    title: string;
+    category: string;
+    description: string;
+    image: string;
+    fallbackGradient: string;
+    iconName: string;
+    features: string[];
+    stats?: { label: string; value: string }[];
+    link: string;
+    featured?: boolean;
+    isActive: boolean;
+    displayOrder: number;
+}
+
+interface GlanceItem {
+    id: number;
+    label: string;
+    value: string;
+    iconName: string;
+    iconColor: string;
+    isActive: boolean;
+    displayOrder: number;
+}
+
 interface PageProps {
     message: string;
     data: {
@@ -140,6 +166,8 @@ interface PageProps {
         messageFromItems?: MessageFromItem[];
         facultyItems?: FacultyItem[];
         welcomeItems?: WelcomeItem[];
+        campusLifeItems?: CampusLifeItem[];
+        glanceItems?: GlanceItem[];
     };
 }
 
@@ -164,6 +192,8 @@ const headlines = data.headlines || [];
 const messageFromItems = data.messageFromItems || [];
 const facultyItems = data.facultyItems || [];
 const welcomeItems = data.welcomeItems || [];
+const campusLifeItems = data.campusLifeItems || [];
+const glanceItems = data.glanceItems || [];
 </script>
 
 <template>
@@ -183,12 +213,13 @@ const welcomeItems = data.welcomeItems || [];
     <DynamicMessageForm :messageFromItems="messageFromItems" />
     <DynamicFacultiesCarousel :facultyItems="facultyItems" />
     <DynamicWelcome :welcomeItems="welcomeItems" />
+    <DynamicCampusLife :campus-life-items="campusLifeItems" :glance-items="glanceItems" />
     <!-- <HeroCarousel /> -->
     <!-- <HeadlineMarquee /> -->
     <!-- <MessageFrom /> -->
     <!-- <FacultiesCarousel /> -->
     <!-- <Welcome /> -->
-    <CampusLife />
+    <!-- <CampusLife /> -->
     <NewsEventsNoticeBoard />
     <TopPublication />
     <Footer />

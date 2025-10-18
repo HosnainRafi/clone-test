@@ -674,6 +674,80 @@ Our focus on research and innovation encourages students to explore new horizons
     ]
 ];
 
+$defaultGlanceItems = [
+            ['id' => 1, 'label' => 'Active Students', 'value' => '5000+', 'iconName' => 'Users', 'iconColor' => '#3b82f6', 'isActive' => true, 'displayOrder' => 1],
+            ['id' => 2, 'label' => 'Student Clubs', 'value' => '25+', 'iconName' => 'Trophy', 'iconColor' => '#10b981', 'isActive' => true, 'displayOrder' => 2],
+            ['id' => 3, 'label' => 'Residential Halls', 'value' => '6+', 'iconName' => 'Home', 'iconColor' => '#8b5cf6', 'isActive' => true, 'displayOrder' => 3],
+            ['id' => 4, 'label' => 'Annual Events', 'value' => '100+', 'iconName' => 'Calendar', 'iconColor' => '#f59e0b', 'isActive' => true, 'displayOrder' => 4],
+        ];
+
+$defaultCampusLifeItems = [
+          [
+            'id' => 1,
+            'title' => 'Student Life',
+            'category' => 'Campus Experience',
+            'description' => 'At MBSTU, student success is our priority. Our campus ensures that all students have the support and resources they need to thrive in this dynamic learning environment.',
+            'image' => '/images/campus-life/student-life.jpg',
+            'fallbackGradient' => 'linear-gradient(135deg, #3b82f6 0%, #1d4ed8 50%, #1e40af 100%)',
+            'iconName' => 'Users',
+            'features' => ['Vibrant student community', 'Academic support services', 'Student organizations', 'Leadership opportunities'],
+            'stats' => [['label' => 'Active Students', 'value' => '5000+'], ['label' => 'Student Clubs', 'value' => '25+']],
+            'link' => '/campus-life',
+            'featured' => true,
+            'isActive' => true,
+            'displayOrder' => 1
+          ],
+          [
+            'id' => 2,
+            'title' => 'Arts & Culture',
+            'category' => 'Cultural Activities',
+            'description' => 'Experience rich cultural diversity through various artistic and cultural programs that celebrate creativity, tradition, and modern expression.',
+            'image' => '/images/campus-life/arts-culture.jpg',
+            'fallbackGradient' => 'linear-gradient(135deg, #f59e0b 0%, #d97706 50%, #92400e 100%)',
+            'iconName' => 'Palette',
+            'features' => ['Cultural festivals', 'Art exhibitions', 'Music performances', 'Traditional celebrations'],
+            'stats' => [['label' => 'Cultural Events', 'value' => '50+/year'], ['label' => 'Art Societies', 'value' => '8+']],
+            'link' => '/arts-culture',
+            'featured' => true,
+            'isActive' => true,
+            'displayOrder' => 2
+          ],
+
+        ];
+
+
+$defaultNewsItems = [
+            [
+                'id' => 1, 'title' => 'CSE Department Achieves Top Ranking', 'excerpt' => 'The Computer Science and Engineering department has been ranked among the top 5 in Bangladesh...', 'content' => 'Full article content about the CSE department achieving a top ranking goes here.', 'date' => '2025-10-15', 'category' => 'Achievement', 'author' => 'Dr. Rahman Ahmed', 'isActive' => true, 'displayOrder' => 1
+            ],
+            [
+                'id' => 2, 'title' => 'New AI Research Lab Inaugurated', 'excerpt' => 'A cutting-edge Artificial Intelligence research laboratory has been established...', 'content' => 'Detailed content about the new AI research lab and its facilities.', 'date' => '2025-10-12', 'category' => 'Research', 'author' => 'Prof. Sarah Khan', 'isActive' => true, 'displayOrder' => 2
+            ],
+            // Add more news items if needed
+        ];
+
+        $defaultEventItems = [
+            [
+                'id' => 1, 'title' => 'International Conference on AI', 'description' => 'Join leading researchers for presentations on cutting-edge AI technologies.', 'date' => '2025-11-15', 'time' => '09:00 AM', 'venue' => 'MBSTU Auditorium', 'category' => 'Conference', 'status' => 'upcoming', 'isActive' => true, 'displayOrder' => 1
+            ],
+            [
+                'id' => 2, 'title' => 'Annual Tech Fest 2025 - CodeCraft', 'description' => 'Three-day technology festival featuring programming contests and workshops.', 'date' => '2025-11-20', 'time' => '10:00 AM', 'venue' => 'University Campus', 'category' => 'Festival', 'status' => 'upcoming', 'isActive' => true, 'displayOrder' => 2
+            ],
+        ];
+
+        $defaultNoticeItems = [
+            [
+                'id' => 1, 'title' => 'Fall 2025 Semester Admission Deadline Extended', 'content' => 'The deadline has been extended to November 15, 2025. Eligible candidates can apply through the university portal.', 'date' => '2025-10-18', 'category' => 'Admission', 'priority' => 'high', 'department' => 'Admission Office', 'isActive' => true, 'displayOrder' => 1
+            ],
+            [
+                'id' => 2, 'title' => 'Final Examination Schedule Published', 'content' => 'The final examination for the current semester will commence from December 1, 2025.', 'date' => '2025-10-16', 'category' => 'Examination', 'priority' => 'high', 'department' => 'Controller of Examinations', 'isActive' => true, 'displayOrder' => 2
+            ],
+        ];
+
+
+
+
+
 
 
         // Create sample sites
@@ -692,6 +766,11 @@ Our focus on research and innovation encourages students to explore new horizons
                     'messageFromItems' => $defaultMessageFromItems,
                     'facultyItems' => $defaultFacultyItems,
                     'welcomeItems' => $defaultWelcomeItems,
+                    'campusLifeItems' => $defaultCampusLifeItems,
+                    'glanceItems' => $defaultGlanceItems,
+                     'newsItems' => $defaultNewsItems,
+                    'eventItems' => $defaultEventItems,
+                    'noticeItems' => $defaultNoticeItems,
                     'siteTitle' => 'Mawlana Bhashani Science and Technology University',
                     'siteDescription' => 'Leading science and technology university in Bangladesh',
                     'contactEmail' => 'info@mbstu.ac.bd',

@@ -14,6 +14,8 @@ Route::middleware(SubdomainMiddleware::class)
         $messageFromItems = [];
         $facultyItems = [];
         $welcomeItems = [];
+        $campusLifeItems = [];
+        $glanceItems = [];
 
         if (isset($siteData['settings']['menuItems'])) {
             $menuItems = $siteData['settings']['menuItems'];
@@ -55,6 +57,30 @@ Route::middleware(SubdomainMiddleware::class)
             \Log::error('WelcomeItems not found in site data');
         }
 
+        if (isset($siteData['settings']['campusLifeItems'])) {
+            $campusLifeItems = $siteData['settings']['campusLifeItems'];
+            \Log::info('CampusLifeItems found:', ['count' => count($campusLifeItems)]);
+        } else {
+            \Log::error('CampusLifeItems not found in site data, using default.');
+
+        }
+
+        if (isset($siteData['settings']['glanceItems'])) {
+            $glanceItems = $siteData['settings']['glanceItems'];
+            \Log::info('GlanceItems found:', ['count' => count($glanceItems)]);
+        } else {
+            \Log::error('GlanceItems not found in site data, using default.');
+            // Default data if not found in settings
+            $glanceItems = [
+                ['id' => 1, 'label' => 'Active Students', 'value' => '5000+', 'iconName' => 'Users', 'iconColor' => '#3b82f6', 'isActive' => true, 'displayOrder' => 1],
+                ['id' => 2, 'label' => 'Student Clubs', 'value' => '25+', 'iconName' => 'Trophy', 'iconColor' => '#10b981', 'isActive' => true, 'displayOrder' => 2],
+                ['id' => 3, 'label' => 'Residential Halls', 'value' => '6+', 'iconName' => 'Home', 'iconColor' => '#8b5cf6', 'isActive' => true, 'displayOrder' => 3],
+                ['id' => 4, 'label' => 'Annual Events', 'value' => '100+', 'iconName' => 'Calendar', 'iconColor' => '#f59e0b', 'isActive' => true, 'displayOrder' => 4],
+            ];
+        }
+
+
+
         $data = (object) [
             'siteData' => $siteData,
             'theme' => $request->get('theme'),
@@ -68,6 +94,8 @@ Route::middleware(SubdomainMiddleware::class)
             'messageFromItems' => $messageFromItems,
             'facultyItems' => $facultyItems,
             'welcomeItems' => $welcomeItems,
+            'campusLifeItems' => $campusLifeItems,
+            'glanceItems' => $glanceItems,
         ];
 
         return Inertia::render('University',[
@@ -851,6 +879,75 @@ Route::middleware(SubdomainMiddleware::class)
             ], 500);
         }
     })->name('welcome-section.save');
+
+
+
+
+
+
+// Campus Life Section Routes
+Route::middleware(SubdomainMiddleware::class)
+    ->get('/campus-life-section', function (Illuminate\Http\Request $request) {
+        $siteData = $request->get('siteData');
+        $campusLifeItems = $siteData['settings']['campusLifeItems'] ?? [];
+        $siteId = $siteData['id'] ?? null;
+
+        return Inertia::render('CampusLife/Index', [
+            'campusLifeItems' => $campusLifeItems,
+            'siteId' => $siteId,
+        ]);
+    })->name('campus-life.index');
+
+Route::middleware(SubdomainMiddleware::class)
+    ->post('/campus-life/save', function (Illuminate\Http\Request $request) {
+        $request->validate([
+            'siteId' => 'required|integer|exists:sites,id',
+            'campusLifeItems' => 'present|array',
+        ]);
+
+        $site = \App\Models\Site::find($request->siteId);
+        $settings = $site->settings;
+        $settings['campusLifeItems'] = $request->campusLifeItems;
+        $site->settings = $settings;
+        $site->save();
+
+        return back()->with('success', 'Campus Life settings have been saved successfully.');
+    })->name('campus-life.save');
+
+
+
+
+Route::middleware(SubdomainMiddleware::class)
+    ->get('/campus-glance', function (\Illuminate\Http\Request $request) { // ✅ Corrected this line
+        $siteData = $request->get('siteData');
+        $glanceItems = $siteData['settings']['glanceItems'] ?? [];
+        $siteId = $siteData['id'] ?? null;
+
+        return Inertia::render('CampusGlance/Index', [
+            'glanceItems' => $glanceItems,
+            'siteId' => $siteId,
+        ]);
+    })->name('campus-glance.index');
+
+
+Route::middleware(SubdomainMiddleware::class)
+    ->post('/campus-glance/save', function (\Illuminate\Http\Request $request) { // ✅ Also corrected here for consistency
+        $request->validate([
+            'siteId' => 'required|integer|exists:sites,id',
+            'glanceItems' => 'present|array',
+        ]);
+
+        $site = \App\Models\Site::find($request->siteId);
+        $settings = $site->settings;
+        $settings['glanceItems'] = $request->glanceItems;
+        $site->settings = $settings;
+        $site->save();
+
+        return back()->with('success', 'Campus Glance settings have been saved successfully.');
+    })->name('campus-glance.save');
+
+
+
 
 
 
