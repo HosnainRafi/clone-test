@@ -319,6 +319,363 @@ class SiteSeeder extends Seeder
             ]
         ];
 
+
+
+
+
+        $defaultHeroSlides = [
+    [
+        'title' => 'Welcome to MBSTU',
+        'subtitle' => 'Mawlana Bhashani Science and Technology University',
+        'description' => 'A leading public university in Bangladesh dedicated to advancing science, technology, and innovation for national development.',
+        'image' => '/images/carousel/mbstu-campus.jpg',
+        'fallbackGradient' => 'linear-gradient(135deg, #1e3a8a 0%, #3b82f6 50%, #60a5fa 100%)',
+        'ctaText' => 'About MBSTU',
+        'ctaLink' => '/about',
+        'secondaryCta' => [
+            'text' => 'Admission',
+            'link' => '/admission'
+        ]
+    ],
+    [
+        'title' => 'Academic Excellence',
+        'subtitle' => '7 Faculties & 33 Departments',
+        'description' => 'Offering undergraduate and graduate programs across diverse fields including Engineering, Science, Agriculture, and Social Sciences.',
+        'image' => '/images/carousel/academic-building.jpg',
+        'fallbackGradient' => 'linear-gradient(135deg, #059669 0%, #10b981 50%, #34d399 100%)',
+        'ctaText' => 'Explore Programs',
+        'ctaLink' => '/academic',
+        'secondaryCta' => null
+    ],
+    [
+        'title' => 'Research & Innovation',
+        'subtitle' => 'Advancing Knowledge',
+        'description' => 'Pioneering research in emerging technologies, sustainable development, and scientific breakthroughs that shape the future.',
+        'image' => '/images/carousel/research-lab.jpg',
+        'fallbackGradient' => 'linear-gradient(135deg, #7c3aed 0%, #8b5cf6 50%, #a78bfa 100%)',
+        'ctaText' => 'View Research',
+        'ctaLink' => '/research',
+        'secondaryCta' => null
+    ]
+];
+
+
+$defaultHeadlines = [
+    [
+        'type' => 'announcement',
+        'text' => '🎓 Admission Open for Fall 2025 - Apply now for undergraduate and graduate programs',
+        'link' => '/admission',
+        'priority' => 'high',
+        'isActive' => true,
+        'icon' => '🎓'
+    ],
+    [
+        'type' => 'news',
+        'text' => '🏆 CSE Department wins National Programming Contest 2025',
+        'link' => '/news/programming-contest-2025',
+        'priority' => 'medium',
+        'isActive' => true,
+        'icon' => '🏆'
+    ],
+    [
+        'type' => 'event',
+        'text' => '📅 International Conference on AI & Machine Learning - March 15-17, 2025',
+        'link' => '/events/ai-conference-2025',
+        'priority' => 'high',
+        'isActive' => true,
+        'icon' => '📅'
+    ],
+    [
+        'type' => 'research',
+        'text' => '🔬 New Research Lab inaugurated for Cybersecurity and Blockchain Technology',
+        'link' => '/research/cybersecurity-lab',
+        'priority' => 'medium',
+        'isActive' => true,
+        'icon' => '🔬'
+    ],
+    [
+        'type' => 'achievement',
+        'text' => '🌟 Dr. Rahman receives Best Faculty Award for outstanding research contribution',
+        'link' => '/faculty/dr-rahman-award',
+        'priority' => 'medium',
+        'isActive' => true,
+        'icon' => '🌟'
+    ],
+    [
+        'type' => 'notice',
+        'text' => '📚 New Digital Library resources available - Access 10,000+ technical journals',
+        'link' => '/library/digital-resources',
+        'priority' => 'low',
+        'isActive' => true,
+        'icon' => '📚'
+    ]
+];
+
+
+$defaultMessageFromItems = [
+            [
+                'name' => 'Professor Dr. Md. Anwarul Azim Akhand',
+                'title' => 'Vice Chancellor',
+                'message' => 'Welcome to Mawlana Bhashani Science and Technology University (MBSTU), a leading center for academic excellence and research in Bangladesh. MBSTU is named after the great visionary and advocate for the underprivileged, Mawlana Abdul Hamid Khan Bhashani. His legacy of dedication to justice, education, and empowerment continues to inspire our mission to create future leaders through scientific innovation, academic rigor, and social commitment.
+
+At MBSTU, we believe that education is not just a means to personal advancement, but a tool for transforming society. Our dynamic curriculum, state-of-the-art facilities, and dedicated faculty aim to nurture creativity, critical thinking, and problem-solving skills among our students. We strive to ensure that our graduates are not only equipped with technical knowledge but also imbued with a sense of responsibility towards the community and the nation.
+
+Our focus on research and innovation encourages students to explore new horizons in science and technology, driving progress in key areas such as computer science, information technology, biotechnology, criminology, engineering, environmental sciences, and many more. Through our diverse programs, we aim to foster a spirit of inquiry leading to solutions for the challenges of tomorrow.',
+                'image' => '/images/faculty/vc.jpg',
+                'fallbackGradient' => 'linear-gradient(135deg, #1e3a8a 0%, #3b82f6 50%, #60a5fa 100%)',
+                'designation' => 'Vice Chancellor',
+                'department' => 'Mawlana Bhashani Science and Technology University',
+                'email' => 'vc@mbstu.ac.bd',
+                'phone' => '+880921 55399',
+                'fax' => '+880921 55400',
+                'office' => 'Vice Chancellor Office, MBSTU',
+                'address' => 'Santosh, Tangail - 1902',
+                'officeTime' => 'Saturday - Wednesday: 9.00AM - 5.00PM',
+                'experience' => '25+ years',
+                'qualifications' => [
+                    'Ph.D. in Computer Science and Engineering',
+                    'M.Sc. in Computer Science and Engineering',
+                    'B.Sc. in Computer Science and Engineering'
+                ],
+                'specializations' => [
+                    'Artificial Intelligence',
+                    'Machine Learning',
+                    'Computer Vision',
+                    'Pattern Recognition',
+                    'Evolutionary Computing'
+                ],
+                'achievements' => [
+                    'Leading MBSTU as the 12th oldest public university in Bangladesh',
+                    'Pioneer in science and technology education',
+                    'Advocate for research and innovation',
+                    'Champion of inclusive and quality education'
+                ],
+                'isActive' => true,
+                'displayOrder' => 1,
+                'type' => 'vice_chancellor'
+            ]
+        ];
+
+
+
+
+
+
+        //Faculties
+        $defaultFacultyItems = [
+            [
+                'name' => 'Faculty of Engineering',
+                'shortName' => 'Engineering',
+                'description' => 'Leading innovation in technology and engineering with cutting-edge research, industry partnerships, and world-class laboratories preparing students for the digital future.',
+                'image' => '/images/faculties/engineering.jpg',
+                'fallbackGradient' => 'linear-gradient(135deg, #1e3a8a 0%, #3b82f6 50%, #60a5fa 100%)',
+                'link' => '/faculty-of-engineering',
+                'departments' => [
+                    'Computer Science and Engineering (CSE)',
+                    'Information and Communication Technology (ICT)',
+                    'Electrical and Electronic Engineering (EEE)',
+                    'Civil Engineering (CE)'
+                ],
+                'stats' => [
+                    'departments' => 4,
+                    'students' => '1,250+',
+                    'faculty' => '48+',
+                    'programs' => 12
+                ],
+                'highlights' => [
+                    'State-of-the-art laboratories',
+                    'Industry collaboration',
+                    'Research excellence',
+                    'International partnerships'
+                ],
+                'researchAreas' => [
+                    'Artificial Intelligence & Machine Learning',
+                    'Robotics & Automation',
+                    'Renewable Energy Systems',
+                    'Smart Infrastructure'
+                ],
+                'achievements' => [
+                    '15+ International Research Publications (2024)',
+                    'IEEE Student Branch Chapter',
+                    'Industry Collaboration with 20+ Companies',
+                    '90% Graduate Employment Rate'
+                ],
+                'featured' => true,
+                'established' => '2002',
+                'ranking' => 'Top Rated',
+                'dean' => [
+                    'name' => 'Prof. Dr. Mohammad Motiur Rahman',
+                    'title' => 'Dean, Faculty of Engineering',
+                    'email' => 'dean.engineering@mbstu.ac.bd'
+                ],
+                'iconName' => 'Calculator',
+                'isActive' => true,
+                'displayOrder' => 1
+            ],
+            [
+                'name' => 'Faculty of Life Science',
+                'shortName' => 'Life Science',
+                'description' => 'Exploring life sciences through advanced research in biotechnology, environmental science, and molecular biology with modern laboratories and experienced faculty.',
+                'image' => '/images/faculties/life-science.jpg',
+                'fallbackGradient' => 'linear-gradient(135deg, #059669 0%, #10b981 50%, #34d399 100%)',
+                'link' => '/faculty-of-life-science',
+                'departments' => [
+                    'Biotechnology and Genetic Engineering (BGE)',
+                    'Microbiology (MB)',
+                    'Biochemistry and Molecular Biology (BMB)',
+                    'Environmental Science (ES)'
+                ],
+                'stats' => [
+                    'departments' => 4,
+                    'students' => '850+',
+                    'faculty' => '38+',
+                    'programs' => 10
+                ],
+                'highlights' => [
+                    'Advanced biotechnology labs',
+                    'Environmental research center',
+                    'Genetic engineering facility',
+                    'Molecular biology research'
+                ],
+                'researchAreas' => [
+                    'Genetic Engineering & Biotechnology',
+                    'Environmental Monitoring',
+                    'Microbial Technology',
+                    'Biochemical Analysis'
+                ],
+                'achievements' => [
+                    'Bio-safety Level 2 Laboratory',
+                    '12+ Research Projects Funded',
+                    'Environmental Impact Studies',
+                    'International Collaboration Programs'
+                ],
+                'featured' => true,
+                'established' => '2003',
+                'ranking' => 'Excellence',
+                'dean' => [
+                    'name' => 'Prof. Dr. Fatima Khatun',
+                    'title' => 'Dean, Faculty of Life Science',
+                    'email' => 'dean.lifescience@mbstu.ac.bd'
+                ],
+                'iconName' => 'Microscope',
+                'isActive' => true,
+                'displayOrder' => 2
+            ],
+            [
+                'name' => 'Faculty of Science',
+                'shortName' => 'Science',
+                'description' => 'Advancing fundamental sciences through research in mathematics, physics, chemistry, and statistics with emphasis on computational and analytical approaches.',
+                'image' => '/images/faculties/science.jpg',
+                'fallbackGradient' => 'linear-gradient(135deg, #7c3aed 0%, #8b5cf6 50%, #a78bfa 100%)',
+                'link' => '/faculty-of-science',
+                'departments' => [
+                    'Mathematics (Math)',
+                    'Physics (Phy)',
+                    'Chemistry (Chem)',
+                    'Statistics (Stat)'
+                ],
+                'stats' => [
+                    'departments' => 4,
+                    'students' => '650+',
+                    'faculty' => '32+',
+                    'programs' => 8
+                ],
+                'highlights' => [
+                    'Research laboratories',
+                    'Mathematical modeling center',
+                    'Computational physics lab',
+                    'Analytical chemistry facility'
+                ],
+                'researchAreas' => [
+                    'Pure & Applied Mathematics',
+                    'Computational Physics',
+                    'Analytical Chemistry',
+                    'Statistical Modeling'
+                ],
+                'achievements' => [
+                    'National Mathematics Olympiad Host',
+                    '8+ Journal Publications (2024)',
+                    'Research Collaboration with BUET',
+                    'Scientific Calculator Development'
+                ],
+                'established' => '2002',
+                'ranking' => 'Premier',
+                'dean' => [
+                    'name' => 'Prof. Dr. Ahmed Hassan',
+                    'title' => 'Dean, Faculty of Science',
+                    'email' => 'dean.science@mbstu.ac.bd'
+                ],
+                'iconName' => 'Globe',
+                'isActive' => true,
+                'displayOrder' => 3
+            ],
+            [
+                'name' => 'Faculty of Business Studies',
+                'shortName' => 'Business',
+                'description' => 'Developing future business leaders through comprehensive management education, entrepreneurship programs, and strong industry connections.',
+                'image' => '/images/faculties/business.jpg',
+                'fallbackGradient' => 'linear-gradient(135deg, #dc2626 0%, #ef4444 50%, #f87171 100%)',
+                'link' => '/faculty-of-business-studies',
+                'departments' => [
+                    'Business Administration (BBA)',
+                    'Accounting and Information Systems (AIS)',
+                    'Marketing (MKT)',
+                    'Finance and Banking (F&B)'
+                ],
+                'stats' => [
+                    'departments' => 4,
+                    'students' => '950+',
+                    'faculty' => '28+',
+                    'programs' => 9
+                ],
+                'highlights' => [
+                    'Industry partnerships',
+                    'Entrepreneurship incubator',
+                    'Case study methodology',
+                    'Professional certification'
+                ],
+                'researchAreas' => [
+                    'Digital Marketing',
+                    'Financial Technology',
+                    'Sustainable Business',
+                    'Entrepreneurship Development'
+                ],
+                'achievements' => [
+                    'Business Incubation Center',
+                    '25+ Industry Partnerships',
+                    'Annual Business Fair',
+                    '85% Job Placement Rate'
+                ],
+                'established' => '2005',
+                'ranking' => 'Growing',
+                'dean' => [
+                    'name' => 'Prof. Dr. Nasreen Ahmed',
+                    'title' => 'Dean, Faculty of Business Studies',
+                    'email' => 'dean.business@mbstu.ac.bd'
+                ],
+                'iconName' => 'Briefcase',
+                'isActive' => true,
+                'displayOrder' => 4
+            ]
+        ];
+
+
+
+
+        $defaultWelcomeItems = [
+    [
+        'title' => 'Welcome to MBSTU',
+        'description' => 'A leading public university in Bangladesh dedicated to advancing science, technology, and innovation for national development.',
+        'backgroundImage' => 'https://mbstu.ac.bd/wp-content/uploads/2023/08/home-Video.jpg',
+        'videoId' => 'PZ9MHpFet34',
+        'buttonText' => 'Watch Campus Video',
+        'isActive' => true,
+        'displayOrder' => 1
+    ]
+];
+
+
+
         // Create sample sites
         $sites = [
             [
@@ -330,6 +687,11 @@ class SiteSeeder extends Seeder
                 'is_active' => true,
                 'settings' => [
                     'menuItems' => $defaultMenuItems,
+                    'heroSlides' => $defaultHeroSlides,
+                    'headlines' => $defaultHeadlines,
+                    'messageFromItems' => $defaultMessageFromItems,
+                    'facultyItems' => $defaultFacultyItems,
+                    'welcomeItems' => $defaultWelcomeItems,
                     'siteTitle' => 'Mawlana Bhashani Science and Technology University',
                     'siteDescription' => 'Leading science and technology university in Bangladesh',
                     'contactEmail' => 'info@mbstu.ac.bd',
