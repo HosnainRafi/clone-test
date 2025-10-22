@@ -3,6 +3,7 @@
 use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
 use App\Http\Middleware\SubdomainMiddleware;
+use Illuminate\Pagination\Paginator;
 
 Route::middleware(SubdomainMiddleware::class)
     ->get('/', function (Illuminate\Http\Request $request) {
@@ -16,6 +17,7 @@ Route::middleware(SubdomainMiddleware::class)
         $welcomeItems = [];
         $campusLifeItems = [];
         $glanceItems = [];
+        $newsItems = $siteData['settings']['newsItems'] ?? [];
 
         if (isset($siteData['settings']['menuItems'])) {
             $menuItems = $siteData['settings']['menuItems'];
@@ -78,7 +80,14 @@ Route::middleware(SubdomainMiddleware::class)
                 ['id' => 4, 'label' => 'Annual Events', 'value' => '100+', 'iconName' => 'Calendar', 'iconColor' => '#f59e0b', 'isActive' => true, 'displayOrder' => 4],
             ];
         }
+        if (isset($siteData['settings']['newsItems'])) {
+            $newsItems = $siteData['settings']['newsItems'];
+            \Log::info('newsItems found:', ['count' => count($newsItems)]);
+        } else {
+            \Log::error('newsItems not found in site data, using default.');
+            // Default data if not found in settings
 
+        }
 
 
         $data = (object) [
@@ -96,6 +105,7 @@ Route::middleware(SubdomainMiddleware::class)
             'welcomeItems' => $welcomeItems,
             'campusLifeItems' => $campusLifeItems,
             'glanceItems' => $glanceItems,
+            'newsItems' => $newsItems,
         ];
 
         return Inertia::render('University',[
@@ -900,18 +910,39 @@ Route::middleware(SubdomainMiddleware::class)
 
 Route::middleware(SubdomainMiddleware::class)
     ->post('/campus-life/save', function (Illuminate\Http\Request $request) {
-        $request->validate([
-            'siteId' => 'required|integer|exists:sites,id',
-            'campusLifeItems' => 'present|array',
-        ]);
+        \Log::info('Campus Life save request received', ['input' => $request->all()]);
 
-        $site = \App\Models\Site::find($request->siteId);
-        $settings = $site->settings;
-        $settings['campusLifeItems'] = $request->campusLifeItems;
-        $site->settings = $settings;
-        $site->save();
+        $requestSiteId = $request->input('siteId');
+        $campusLifeItems = $request->input('campusLifeItems');
 
-        return back()->with('success', 'Campus Life settings have been saved successfully.');
+        if (!$requestSiteId) {
+            return response()->json(['success' => false, 'message' => 'Site ID is required.'], 422);
+        }
+
+        try {
+            $site = \DB::table('sites')->where('id', $requestSiteId)->first();
+            if (!$site) {
+                return response()->json(['success' => false, 'message' => 'Site not found.'], 404);
+            }
+
+            $currentSettings = json_decode($site->settings, true) ?: [];
+            $currentSettings['campusLifeItems'] = $campusLifeItems;
+            $newSettingsJson = json_encode($currentSettings);
+
+            \DB::table('sites')->where('id', $requestSiteId)->update([
+                'settings' => $newSettingsJson,
+                'updated_at' => now(),
+            ]);
+
+            return response()->json([
+                'success' => true,
+                'message' => 'Campus Life settings saved successfully!',
+            ]);
+
+        } catch (\Exception $e) {
+            \Log::error('Campus Life save error: ' . $e->getMessage());
+            return response()->json(['success' => false, 'message' => 'Failed to save settings.'], 500);
+        }
     })->name('campus-life.save');
 
 
@@ -931,24 +962,163 @@ Route::middleware(SubdomainMiddleware::class)
 
 
 Route::middleware(SubdomainMiddleware::class)
-    ->post('/campus-glance/save', function (\Illuminate\Http\Request $request) { // ✅ Also corrected here for consistency
-        $request->validate([
-            'siteId' => 'required|integer|exists:sites,id',
-            'glanceItems' => 'present|array',
-        ]);
+    ->post('/campus-glance/save', function (Illuminate\Http\Request $request) {
+        \Log::info('Campus Glance save request received', ['input' => $request->all()]);
 
-        $site = \App\Models\Site::find($request->siteId);
-        $settings = $site->settings;
-        $settings['glanceItems'] = $request->glanceItems;
-        $site->settings = $settings;
-        $site->save();
+        $requestSiteId = $request->input('siteId');
+        $glanceItems = $request->input('glanceItems');
 
-        return back()->with('success', 'Campus Glance settings have been saved successfully.');
+        if (!$requestSiteId) {
+            return response()->json(['success' => false, 'message' => 'Site ID is required.'], 422);
+        }
+
+        try {
+            $site = \DB::table('sites')->where('id', $requestSiteId)->first();
+            if (!$site) {
+                return response()->json(['success' => false, 'message' => 'Site not found.'], 404);
+            }
+
+            $currentSettings = json_decode($site->settings, true) ?: [];
+            $currentSettings['glanceItems'] = $glanceItems;
+            $newSettingsJson = json_encode($currentSettings);
+
+            \DB::table('sites')->where('id', $requestSiteId)->update([
+                'settings' => $newSettingsJson,
+                'updated_at' => now(),
+            ]);
+
+            return response()->json([
+                'success' => true,
+                'message' => 'Campus Glance settings have been saved successfully.',
+            ]);
+
+        } catch (\Exception $e) {
+            \Log::error('Campus Glance save error: ' . $e->getMessage());
+            return response()->json(['success' => false, 'message' => 'Failed to save settings.'], 500);
+        }
     })->name('campus-glance.save');
 
+Route::middleware(SubdomainMiddleware::class)
+    ->get('/news-section', function (\Illuminate\Http\Request $request) {
+        $siteData = $request->get('siteData');
+        $newsItems = $siteData['settings']['newsItems'] ?? [];
+        $siteId = $siteData['id'] ?? null;
+
+        return Inertia::render('News/Index', [
+            'newsItems' => $newsItems,
+            'siteId' => $siteId,
+        ]);
+    })->name('news-section.index');
+
+// POST route to save the changes
+Route::middleware(SubdomainMiddleware::class)
+    // ✅ CORRECTED: Use the full namespace for the Request object
+    ->post('/news-section/save', function (Illuminate\Http\Request $request) {
+        \Log::info('News section save request received', [
+            'input' => $request->all(),
+            'siteData' => $request->get('siteData')
+        ]);
+
+        $siteData = $request->get('siteData');
+        $newsItems = $request->input('newsItems');
+        $requestSiteId = $request->input('siteId');
+
+        $actualSiteId = null;
+        if ($siteData && isset($siteData->id)) {
+            $actualSiteId = $siteData->id;
+        } elseif ($requestSiteId) {
+            $actualSiteId = $requestSiteId;
+        } else {
+            return response()->json(['success' => false, 'message' => 'No site ID found'], 422);
+        }
+
+        if (!$newsItems || !is_array($newsItems)) {
+            return response()->json(['success' => false, 'message' => 'News items are required'], 422);
+        }
+
+        try {
+            $site = \DB::table('sites')->where('id', $actualSiteId)->first();
+            if (!$site) {
+                return response()->json(['success' => false, 'message' => 'Site not found'], 404);
+            }
+
+            $currentSettings = json_decode($site->settings, true) ?: [];
+            $currentSettings['newsItems'] = $newsItems;
+            $newSettingsJson = json_encode($currentSettings);
+
+            \DB::table('sites')->where('id', $actualSiteId)->update([
+                'settings' => $newSettingsJson,
+                'updated_at' => now()
+            ]);
+
+            return response()->json([
+                'success' => true,
+                'message' => 'News section configuration saved successfully!'
+            ]);
+        } catch (\Exception $e) {
+            \Log::error('News section save error: ' . $e->getMessage());
+            return response()->json(['success' => false, 'message' => 'Failed to save news configuration'], 500);
+        }
+    })->name('news-section.save');
+
+Route::middleware(SubdomainMiddleware::class)
+    ->get('/news/{slug}', function (Illuminate\Http\Request $request, $slug) {
+        $siteData = $request->get('siteData');
+
+        $allNewsItems = $siteData->settings['newsItems'] ?? [];
+        $newsCollection = collect($allNewsItems);
+
+        // Find the current article
+        $newsArticle = $newsCollection->first(function ($item) use ($slug) {
+            return basename($item['link']) === $slug;
+        });
+
+        if (!$newsArticle) {
+            abort(404, 'News article not found.');
+        }
+
+        // ✅ NEW: Get the 5 most recent articles for the sidebar, excluding the current one
+        $latestNews = $newsCollection
+            ->where('link', '!=', $newsArticle['link']) // Exclude the current article
+            ->sortByDesc('date') // Sort by most recent date
+            ->take(5); // Take the top 5
+
+        return Inertia::render('News/Show', [
+            'newsArticle' => $newsArticle,
+            'latestNews' => $latestNews->values()->all(), // Pass latest news to the view
+            'menuItems' => $siteData->settings['menuItems'] ?? [],
+            'siteData' => $siteData,
+        ]);
+
+    })->name('news.show');
 
 
+Route::middleware(SubdomainMiddleware::class)
+    ->get('/news', function (Illuminate\Http\Request $request) {
+        $siteData = $request->get('siteData');
 
+        // Get all news items and sort them by date
+        $allNewsItems = collect($siteData->settings['newsItems'] ?? [])->sortByDesc('date');
+
+        // Manually paginate the collection
+        $perPage = 10;
+        $currentPage = Paginator::resolveCurrentPage('page');
+        $currentPageItems = $allNewsItems->slice(($currentPage - 1) * $perPage, $perPage)->values();
+
+        $paginatedNews = new \Illuminate\Pagination\LengthAwarePaginator(
+            $currentPageItems,
+            $allNewsItems->count(),
+            $perPage,
+            $currentPage,
+            ['path' => Paginator::resolveCurrentPath()]
+        );
+
+        return Inertia::render('News/IndexAll', [
+            'news' => $paginatedNews, // Pass the paginated data
+            'menuItems' => $siteData->settings['menuItems'] ?? [],
+        ]);
+
+    })->name('news.index');
 
 
 

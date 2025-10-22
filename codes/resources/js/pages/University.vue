@@ -5,9 +5,9 @@ import DynamicHeadlineMarquee from '@/components/user/DynamicHeadlineMarquee.vue
 import DynamicHeroCarousel from '@/components/user/DynamicHeroCarousel.vue';
 import DynamicMessageForm from '@/components/user/DynamicMessageForm.vue';
 import DynamicNavbar from '@/components/user/DynamicNavbar.vue';
+import DynamicNews from '@/components/user/DynamicNews.vue';
 import DynamicWelcome from '@/components/user/DynamicWelcome.vue';
 import Footer from '@/components/user/Footer2.vue';
-import NewsEventsNoticeBoard from '@/components/user/NewsEventsNoticeBoard.vue';
 import TopPublication from '@/components/user/TopPublication.vue';
 
 // Define the props interface to match the data structure from Laravel
@@ -151,6 +151,17 @@ interface GlanceItem {
     displayOrder: number;
 }
 
+interface NewsItem {
+    id: number;
+    title: string;
+    excerpt: string;
+    image: string;
+    date: string;
+    category: string;
+    link: string;
+    isActive: boolean;
+}
+
 interface PageProps {
     message: string;
     data: {
@@ -168,6 +179,7 @@ interface PageProps {
         welcomeItems?: WelcomeItem[];
         campusLifeItems?: CampusLifeItem[];
         glanceItems?: GlanceItem[];
+        newsItems?: NewsItem[];
     };
 }
 
@@ -194,6 +206,7 @@ const facultyItems = data.facultyItems || [];
 const welcomeItems = data.welcomeItems || [];
 const campusLifeItems = data.campusLifeItems || [];
 const glanceItems = data.glanceItems || [];
+const newsItems = data.newsItems || [];
 </script>
 
 <template>
@@ -220,7 +233,8 @@ const glanceItems = data.glanceItems || [];
     <!-- <FacultiesCarousel /> -->
     <!-- <Welcome /> -->
     <!-- <CampusLife /> -->
-    <NewsEventsNoticeBoard />
+    <DynamicNews :news-items="newsItems" />
+    <!-- <NewsEventsNoticeBoard /> -->
     <TopPublication />
     <Footer />
 </template>

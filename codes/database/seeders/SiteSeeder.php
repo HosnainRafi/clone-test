@@ -746,7 +746,41 @@ $defaultNewsItems = [
 
 
 
-
+$defaultNewsItems = [
+            [
+                'id' => 1,
+                'title' => 'CSE Department Achieves Top National Ranking',
+                'excerpt' => 'The Department of Computer Science and Engineering has been recognized as one of the top 5 programs in the country for its outstanding research output and academic excellence.',
+                'image' => '/images/news/cse-ranking.jpg',
+                'date' => '2025-10-15',
+                'category' => 'Achievement',
+                'link' => '/news/cse-top-ranking-2025',
+                'isActive' => true,
+                'displayOrder' => 1,
+            ],
+            [
+                'id' => 2,
+                'title' => 'New AI Research Lab Inaugurated by Vice Chancellor',
+                'excerpt' => 'A state-of-the-art laboratory for Artificial Intelligence and Machine Learning has been inaugurated to foster innovation and advanced research projects.',
+                'image' => '/images/news/ai-lab.jpg',
+                'date' => '2025-10-12',
+                'category' => 'Research',
+                'link' => '/news/ai-lab-inauguration',
+                'isActive' => true,
+                'displayOrder' => 2,
+            ],
+            [
+                'id' => 3,
+                'title' => 'Annual Tech Fest "Innovate 2025" Announced',
+                'excerpt' => 'The university is excited to announce "Innovate 2025", our annual technology festival, scheduled for November. It will feature coding competitions, project showcases, and seminars.',
+                'image' => '/images/news/tech-fest.jpg',
+                'date' => '2025-10-10',
+                'category' => 'Event',
+                'link' => '/events/innovate-2025',
+                'isActive' => true,
+                'displayOrder' => 3,
+            ],
+        ];
 
 
 
@@ -768,8 +802,9 @@ $defaultNewsItems = [
                     'welcomeItems' => $defaultWelcomeItems,
                     'campusLifeItems' => $defaultCampusLifeItems,
                     'glanceItems' => $defaultGlanceItems,
-                     'newsItems' => $defaultNewsItems,
-                    'eventItems' => $defaultEventItems,
+                    'newsItems' => $defaultNewsItems,
+
+                    'eventItems' => $defaultEventItems, // Assuming you'll add this later
                     'noticeItems' => $defaultNoticeItems,
                     'siteTitle' => 'Mawlana Bhashani Science and Technology University',
                     'siteDescription' => 'Leading science and technology university in Bangladesh',
