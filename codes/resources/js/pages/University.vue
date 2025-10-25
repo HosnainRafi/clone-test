@@ -1,14 +1,14 @@
 <script setup lang="ts">
 import DynamicCampusLife from '@/components/user/DynamicCampusLife.vue';
 import DynamicFacultiesCarousel from '@/components/user/DynamicFacultiesCarousel.vue';
+import DynamicFooter from '@/components/user/DynamicFooter.vue';
 import DynamicHeadlineMarquee from '@/components/user/DynamicHeadlineMarquee.vue';
 import DynamicHeroCarousel from '@/components/user/DynamicHeroCarousel.vue';
 import DynamicMessageForm from '@/components/user/DynamicMessageForm.vue';
 import DynamicNavbar from '@/components/user/DynamicNavbar.vue';
-import DynamicNews from '@/components/user/DynamicNews.vue';
+import DynamicNewsEventsNoticeBoard from '@/components/user/DynamicNewsEventsNoticeBoard.vue';
+import DynamicTopPublication from '@/components/user/DynamicTopPublication.vue';
 import DynamicWelcome from '@/components/user/DynamicWelcome.vue';
-import Footer from '@/components/user/Footer2.vue';
-import TopPublication from '@/components/user/TopPublication.vue';
 
 // Define the props interface to match the data structure from Laravel
 interface MenuItemProps {
@@ -162,6 +162,89 @@ interface NewsItem {
     isActive: boolean;
 }
 
+interface NoticeItem {
+    id: number;
+    title: string;
+    content: string;
+    date: string;
+    category: string;
+    priority: 'high' | 'medium' | 'low';
+    department: string;
+    validUntil: string;
+    attachments: string[];
+    isActive: boolean;
+    displayOrder: number;
+    link: string;
+}
+
+interface EventItem {
+    id: number;
+    title: string;
+    description: string;
+    date: string;
+    time: string;
+    endDate: string;
+    venue: string;
+    category: string;
+    status: 'upcoming' | 'completed' | 'postponed';
+    registration: string;
+    fee: string;
+    organizer: string;
+    participants: string;
+    link: string;
+    isActive: boolean;
+}
+
+interface PublicationProps {
+    id: number;
+    title: string;
+    abstract: string;
+    authors: string[];
+    correspondingAuthor: string;
+    journal: string;
+    journalRank: string;
+    impactFactor: number;
+    publishDate: string;
+    volume?: string;
+    issue?: string;
+    pages?: string;
+    doi?: string;
+    category: string;
+    keywords: string[];
+    citations: number;
+    downloads: number;
+    openAccess: boolean;
+    featured: boolean;
+    fallbackGradient: string;
+    pdfUrl?: string;
+    journalUrl?: string;
+}
+interface FooterLink {
+    text: string;
+    href: string;
+}
+interface SocialLink {
+    platform: 'facebook' | 'twitter' | 'linkedin' | 'youtube' | 'website';
+    href: string;
+}
+interface FooterData {
+    universityName: string;
+    universityFullName: string;
+    universitySlogan?: string;
+    logoUrl: string;
+    address: string;
+    phone: string;
+    email: string;
+    academicLinksTitle: string;
+    academicLinks: FooterLink[];
+    usefulLinksTitle: string;
+    usefulLinks: FooterLink[];
+    socialLinks: SocialLink[];
+    copyrightText: string;
+    liaisonOfficeTitle?: string;
+    liaisonOfficeAddress?: string;
+}
+
 interface PageProps {
     message: string;
     data: {
@@ -180,6 +263,10 @@ interface PageProps {
         campusLifeItems?: CampusLifeItem[];
         glanceItems?: GlanceItem[];
         newsItems?: NewsItem[];
+        eventItems?: EventItem[];
+        noticeItems?: NoticeItem[];
+        publicationItems?: PublicationProps[];
+        footerData?: FooterData;
     };
 }
 
@@ -207,6 +294,10 @@ const welcomeItems = data.welcomeItems || [];
 const campusLifeItems = data.campusLifeItems || [];
 const glanceItems = data.glanceItems || [];
 const newsItems = data.newsItems || [];
+const eventItems = data.eventItems || [];
+const noticeItems = data.noticeItems || [];
+const publicationItems = data.publicationItems || [];
+const footerData = data.footerData || null;
 </script>
 
 <template>
@@ -233,8 +324,13 @@ const newsItems = data.newsItems || [];
     <!-- <FacultiesCarousel /> -->
     <!-- <Welcome /> -->
     <!-- <CampusLife /> -->
-    <DynamicNews :news-items="newsItems" />
+    <!-- <DynamicNews :news-items="newsItems" />
+    <DynamicEvent :event-items="eventItems" /> -->
     <!-- <NewsEventsNoticeBoard /> -->
-    <TopPublication />
-    <Footer />
+    <!-- <DynamicNotices :notice-items="noticeItems" /> -->
+    <DynamicNewsEventsNoticeBoard :news-items="newsItems" :event-items="eventItems" :notice-items="noticeItems" />
+    <!-- <TopPublication /> -->
+    <DynamicTopPublication :publication-items="publicationItems" />
+    <DynamicFooter :footer-data="footerData" />
+    <!-- <Footer /> -->
 </template>

@@ -716,24 +716,6 @@ $defaultCampusLifeItems = [
         ];
 
 
-$defaultNewsItems = [
-            [
-                'id' => 1, 'title' => 'CSE Department Achieves Top Ranking', 'excerpt' => 'The Computer Science and Engineering department has been ranked among the top 5 in Bangladesh...', 'content' => 'Full article content about the CSE department achieving a top ranking goes here.', 'date' => '2025-10-15', 'category' => 'Achievement', 'author' => 'Dr. Rahman Ahmed', 'isActive' => true, 'displayOrder' => 1
-            ],
-            [
-                'id' => 2, 'title' => 'New AI Research Lab Inaugurated', 'excerpt' => 'A cutting-edge Artificial Intelligence research laboratory has been established...', 'content' => 'Detailed content about the new AI research lab and its facilities.', 'date' => '2025-10-12', 'category' => 'Research', 'author' => 'Prof. Sarah Khan', 'isActive' => true, 'displayOrder' => 2
-            ],
-            // Add more news items if needed
-        ];
-
-        $defaultEventItems = [
-            [
-                'id' => 1, 'title' => 'International Conference on AI', 'description' => 'Join leading researchers for presentations on cutting-edge AI technologies.', 'date' => '2025-11-15', 'time' => '09:00 AM', 'venue' => 'MBSTU Auditorium', 'category' => 'Conference', 'status' => 'upcoming', 'isActive' => true, 'displayOrder' => 1
-            ],
-            [
-                'id' => 2, 'title' => 'Annual Tech Fest 2025 - CodeCraft', 'description' => 'Three-day technology festival featuring programming contests and workshops.', 'date' => '2025-11-20', 'time' => '10:00 AM', 'venue' => 'University Campus', 'category' => 'Festival', 'status' => 'upcoming', 'isActive' => true, 'displayOrder' => 2
-            ],
-        ];
 
         $defaultNoticeItems = [
             [
@@ -782,6 +764,192 @@ $defaultNewsItems = [
             ],
         ];
 
+        $defaultEventItems = [
+            [
+                'id' => 1,
+                'title' => 'International Conference on Artificial Intelligence and Machine Learning',
+                'description' => 'Join leading researchers and industry experts for presentations on cutting-edge AI technologies.',
+                'date' => '2025-03-15',
+                'time' => '09:00 AM',
+                'endDate' => '2025-03-17',
+                'venue' => 'MBSTU Auditorium',
+                'category' => 'Conference',
+                'status' => 'upcoming',
+                'registration' => 'Open',
+                'fee' => 'Free for students',
+                'organizer' => 'CSE Department',
+                'participants' => '200+ expected',
+                'isActive' => true,
+                'displayOrder' => 1,
+                'link' => '/events/international-conference-on-ai',
+            ],
+            [
+                'id' => 2,
+                'title' => 'Annual Tech Fest 2025 - CodeCraft',
+                'description' => 'Three-day technology festival featuring programming contests, workshops, and tech exhibitions.',
+                'date' => '2025-02-20',
+                'time' => '10:00 AM',
+                'endDate' => '2025-02-22',
+                'venue' => 'University Campus',
+                'category' => 'Festival',
+                'status' => 'upcoming',
+                'registration' => 'Open',
+                'fee' => 'Registration required',
+                'organizer' => 'Student Council',
+                'participants' => '500+ participants',
+                'isActive' => true,
+                'displayOrder' => 2,
+                'link' => '/events/annual-tech-fest-2025',
+            ],
+        ];
+$defaultNoticeItems = [
+            [
+                'id' => 1,
+                'title' => 'Fall 2025 Semester Admission Application Deadline Extended',
+                'content' => '<p>The deadline for Fall 2025 semester admission applications has been extended to February 15, 2025. Eligible candidates can apply through the university portal.</p>',
+                'date' => '2025-01-18',
+                'category' => 'Admission',
+                'priority' => 'high',
+                'department' => 'Admission Office',
+                'validUntil' => '2025-02-15',
+                'attachments' => ['admission-guidelines.pdf', 'application-form.pdf'],
+                'isActive' => true,
+                'displayOrder' => 1,
+                'link' => '/notices/admission-deadline-extended-fall-2025'
+            ],
+            [
+                'id' => 2,
+                'title' => 'Spring 2025 Final Examination Schedule',
+                'content' => '<p>The final examination for Spring 2025 semester will commence from March 1, 2025. Detailed schedule and hall ticket information available on student portal.</p>',
+                'date' => '2025-01-16',
+                'category' => 'Examination',
+                'priority' => 'high',
+                'department' => 'Controller of Examinations',
+                'validUntil' => '2025-03-01',
+                'attachments' => ['exam-schedule.pdf', 'guidelines.pdf'],
+                'isActive' => true,
+                'displayOrder' => 2,
+                'link' => '/notices/spring-2025-exam-schedule'
+            ],
+        ];
+
+
+        $defaultPublicationItems = [
+            [
+                'id' => 1,
+                'title' => 'Deep Learning Approaches for Predictive Analytics in Educational Data Mining: A Comprehensive Study',
+                'abstract' => 'This paper presents a comprehensive analysis of deep learning methodologies applied to educational data mining, focusing on student performance prediction and learning path optimization.',
+                'authors' => ['Dr. Rahman Ahmed', 'Prof. Fatima Khan', 'Dr. Nasir Uddin', 'Md. Karim Hassan'],
+                'correspondingAuthor' => 'Dr. Rahman Ahmed',
+                'journal' => 'IEEE Transactions on Learning Technologies',
+                'journalRank' => 'Q1',
+                'impactFactor' => 3.87,
+                'publishDate' => '2024-02-15',
+                'volume' => '17',
+                'issue' => '3',
+                'pages' => '245-267',
+                'doi' => '10.1109/TLT.2024.1234567',
+                'category' => 'Artificial Intelligence',
+                'keywords' => ['Deep Learning', 'Educational Data Mining', 'Student Performance', 'Machine Learning'],
+                'citations' => 156,
+                'downloads' => 2340,
+                'openAccess' => true,
+                'featured' => true,
+                'fallbackGradient' => 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
+                'pdfUrl' => '#',
+                'journalUrl' => '#'
+            ],
+            [
+                'id' => 2,
+                'title' => 'Quantum-Inspired Optimization Algorithms for Resource Allocation in Cloud Computing Environments',
+                'abstract' => 'We propose novel quantum-inspired algorithms that significantly improve resource allocation efficiency in distributed cloud computing systems, achieving up to 35% better performance.',
+                'authors' => ['Prof. Fatima Khan', 'Dr. Sarah Ahmed', 'Rashida Begum'],
+                'correspondingAuthor' => 'Prof. Fatima Khan',
+                'journal' => 'Journal of Parallel and Distributed Computing',
+                'journalRank' => 'Q1',
+                'impactFactor' => 4.21,
+                'publishDate' => '2024-01-28',
+                'volume' => '189',
+                'issue' => null,
+                'pages' => '104-123',
+                'doi' => '10.1016/j.jpdc.2024.104123',
+                'category' => 'Cloud Computing',
+                'keywords' => ['Quantum Computing', 'Resource Allocation', 'Cloud Computing', 'Optimization'],
+                'citations' => 89,
+                'downloads' => 1876,
+                'openAccess' => false,
+                'featured' => true,
+                'fallbackGradient' => 'linear-gradient(135deg, #f093fb 0%, #f5576c 100%)',
+                'pdfUrl' => '#',
+                'journalUrl' => '#'
+            ],
+            [
+                'id' => 3,
+                'title' => 'Blockchain-Based Secure Framework for IoT Device Authentication and Data Integrity',
+                'abstract' => 'This research introduces a novel blockchain framework that ensures secure authentication and data integrity for IoT devices in smart city applications.',
+                'authors' => ['Dr. Nasir Uddin', 'Md. Karim Hassan', 'Dr. Rahman Ahmed'],
+                'correspondingAuthor' => 'Dr. Nasir Uddin',
+                'journal' => 'Computer Networks',
+                'journalRank' => 'Q1',
+                'impactFactor' => 4.89,
+                'publishDate' => '2023-12-10',
+                'volume' => '236',
+                'issue' => null,
+                'pages' => '109912',
+                'doi' => '10.1016/j.comnet.2023.109912',
+                'category' => 'Cybersecurity',
+                'keywords' => ['Blockchain', 'IoT Security', 'Authentication', 'Data Integrity'],
+                'citations' => 203,
+                'downloads' => 3120,
+                'openAccess' => true,
+                'featured' => true,
+                'fallbackGradient' => 'linear-gradient(135deg, #4facfe 0%, #00f2fe 100%)',
+                'pdfUrl' => '#',
+                'journalUrl' => '#'
+            ]
+        ];
+
+
+
+        $defaultFooterData = [
+            'universityName' => 'MBSTU',
+            'universityFullName' => 'Mawlana Bhashani Science and Technology University',
+            'universitySlogan' => 'Mawlana Bhashani Science and Technology University is aimed to provide its students with the knowledge of proper combination of science and technology...', // Truncated for brevity
+            'logoUrl' => '/images/university/logo/MBSTU_logo.png',
+            'address' => 'Santosh, Tangail-1902, Bangladesh',
+            'phone' => '+880-921-55399',
+            'email' => 'registrar@mbstu.ac.bd',
+            'academicLinksTitle' => 'Academics',
+            'academicLinks' => [
+                ['text' => 'Academic Programs', 'href' => '/academics'],
+                ['text' => 'Faculty of Engineering', 'href' => '/faculty-of-engineering'],
+                ['text' => 'Faculty of Life Science', 'href' => '/faculty-of-life-science'],
+                ['text' => 'Faculty of Science', 'href' => '/faculty-of-science'],
+                ['text' => 'Faculty of Business Studies', 'href' => '/faculty-of-business-studies'],
+                ['text' => 'Faculty of Social Science', 'href' => '/faculty-of-social-science'],
+                ['text' => 'Faculty of Arts', 'href' => '/faculty-of-arts'],
+            ],
+            'usefulLinksTitle' => 'Useful Links',
+            'usefulLinks' => [
+                 ['text' => 'ICT Cell', 'href' => '/ict-cell'],
+                 ['text' => 'BNCC', 'href' => '/bncc'],
+                 ['text' => 'Central Library', 'href' => '/central-library'],
+                 ['text' => 'Residential Halls', 'href' => '/residential-halls'],
+                 ['text' => 'Students\' Welfare', 'href' => '/students-welfare-and-counseling'],
+                 ['text' => 'Registrar Office', 'href' => '/registrar-office'],
+                 ['text' => 'Research Cell', 'href' => '/research-cell'],
+            ],
+            'socialLinks' => [
+                ['platform' => 'facebook', 'href' => 'https://facebook.com/mbstu'],
+                ['platform' => 'twitter', 'href' => 'https://twitter.com/mbstu'],
+                ['platform' => 'linkedin', 'href' => 'https://linkedin.com/company/mbstu'],
+                ['platform' => 'youtube', 'href' => 'https://youtube.com/@mbstu'],
+                ['platform' => 'website', 'href' => 'https://mbstu.ac.bd'],
+            ],
+            'copyrightText' => '© ' . date('Y') . ' Mawlana Bhashani Science and Technology University',
+            'liaisonOfficeTitle' => 'Dhaka Liaison Office:',
+            'liaisonOfficeAddress' => 'Alamin Apon Heights, Flat No. C-12, D-12, 2/1/B Road 03, Shaymoli, Dhaka',
+        ];
 
 
         // Create sample sites
@@ -803,9 +971,10 @@ $defaultNewsItems = [
                     'campusLifeItems' => $defaultCampusLifeItems,
                     'glanceItems' => $defaultGlanceItems,
                     'newsItems' => $defaultNewsItems,
-
-                    'eventItems' => $defaultEventItems, // Assuming you'll add this later
                     'noticeItems' => $defaultNoticeItems,
+                    'eventItems' => $defaultEventItems,
+                    'publicationItems' => $defaultPublicationItems,
+                    'footerData' => $defaultFooterData,
                     'siteTitle' => 'Mawlana Bhashani Science and Technology University',
                     'siteDescription' => 'Leading science and technology university in Bangladesh',
                     'contactEmail' => 'info@mbstu.ac.bd',

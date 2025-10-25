@@ -227,6 +227,86 @@ const menuGroups = ref([
                     stroke-linejoin="round"
                   />
                 </svg>`,
+                label: 'Events Section',
+                route: '/events-section',
+            },
+            {
+                icon: `<svg
+                  class="fill-current"
+                  width="18"
+                  height="18"
+                  viewBox="0 0 18 18"
+                  fill="none"
+                  xmlns="http://www.w3.org/2000/svg"
+                >
+                  <path
+                    d="M2.25 4.5h13.5M2.25 9h13.5M2.25 13.5h13.5"
+                    stroke="currentColor"
+                    stroke-width="1.5"
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                  />
+                </svg>`,
+                label: 'Notices Section',
+                route: '/notices-section',
+            },
+            {
+                icon: `<svg
+                  class="fill-current"
+                  width="18"
+                  height="18"
+                  viewBox="0 0 18 18"
+                  fill="none"
+                  xmlns="http://www.w3.org/2000/svg"
+                >
+                  <path
+                    d="M2.25 4.5h13.5M2.25 9h13.5M2.25 13.5h13.5"
+                    stroke="currentColor"
+                    stroke-width="1.5"
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                  />
+                </svg>`,
+                label: 'Publications Section',
+                route: '/publications-section',
+            },
+            {
+                icon: `<svg
+                  class="fill-current"
+                  width="18"
+                  height="18"
+                  viewBox="0 0 18 18"
+                  fill="none"
+                  xmlns="http://www.w3.org/2000/svg"
+                >
+                  <path
+                    d="M2.25 4.5h13.5M2.25 9h13.5M2.25 13.5h13.5"
+                    stroke="currentColor"
+                    stroke-width="1.5"
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                  />
+                </svg>`,
+                label: 'Footer Section',
+                route: '/footer-section',
+            },
+            {
+                icon: `<svg
+                  class="fill-current"
+                  width="18"
+                  height="18"
+                  viewBox="0 0 18 18"
+                  fill="none"
+                  xmlns="http://www.w3.org/2000/svg"
+                >
+                  <path
+                    d="M2.25 4.5h13.5M2.25 9h13.5M2.25 13.5h13.5"
+                    stroke="currentColor"
+                    stroke-width="1.5"
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                  />
+                </svg>`,
                 label: 'Faculties',
                 route: '/faculties',
             },

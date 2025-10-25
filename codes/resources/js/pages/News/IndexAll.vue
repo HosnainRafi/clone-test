@@ -3,6 +3,7 @@ import Pagination from '@/components/Pagination.vue'; // Import the pagination c
 import DynamicNavbar from '@/components/user/DynamicNavbar.vue';
 import Footer from '@/components/user/Footer2.vue';
 import { Link } from '@inertiajs/vue3';
+import { Calendar } from 'lucide-vue-next';
 
 // 1. DEFINE INTERFACES
 interface NewsItem {
@@ -30,66 +31,56 @@ const props = defineProps<PageProps>();
 const formatDate = (dateString: string) => {
     return new Date(dateString).toLocaleDateString('en-US', {
         year: 'numeric',
-        month: '2-digit',
-        day: '2-digit',
+        month: 'long', // Changed to 'long' for consistency
+        day: 'numeric',
     });
 };
 </script>
 
 <template>
-    <div class="flex min-h-screen flex-col bg-gray-100 dark:bg-boxdark-2">
-        <!-- Navbar -->
+    <div class="flex min-h-screen flex-col bg-gray-50">
         <DynamicNavbar :menuItems="props.menuItems" />
 
-        <!-- Page Header -->
-        <div class="bg-header-teal py-8 text-center text-white shadow-lg">
-            <h1 class="text-3xl font-bold">University News</h1>
-            <p class="mt-2 text-sm">
-                <Link href="/" class="hover:underline">Home</Link>
+        <div class="container mx-auto mb-12 pt-12 text-center">
+            <h1 class="mb-4 text-3xl font-bold text-[hsl(var(--secondary))] md:text-4xl">University News</h1>
+            <p class="text-lg text-gray-600">
+                <Link href="/" class="hover:text-[hsl(var(--primary))] hover:underline">Home</Link>
                 <span class="mx-2">></span>
-                <span class="font-semibold">News</span>
+                <span class="font-semibold text-[hsl(var(--secondary))]">News</span>
             </p>
         </div>
 
-        <!-- Main Content Area: News Grid -->
         <main class="container mx-auto flex-grow p-4 md:p-8">
             <div v-if="props.news.data.length > 0" class="grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-3">
-                <!-- Loop through paginated news items -->
                 <article
                     v-for="item in props.news.data"
                     :key="item.link"
-                    class="flex flex-col overflow-hidden rounded-lg border border-gray-200 bg-white shadow-md transition-shadow duration-300 hover:shadow-xl dark:border-gray-700 dark:bg-boxdark"
+                    class="group flex flex-col overflow-hidden rounded-lg border border-gray-200 bg-white shadow-sm transition-all duration-300 hover:shadow-md"
                 >
-                    <!-- Image -->
                     <Link :href="item.link" class="block">
-                        <img :src="item.image" :alt="item.title" class="h-56 w-full object-cover" />
+                        <div class="h-56 w-full bg-gradient-to-br from-blue-500 to-purple-600 object-cover"></div>
                     </Link>
 
-                    <!-- Content -->
                     <div class="flex flex-1 flex-col p-5">
                         <Link :href="item.link" class="block flex-grow">
-                            <h3 class="text-lg font-semibold text-black hover:text-red-700 dark:text-white dark:hover:text-red-500">
+                            <h3
+                                class="mb-3 text-lg font-semibold text-[hsl(var(--secondary))] transition-colors group-hover:text-[hsl(var(--primary))]"
+                            >
                                 {{ item.title }}
                             </h3>
                         </Link>
+                        <p class="mb-4 line-clamp-2 text-gray-600" v-html="item.excerpt"></p>
 
                         <div class="mt-4 flex items-center justify-between">
                             <div class="flex items-center gap-2 text-sm text-gray-500">
-                                <svg class="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path
-                                        stroke-linecap="round"
-                                        stroke-linejoin="round"
-                                        stroke-width="2"
-                                        d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"
-                                    ></path>
-                                </svg>
+                                <Calendar class="h-4 w-4" />
                                 <time :datetime="item.date">{{ formatDate(item.date) }}</time>
                             </div>
                             <Link
                                 :href="item.link"
-                                class="rounded-md bg-red-600 px-4 py-2 text-sm font-semibold text-white transition hover:bg-red-700"
+                                class="inline-flex items-center font-medium text-[hsl(var(--secondary))] hover:text-[hsl(var(--primary))]"
                             >
-                                READ NEWS →
+                                Read More →
                             </Link>
                         </div>
                     </div>
@@ -100,11 +91,30 @@ const formatDate = (dateString: string) => {
                 <p class="mt-2">Please check back later for updates.</p>
             </div>
 
-            <!-- Pagination Links -->
-            <Pagination :links="props.news.links" />
+            <Pagination :links="props.news.links" class="mt-12" />
         </main>
 
-        <!-- Footer -->
         <Footer />
     </div>
 </template>
+
+<style scoped>
+.line-clamp-2 {
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+}
+
+/* Smooth hover transitions for cards */
+.bg-white {
+    transition: all 0.3s ease;
+}
+
+.bg-white:hover {
+    transform: translateY(-2px);
+    box-shadow:
+        0 10px 25px -5px rgba(0, 0, 0, 0.1),
+        0 10px 10px -5px rgba(0, 0, 0, 0.04);
+}
+</style>

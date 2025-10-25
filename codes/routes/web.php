@@ -18,6 +18,10 @@ Route::middleware(SubdomainMiddleware::class)
         $campusLifeItems = [];
         $glanceItems = [];
         $newsItems = $siteData['settings']['newsItems'] ?? [];
+        $eventItems = $siteData['settings']['eventItems'] ?? [];
+        $noticeItems = $siteData['settings']['noticeItems'] ?? [];
+        $publicationItems = [];
+        $footerData = null;
 
         if (isset($siteData['settings']['menuItems'])) {
             $menuItems = $siteData['settings']['menuItems'];
@@ -88,7 +92,39 @@ Route::middleware(SubdomainMiddleware::class)
             // Default data if not found in settings
 
         }
+        if (isset($siteData['settings']['eventItems'])) {
+            $eventItems  = $siteData['settings']['eventItems'];
+            \Log::info('eventItems found:', ['count' => count($newsItems)]);
+        } else {
+            \Log::error('eventItems not found in site data, using default.');
+            // Default data if not found in settings
 
+        }
+        if (isset($siteData['settings']['noticeItems'])) {
+            $noticeItems  = $siteData['settings']['noticeItems'];
+            \Log::info('noticeItems found:', ['count' => count($newsItems)]);
+        } else {
+            \Log::error('noticeItems not found in site data, using default.');
+            // Default data if not found in settings
+
+        }
+
+        if (isset($siteData['settings']['publicationItems'])) {
+            $publicationItems  = $siteData['settings']['publicationItems'];
+            Log::info('publicationItems found:', ['count' => count($publicationItems)]);
+        } else {
+            Log::error('publicationItems not found in site data, using default.');
+        }
+
+        if (isset($siteData['settings']['footerData'])) {
+            $footerData = $siteData['settings']['footerData'];
+            Log::info('footerData found.');
+        } else {
+            Log::error('footerData not found in site data, using default.');
+            // You might want to load a default structure here if needed,
+            // or let the Vue component handle the default
+        }
+        //
 
         $data = (object) [
             'siteData' => $siteData,
@@ -106,6 +142,10 @@ Route::middleware(SubdomainMiddleware::class)
             'campusLifeItems' => $campusLifeItems,
             'glanceItems' => $glanceItems,
             'newsItems' => $newsItems,
+            'eventItems' => $eventItems,
+            'noticeItems' => $noticeItems,
+            'publicationItems' => $publicationItems,
+            'footerData' => $footerData,
         ];
 
         return Inertia::render('University',[
@@ -1119,6 +1159,244 @@ Route::middleware(SubdomainMiddleware::class)
         ]);
 
     })->name('news.index');
+
+
+
+
+Route::middleware(SubdomainMiddleware::class)
+    ->get('/events-section', function (Illuminate\Http\Request $request) {
+        $siteData = $request->get('siteData');
+        $eventItems = $siteData->settings['eventItems'] ?? [];
+        $siteId = $siteData->id ?? null;
+        return Inertia::render('Event/Index', [
+            'eventItems' => $eventItems,
+            'siteId' => $siteId,
+        ]);
+    })->name('events.admin');
+
+Route::middleware(SubdomainMiddleware::class)
+    ->post('/events-section/save', function (Illuminate\Http\Request $request) {
+        $site = $request->get('siteData');
+        if (!$site) {
+            return response()->json(['success' => false, 'message' => 'Site not found.'], 404);
+        }
+
+        $validated = $request->validate([
+            'eventItems' => 'present|array',
+            'siteId' => 'required|integer',
+        ]);
+
+        $currentSettings = $site->settings;
+        $currentSettings['eventItems'] = $validated['eventItems'];
+
+        $site->settings = $currentSettings;
+        $site->save();
+
+        return response()->json([
+            'success' => true,
+            'message' => 'Event section saved successfully!',
+        ]);
+    })->name('events.save');
+
+// Public facing event routes
+Route::middleware(SubdomainMiddleware::class)
+    ->get('/events', function (Illuminate\Http\Request $request) {
+        $siteData = $request->get('siteData');
+        $allEvents = collect($siteData->settings['eventItems'] ?? [])->sortByDesc('date');
+
+        $paginatedEvents = new \Illuminate\Pagination\LengthAwarePaginator(
+            $allEvents->forPage(Paginator::resolveCurrentPage(), 9),
+            $allEvents->count(), 9, Paginator::resolveCurrentPage(),
+            ['path' => Paginator::resolveCurrentPath()]
+        );
+
+        return Inertia::render('Event/IndexAll', [
+            'events' => $paginatedEvents,
+            'menuItems' => $siteData->settings['menuItems'] ?? [],
+        ]);
+    })->name('events.index');
+
+Route::middleware(SubdomainMiddleware::class)
+    ->get('/events/{slug}', function (Illuminate\Http\Request $request, $slug) {
+        $siteData = $request->get('siteData');
+        $eventCollection = collect($siteData->settings['eventItems'] ?? []);
+
+        $event = $eventCollection->firstWhere('link', '/events/' . $slug);
+
+        if (!$event) {
+            abort(404);
+        }
+
+        $latestEvents = $eventCollection->where('link', '!=', $event['link'])->sortByDesc('date')->take(5);
+
+        return Inertia::render('Event/Show', [
+            'event' => $event,
+            'latestEvents' => $latestEvents->values()->all(),
+            'menuItems' => $siteData->settings['menuItems'] ?? [],
+            'siteData' => $siteData,
+        ]);
+    })->name('events.show');
+
+
+
+
+Route::middleware(SubdomainMiddleware::class)
+    ->get('/notices-section', function (Illuminate\Http\Request $request) {
+        $siteData = $request->get('siteData');
+        return Inertia::render('Notice/Index', [
+            'noticeItems' => $siteData->settings['noticeItems'] ?? [],
+            'siteId' => $siteData->id ?? null,
+        ]);
+    })->name('notices.admin');
+
+Route::middleware(SubdomainMiddleware::class)
+    ->post('/notices-section/save', function (Illuminate\Http\Request $request) {
+        $site = $request->get('siteData');
+        if (!$site) {
+            return response()->json(['success' => false, 'message' => 'Site not found.'], 404);
+        }
+
+        $validated = $request->validate([
+            'noticeItems' => 'present|array',
+            'siteId' => 'required|integer',
+        ]);
+
+        $currentSettings = $site->settings;
+        $currentSettings['noticeItems'] = $validated['noticeItems'];
+
+        $site->settings = $currentSettings;
+        $site->save();
+
+        return response()->json([
+            'success' => true,
+            'message' => 'Notice section saved successfully!',
+        ]);
+    })->name('notices.save');
+
+// Public facing notice routes
+Route::middleware(SubdomainMiddleware::class)
+    ->get('/notices', function (Illuminate\Http\Request $request) {
+        $siteData = $request->get('siteData');
+        $allNotices = collect($siteData->settings['noticeItems'] ?? [])->sortByDesc('date');
+
+        $paginatedNotices = new \Illuminate\Pagination\LengthAwarePaginator(
+            $allNotices->forPage(Paginator::resolveCurrentPage(), 10),
+            $allNotices->count(), 10, Paginator::resolveCurrentPage(),
+            ['path' => Paginator::resolveCurrentPath()]
+        );
+
+        return Inertia::render('Notice/IndexAll', [
+            'notices' => $paginatedNotices,
+            'menuItems' => $siteData->settings['menuItems'] ?? [],
+        ]);
+    })->name('notices.index');
+
+Route::middleware(SubdomainMiddleware::class)
+    ->get('/notices/{slug}', function (Illuminate\Http\Request $request, $slug) {
+        $siteData = $request->get('siteData');
+        $noticeCollection = collect($siteData->settings['noticeItems'] ?? []);
+
+        $notice = $noticeCollection->firstWhere('link', '/notices/' . $slug);
+
+        if (!$notice) {
+            abort(404);
+        }
+
+        $latestNotices = $noticeCollection->where('link', '!=', $notice['link'])->sortByDesc('date')->take(5);
+
+        return Inertia::render('Notice/Show', [
+            'notice' => $notice,
+            'latestNotices' => $latestNotices->values()->all(),
+            'menuItems' => $siteData->settings['menuItems'] ?? [],
+        ]);
+    })->name('notices.show');
+
+
+
+
+
+Route::middleware(SubdomainMiddleware::class)
+    ->get('/publications-section', function (Illuminate\Http\Request $request) {
+        $siteData = $request->get('siteData');
+        return Inertia::render('TopPublication/Index', [
+            'publicationItems' => $siteData->settings['publicationItems'] ?? [],
+            'siteId' => $siteData->id ?? null,
+        ]);
+    })->name('publications.admin'); // You might need ->middleware('auth') later
+
+Route::middleware(SubdomainMiddleware::class)
+    ->post('/publications-section/save', function (Illuminate\Http\Request $request) {
+        $site = $request->get('siteData');
+        if (!$site) {
+            return response()->json(['success' => false, 'message' => 'Site not found.'], 404);
+        }
+
+        $validated = $request->validate([
+            'publicationItems' => 'present|array',
+            'siteId' => 'required|integer',
+        ]);
+
+        $currentSettings = $site->settings;
+        $currentSettings['publicationItems'] = $validated['publicationItems'];
+
+        $site->settings = $currentSettings;
+        $site->save();
+
+        return response()->json([
+            'success' => true,
+            'message' => 'Publications section saved successfully!',
+        ]);
+    })->name('publications.save');
+
+
+
+
+
+
+Route::middleware(SubdomainMiddleware::class)
+    ->get('/footer-section', function (Illuminate\Http\Request $request) {
+        $siteData = $request->get('siteData');
+        return Inertia::render('Footer/Index', [ // Assumes you created Footer/Index.vue
+            'footerData' => $siteData->settings['footerData'] ?? null,
+            'siteId' => $siteData->id ?? null,
+        ]);
+    })->name('footer.admin'); // Consider adding ->middleware('auth') later
+
+Route::middleware(SubdomainMiddleware::class)
+    ->post('/footer-section/save', function (Illuminate\Http\Request $request) {
+        $site = $request->get('siteData');
+        if (!$site) {
+            return response()->json(['success' => false, 'message' => 'Site not found.'], 404);
+        }
+
+        // Add validation for the footer data structure
+        $validated = $request->validate([
+            'footerData' => 'required|array',
+            'footerData.universityName' => 'required|string|max:255',
+            'footerData.universityFullName' => 'required|string|max:255',
+            'footerData.email' => 'required|email|max:255',
+            // Add more specific validation rules here based on Footer/Index.vue
+            'siteId' => 'required|integer|exists:sites,id',
+        ]);
+
+        try {
+            $currentSettings = $site->settings;
+            $currentSettings['footerData'] = $validated['footerData']; // Use the key 'footerData'
+            $site->settings = $currentSettings;
+            $site->save();
+
+            return response()->json([
+                'success' => true,
+                'message' => 'Footer section saved successfully!',
+            ]);
+        } catch (\Exception $e) {
+            Log::error('Error saving footer settings for site ID ' . $validated['siteId'] . ': ' . $e->getMessage());
+            return response()->json([
+                'success' => false,
+                'message' => 'An error occurred saving settings.',
+            ], 500);
+        }
+    })->name('footer.save');
 
 
 
