@@ -1,0 +1,14 @@
+{
+  "name": "mbstu-website-2025-copy",
+  "version": "1.0.0",
+  "description": "- **Backend**: Laravel 9.x\r - **Frontend**: Vue.js 3.x\r - **Database**: PostgreSQL\r - **Environment**: Docker",
+  "main": "index.js",
+  "directories": {
+    "doc": "docs"
+  },
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "",
+  "license": "ISC"
+}

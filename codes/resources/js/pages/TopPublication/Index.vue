@@ -558,15 +558,7 @@ select.form-input {
     -webkit-box-orient: vertical;
     overflow: hidden;
 }
-/* Ensure Tiptap Editor looks like other inputs */
-:deep(.ProseMirror) {
-    @apply form-input;
-    min-height: 150px;
-    height: auto;
-    padding-top: 11px;
-    padding-bottom: 11px;
-    line-height: 1.5; /* Ensure consistent line height */
-}
+
 :deep(.ProseMirror p.is-editor-empty:first-child::before) {
     content: attr(data-placeholder);
     float: left;
