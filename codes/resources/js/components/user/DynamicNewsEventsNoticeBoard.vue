@@ -141,7 +141,7 @@ const getEventStatus = (status: string) => {
                             'ml-2 rounded-full px-2 py-0.5 text-xs font-semibold',
                             activeTab === 'events' ? 'bg-white text-[hsl(var(--secondary))]' : 'bg-green-100 text-green-700',
                         ]"
-                        >{{ eventItems.filter((e) => e.status === 'upcoming').length }}</span
+                        >{{ eventItems.length }}</span
                     >
                 </button>
                 <button

@@ -8,6 +8,7 @@ use Illuminate\Http\Request;
 use Illuminate\Pagination\LengthAwarePaginator;
 use Illuminate\Pagination\Paginator;
 use Inertia\Inertia;
+use Illuminate\Support\Facades\Log;
 
 class EventController extends BaseController
 {
@@ -26,30 +27,46 @@ class EventController extends BaseController
 
         return Inertia::render('Event/IndexAll', [
             'events' => $paginatedEvents,
-            'menuItems' => $siteData['settings']['menuItems'] ?? []
-        ]);
-    }
-
-    public function show(Request $request, $slug)
-    {
-        $siteData = $this->getSiteData($request);
-        $eventCollection = collect($siteData['settings']['eventItems'] ?? []);
-
-        $event = $eventCollection->firstWhere('link', 'events/' . $slug);
-
-        if (!$event) {
-            abort(404);
-        }
-
-        $latestEvents = $eventCollection->where('link', '!=', $event['link'])
-                                       ->sortByDesc('date')
-                                       ->take(5);
-
-        return Inertia::render('Event/Show', [
-            'event' => $event,
-            'latestEvents' => $latestEvents->values()->all(),
             'menuItems' => $siteData['settings']['menuItems'] ?? [],
-            'siteData' => $siteData
+            'siteData' => $siteData,
         ]);
     }
+
+   // app/Http/Controllers/Public/EventController.php
+
+public function show(Request $request, $slug)
+{
+    $siteData = $this->getSiteData($request);
+    $allEvents = $siteData['settings']['eventItems'] ?? [];
+    $searchedForLink = '/events/' . $slug;
+
+    $event = null;
+
+    foreach ($allEvents as $item) {
+        if (isset($item['link']) && trim($item['link']) === $searchedForLink) {
+            $event = $item;
+            break;
+        }
+    }
+
+    if (!$event) {
+        abort(404);
+    }
+
+    $allEventsCollection = collect($allEvents);
+
+    $latestEvents = $allEventsCollection
+        ->where('link', '!=', $event['link']) // Exclude the current event
+        ->sortByDesc('date')
+        ->take(5)
+        ->values();
+
+    return Inertia::render('Event/Show', [
+        'event' => $event,
+        'latestEvents' => $latestEvents,
+        'menuItems' => $siteData['settings']['menuItems'] ?? [],
+        'siteData' => $siteData, // <-- ADD THIS LINE
+    ]);
+}
+
 }

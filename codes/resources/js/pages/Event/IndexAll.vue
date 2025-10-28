@@ -90,7 +90,7 @@ const eventStatusClass = (status: string) => {
                                         class="inline-flex items-center rounded-full px-3 py-1 text-xs font-semibold"
                                         :class="eventStatusClass(event.status)"
                                     >
-                                        {{ event.status.charAt(0).toUpperCase() + event.status.slice(1) }}
+                                        {{ event.status ? event.status.charAt(0).toUpperCase() + event.status.slice(1) : 'No Status' }}
                                     </span>
                                     <div class="flex items-center text-sm text-gray-500">
                                         <Tag class="mr-1.5 h-4 w-4" />

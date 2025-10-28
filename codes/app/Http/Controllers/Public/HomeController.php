@@ -12,6 +12,7 @@ class HomeController extends BaseController
 {
     public function index(Request $request)
     {
+        //console.log('HomeController index method called',$request->all());
         $siteData = $this->getSiteData($request);
 
         // Load all the site content

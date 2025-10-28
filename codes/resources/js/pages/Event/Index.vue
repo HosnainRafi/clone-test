@@ -8,7 +8,7 @@ import { computed, ref } from 'vue';
 interface EventItem {
     id: number;
     title: string;
-    description: string;
+    excerpt: string; // Changed from 'description'
     date: string;
     time: string;
     endDate: string;
@@ -50,7 +50,7 @@ const hasUnsavedChanges = computed(() => {
 
 const isValidConfiguration = computed(() => {
     if (viewMode.value === 'form' && editingItem.value) {
-        return editingItem.value.title && editingItem.value.description && editingItem.value.category && editingItem.value.venue;
+        return editingItem.value.title && editingItem.value.excerpt && editingItem.value.category && editingItem.value.venue;
     }
     return true;
 });
@@ -68,7 +68,7 @@ const onAddItem = () => {
     editingItem.value = {
         id: Date.now(),
         title: 'New Event Title',
-        description: '<p>Enter event description here.</p>',
+        excerpt: '<p>Enter event description here.</p>', // Changed from 'description'
         date: new Date().toISOString().split('T')[0],
         time: '10:00 AM',
         endDate: new Date().toISOString().split('T')[0],
@@ -243,7 +243,8 @@ const validateAndSave = async () => {
                         </div>
                         <div>
                             <label class="form-label">Description *</label>
-                            <TiptapEditor v-model="editingItem.description" />
+                            <TiptapEditor v-model="editingItem.excerpt" />
+                            <!-- Changed from 'description' -->
                         </div>
                         <div class="grid grid-cols-1 gap-4 sm:grid-cols-3">
                             <div>

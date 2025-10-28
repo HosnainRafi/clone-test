@@ -55,6 +55,8 @@ const priorityClasses = (priority: string) => {
 
 // Simple hover for the card
 const cardClasses = 'border border-gray-200 bg-white shadow-sm transition-all duration-300 hover:shadow-md';
+
+console.log('Notices Props:', props.notices.data);
 </script>
 
 <template>
@@ -86,7 +88,7 @@ const cardClasses = 'border border-gray-200 bg-white shadow-sm transition-all du
                             <div class="flex-grow">
                                 <div
                                     class="mb-2 flex items-center text-sm font-semibold"
-                                    :class="priority === 'high' ? 'text-red-600' : 'text-gray-600'"
+                                    :class="notice.priority === 'high' ? 'text-red-600' : 'text-gray-600'"
                                 >
                                     <AlertCircle v-if="notice.priority === 'high'" class="mr-2 h-4 w-4" />
                                     <span class="font-bold uppercase">{{ notice.priority }}</span>

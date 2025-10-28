@@ -8,7 +8,7 @@ import { computed, ref } from 'vue';
 interface NoticeItem {
     id: number;
     title: string;
-    content: string;
+    excerpt: string; // Changed from 'content' to 'excerpt'
     date: string;
     category: string;
     priority: 'high' | 'medium' | 'low';
@@ -45,7 +45,7 @@ const hasUnsavedChanges = computed(() => {
 
 const isValidConfiguration = computed(() => {
     if (viewMode.value === 'form' && editingItem.value) {
-        return editingItem.value.title && editingItem.value.content && editingItem.value.category && editingItem.value.department;
+        return editingItem.value.title && editingItem.value.excerpt && editingItem.value.category && editingItem.value.department;
     }
     return true;
 });
@@ -63,7 +63,7 @@ const onAddItem = () => {
     editingItem.value = {
         id: Date.now(),
         title: 'New Notice Title',
-        content: '<p>Enter notice content here.</p>',
+        excerpt: '<p>Enter notice content here.</p>', // Changed from 'content'
         date: new Date().toISOString().split('T')[0],
         category: 'General',
         priority: 'medium',
@@ -237,7 +237,8 @@ const priorityClass = (priority: string) => {
                         </div>
                         <div>
                             <label class="form-label">Content *</label>
-                            <TiptapEditor v-model="editingItem.content" />
+                            <TiptapEditor v-model="editingItem.excerpt" />
+                            <!-- Changed from 'content' -->
                         </div>
                         <div class="grid grid-cols-1 gap-4 sm:grid-cols-2">
                             <div>

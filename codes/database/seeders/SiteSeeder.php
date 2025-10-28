@@ -1061,7 +1061,8 @@ $defaultNoticeItems = [
                     'siteTitle' => 'MBSTU - Development',
                     'siteDescription' => 'Development environment for MBSTU website',
                     'contactEmail' => 'dev@mbstu.ac.bd',
-                    'environment' => 'development'
+                    'environment' => 'development',
+                    'footerData' => $defaultFooterData,
                 ],
                 'created_by' => 1,
                 'updated_by' => 1,
