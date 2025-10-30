@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Public;
 
 use App\Http\Controllers\BaseController;
 use App\Services\SiteContentService;
+use App\Models\Event;
 use Illuminate\Http\Request;
 use Illuminate\Pagination\LengthAwarePaginator;
 use Illuminate\Pagination\Paginator;
@@ -15,7 +16,27 @@ class EventController extends BaseController
     public function index(Request $request)
     {
         $siteData = $this->getSiteData($request);
-        $allEvents = collect($siteData['settings']['eventItems'] ?? [])->sortByDesc('date');
+        $siteId = $siteData['id'] ?? 1;
+
+        $allEvents = Event::forSite($siteId)
+            ->orderBy('starts_at', 'desc')
+            ->orderBy('sort_order', 'asc')
+            ->get()
+            ->map(function ($item) {
+                return [
+                    'id' => $item->id,
+                    'title' => $item->title,
+                    'excerpt' => $item->excerpt,
+                    'content' => $item->content,
+                    'image' => $item->image,
+                    'link' => $item->link,
+                    'isActive' => $item->is_active,
+                    'displayOrder' => $item->sort_order,
+                    'starts_at' => $item->starts_at?->format('Y-m-d') ?? null,
+                    'ends_at' => $item->ends_at?->format('Y-m-d') ?? null,
+                ];
+            })
+            ->values();
 
         $paginatedEvents = new LengthAwarePaginator(
             $allEvents->forPage(Paginator::resolveCurrentPage(), 9),
@@ -37,35 +58,55 @@ class EventController extends BaseController
 public function show(Request $request, $slug)
 {
     $siteData = $this->getSiteData($request);
-    $allEvents = $siteData['settings']['eventItems'] ?? [];
-    $searchedForLink = '/events/' . $slug;
+    $siteId = $siteData['id'] ?? 1;
 
-    $event = null;
+    $searchedLink = '%/' . $slug;
 
-    foreach ($allEvents as $item) {
-        if (isset($item['link']) && trim($item['link']) === $searchedForLink) {
-            $event = $item;
-            break;
-        }
-    }
+    $event = Event::forSite($siteId)
+        ->where('link', 'like', $searchedLink)
+        ->orWhere('link', '=', '/events/' . $slug)
+        ->first();
 
     if (!$event) {
         abort(404);
     }
 
-    $allEventsCollection = collect($allEvents);
-
-    $latestEvents = $allEventsCollection
-        ->where('link', '!=', $event['link']) // Exclude the current event
-        ->sortByDesc('date')
+    $latestEvents = Event::forSite($siteId)
+        ->where('id', '!=', $event->id)
+        ->orderBy('starts_at', 'desc')
         ->take(5)
+        ->get()
+        ->map(fn($item) => [
+            'id' => $item->id,
+            'title' => $item->title,
+            'excerpt' => $item->excerpt,
+            'link' => $item->link,
+            'starts_at' => $item->starts_at?->format('Y-m-d') ?? null,
+        ])
         ->values();
 
     return Inertia::render('Event/Show', [
-        'event' => $event,
+        'event' => [
+            'id' => $event->id,
+            'title' => $event->title,
+            'description' => $event->content,
+            'date' => $event->starts_at?->format('Y-m-d') ?? null,
+            'time' => $event->starts_at?->format('H:i A') ?? '09:00 AM',
+            'endDate' => $event->ends_at?->format('Y-m-d') ?? null,
+            'venue' => $event->venue ?? 'MBSTU Campus',
+            'category' => $event->category ?? 'University Event',
+            'status' => $event->starts_at?->isFuture() ? 'upcoming' : 'completed',
+            'registration' => $event->registration ?? 'Not Required',
+            'fee' => $event->fee ?? 'Free',
+            'organizer' => $event->organizer ?? 'MBSTU',
+            'participants' => $event->participants ?? 'Open to All',
+            'link' => $event->link,
+            'image' => $event->image,
+            'excerpt' => $event->excerpt,
+        ],
         'latestEvents' => $latestEvents,
         'menuItems' => $siteData['settings']['menuItems'] ?? [],
-        'siteData' => $siteData, // <-- ADD THIS LINE
+        'siteData' => $siteData,
     ]);
 }
 

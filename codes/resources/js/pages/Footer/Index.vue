@@ -126,7 +126,7 @@ const validateAndSave = async () => {
     isSaving.value = true;
     try {
         const csrfToken = document.querySelector('meta[name="csrf-token"]')?.getAttribute('content');
-        const response = await fetch('/footer-section/save', {
+        const response = await fetch('/admin/footer-section', {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',

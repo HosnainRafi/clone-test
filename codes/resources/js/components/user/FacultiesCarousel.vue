@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import { computed } from 'vue'
 import {
   Card,
   CardContent,
@@ -69,8 +70,19 @@ interface FacultyProps {
   icon: any;
 }
 
-// Faculty data based on MBSTU website - Enhanced with comprehensive information
-const faculties: FacultyProps[] = [
+// Props interface
+interface ComponentProps {
+  componentData?: {
+    faculties?: FacultyProps[]
+  }
+  faculties?: FacultyProps[]
+}
+
+// Define props
+const props = defineProps<ComponentProps>()
+
+// Default faculty data based on MBSTU website - Enhanced with comprehensive information
+const defaultFaculties: FacultyProps[] = [
   {
     id: 1,
     name: 'Faculty of Engineering',
@@ -403,6 +415,17 @@ const faculties: FacultyProps[] = [
     icon: Heart
   }
 ]
+
+// Computed property for faculties with priority: componentData.faculties > props.faculties > defaultFaculties
+const faculties = computed(() => {
+  if (props.componentData?.faculties && props.componentData.faculties.length > 0) {
+    return props.componentData.faculties
+  }
+  if (props.faculties && props.faculties.length > 0) {
+    return props.faculties
+  }
+  return defaultFaculties
+})
 
 const getRankingColor = (ranking: string): string => {
   const colors: Record<string, string> = {

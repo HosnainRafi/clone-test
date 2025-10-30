@@ -1,12 +1,31 @@
 <script setup lang="ts">
-import { ref, onMounted, onUnmounted } from 'vue'
+import { ref, onMounted, onUnmounted, computed } from 'vue'
+
+// Props interface
+interface HeadlineItem {
+  id: number
+  type: string
+  text: string
+  link: string
+  priority: 'high' | 'medium' | 'low'
+}
+
+interface Props {
+  headlines?: HeadlineItem[]
+  componentData?: {
+    headlines?: HeadlineItem[]
+    [key: string]: any
+  }
+}
+
+const props = defineProps<Props>()
 
 // Simple marquee implementation
 const marqueeRef = ref<HTMLElement>()
 const isPaused = ref(false)
 
-// Headline news and announcements for MBSTU CSE
-const headlines = [
+// Static headline news and announcements for MBSTU CSE (fallback data)
+const staticHeadlines: HeadlineItem[] = [
   {
     id: 1,
     type: 'announcement',
@@ -51,9 +70,21 @@ const headlines = [
   }
 ]
 
+// Computed property to get headlines from props or fallback to static data
+const headlines = computed(() => {
+  // Priority order: direct headlines prop > componentData.headlines > static fallback
+  if (props.headlines && props.headlines.length > 0) {
+    return props.headlines
+  } else if (props.componentData?.headlines && props.componentData.headlines.length > 0) {
+    return props.componentData.headlines
+  } else {
+    return staticHeadlines
+  }
+})
+
 // Filter high priority headlines for main marquee
-const priorityHeadlines = headlines.filter(h => h.priority === 'high')
-const allHeadlines = headlines
+const priorityHeadlines = computed(() => headlines.value.filter((h: HeadlineItem) => h.priority === 'high'))
+const allHeadlines = computed(() => headlines.value)
 </script>
 
 <template>

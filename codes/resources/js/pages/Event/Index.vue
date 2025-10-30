@@ -38,6 +38,26 @@ const messageType = ref<'success' | 'error' | ''>('');
 const viewMode = ref<'list' | 'form'>('list');
 const editingItem = ref<EventItem | null>(null);
 
+// --- DEFAULTS & HELPERS ---
+const defaultEventItem: EventItem = {
+    id: 0,
+    title: '',
+    excerpt: '<p></p>',
+    date: new Date().toISOString().split('T')[0],
+    time: '10:00 AM',
+    endDate: new Date().toISOString().split('T')[0],
+    venue: '',
+    category: 'General',
+    status: 'upcoming',
+    registration: 'Open',
+    fee: 'Free',
+    organizer: '',
+    participants: 'N/A',
+    link: '#',
+    isActive: true,
+    displayOrder: 0,
+};
+
 // --- METHODS ---
 const initializeEvents = () => {
     eventData.value = JSON.parse(JSON.stringify(props.eventItems || []));
@@ -50,7 +70,9 @@ const hasUnsavedChanges = computed(() => {
 
 const isValidConfiguration = computed(() => {
     if (viewMode.value === 'form' && editingItem.value) {
-        return editingItem.value.title && editingItem.value.excerpt && editingItem.value.category && editingItem.value.venue;
+        // Ensure all required fields are not empty
+        const item = editingItem.value;
+        return item.title?.trim() !== '' && item.excerpt?.trim() !== '' && item.category?.trim() !== '' && item.venue?.trim() !== '';
     }
     return true;
 });
@@ -87,7 +109,11 @@ const onAddItem = () => {
 };
 
 const onEditItem = (item: EventItem) => {
-    editingItem.value = JSON.parse(JSON.stringify(item));
+    // Deep copy and merge with defaults to ensure all fields exist
+    editingItem.value = {
+        ...defaultEventItem,
+        ...JSON.parse(JSON.stringify(item)),
+    };
     viewMode.value = 'form';
 };
 
@@ -96,13 +122,15 @@ const onDeleteItem = (id: number) => {
     if (index > -1) {
         eventData.value.splice(index, 1);
         eventData.value.forEach((item, idx) => {
-            item.displayOrder = idx + 1;
+            item.displayOrder = idx + 1; // Re-order
         });
-        showMessage('Event removed. Click "Save All Changes" to confirm.', 'success');
+        showMessage('Event removed.', 'success');
+        // Auto-save on delete
+        validateAndSave();
     }
 };
 
-const onSaveItem = () => {
+const onSaveItem = async () => {
     if (!editingItem.value || !isValidConfiguration.value) {
         showMessage('Please fill all required fields.', 'error');
         return;
@@ -116,7 +144,9 @@ const onSaveItem = () => {
     }
     viewMode.value = 'list';
     editingItem.value = null;
-    showMessage('Changes staged. Save to persist them to the server.', 'success');
+
+    // Save immediately to the server
+    await validateAndSave();
 };
 
 const onCancelEdit = () => {
@@ -133,9 +163,12 @@ const validateAndSave = async () => {
     if (!siteId) return showMessage('Site ID is missing.', 'error');
     isSaving.value = true;
     try {
-        const dataToSave = eventData.value.map(({ id, ...rest }) => rest);
+        // Prepare data for saving (remove temporary frontend IDs if they exist)
+        const dataToSave = eventData.value.map(({ id, ...rest }) => {
+            return id > 1000000000000 ? rest : { id, ...rest };
+        });
         const csrfToken = document.querySelector('meta[name="csrf-token"]')?.getAttribute('content');
-        const response = await fetch('/events-section/save', {
+        const response = await fetch('/admin/events-section', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json', 'X-CSRF-TOKEN': csrfToken || '', Accept: 'application/json' },
             body: JSON.stringify({ eventItems: dataToSave, siteId: props.siteId }),
@@ -143,11 +176,16 @@ const validateAndSave = async () => {
         const result = await response.json();
         if (response.ok && result.success) {
             showMessage(result.message, 'success');
-            router.reload({ only: ['eventItems'], onSuccess: () => initializeEvents() });
+            // Reload props from server to get fresh data (including new IDs)
+            router.reload({
+                only: ['eventItems'],
+                onSuccess: () => initializeEvents(),
+            });
         } else {
             showMessage(result.message || 'An unknown server error occurred.', 'error');
         }
-    } catch (error) {
+    } catch (err) {
+        console.error(err);
         showMessage('A network error occurred. Please try again.', 'error');
     } finally {
         isSaving.value = false;
@@ -255,16 +293,16 @@ const validateAndSave = async () => {
                                 <label class="form-label">End Date</label>
                                 <input v-model="editingItem.endDate" type="date" class="form-input" />
                             </div>
-                            <div>
+                            <!-- <div>
                                 <label class="form-label">Time</label>
                                 <input v-model="editingItem.time" type="text" class="form-input" />
-                            </div>
-                        </div>
-                        <div class="grid grid-cols-1 gap-4 sm:grid-cols-3">
+                            </div> -->
                             <div>
                                 <label class="form-label">Venue *</label>
                                 <input v-model="editingItem.venue" type="text" class="form-input" />
                             </div>
+                        </div>
+                        <div class="grid grid-cols-1 gap-4 sm:grid-cols-3">
                             <div>
                                 <label class="form-label">Category *</label>
                                 <input v-model="editingItem.category" type="text" class="form-input" />
@@ -277,12 +315,12 @@ const validateAndSave = async () => {
                                     <option>postponed</option>
                                 </select>
                             </div>
-                        </div>
-                        <div class="grid grid-cols-1 gap-4 sm:grid-cols-2">
                             <div>
                                 <label class="form-label">Organizer</label>
                                 <input v-model="editingItem.organizer" type="text" class="form-input" />
                             </div>
+                        </div>
+                        <div class="grid grid-cols-1 gap-4 sm:grid-cols-2">
                             <div>
                                 <label class="form-label">Link URL (auto-generated)</label>
                                 <input v-model="editingItem.link" type="text" class="form-input bg-gray-100 dark:bg-gray-700" disabled />
@@ -293,7 +331,7 @@ const validateAndSave = async () => {
                 <div class="mt-6 flex justify-end gap-3">
                     <button @click="onCancelEdit" class="action-btn bg-gray-500">Cancel</button>
                     <button @click="onSaveItem" :disabled="!isValidConfiguration" class="action-btn bg-success">
-                        {{ editingItem.id > 1000000000000 ? 'Add Item' : 'Update Item' }}
+                        {{ editingItem.id > 1000000000000 ? 'Add Event' : 'Update Event' }}
                     </button>
                 </div>
             </div>

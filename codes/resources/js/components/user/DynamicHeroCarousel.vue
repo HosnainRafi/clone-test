@@ -98,6 +98,10 @@ const [emblaRef, emblaApi] = useEmblaCarousel({
 const selectedIndex = ref(0);
 const scrollSnaps = ref<number[]>([]);
 
+// Track which slide images successfully preload. If preload fails we won't
+// include the image in the background and will fall back to the gradient.
+const imageValid = ref<boolean[]>([]);
+
 const scrollTo = (index: number) => {
     if (emblaApi.value) emblaApi.value.scrollTo(index);
 };
@@ -146,6 +150,51 @@ onMounted(() => {
         // Start autoplay
         startAutoplay();
     }
+
+    // --- DEBUG: verify slide image URLs are reachable and mark valid ones ---
+    try {
+        slides.value.forEach((s, idx) => {
+            // ensure imageValid has an entry for this index
+            if (typeof imageValid.value[idx] === 'undefined') imageValid.value[idx] = false;
+
+            console.log(`[HeroCarousel][debug] slide[${idx}] image:`, s.image);
+            // Log whether path looks like a storage URL
+            if (typeof s.image === 'string') {
+                if (s.image.startsWith('/storage') || s.image.includes('/storage/')) {
+                    console.log(`[HeroCarousel][debug] slide[${idx}] appears to be a Storage URL (use Storage::url in backend).`);
+                }
+                if (s.image.startsWith('http') || s.image.startsWith('//')) {
+                    console.log(`[HeroCarousel][debug] slide[${idx}] is an absolute URL.`);
+                } else if (s.image.startsWith('/')) {
+                    console.log(`[HeroCarousel][debug] slide[${idx}] is a root-relative URL.`);
+                } else {
+                    console.log(`[HeroCarousel][debug] slide[${idx}] is a relative URL.`);
+                }
+            }
+
+            // Try to pre-load image to detect load errors
+            const img = new Image();
+            img.onload = () => {
+                console.log(`[HeroCarousel][debug] slide[${idx}] image loaded OK (${s.image})`);
+                imageValid.value[idx] = true;
+            };
+            img.onerror = (e) => {
+                console.warn(`[HeroCarousel][debug] slide[${idx}] image failed to load:`, s.image, e);
+                imageValid.value[idx] = false;
+            };
+
+            // prepend origin for relative paths to test reachability
+            try {
+                const testSrc = s.image && (s.image.startsWith('http') || s.image.startsWith('//')) ? s.image : window.location.origin + s.image;
+                img.src = testSrc;
+            } catch (err) {
+                console.warn(`[HeroCarousel][debug] slide[${idx}] image test failed to assign src:`, err);
+                imageValid.value[idx] = false;
+            }
+        });
+    } catch (err) {
+        console.warn('[HeroCarousel][debug] error during debug checks:', err);
+    }
 });
 
 onUnmounted(() => {
@@ -166,16 +215,26 @@ console.log('HeroCarousel - Computed slides:', slides.value);
         <!-- Carousel Container -->
         <div class="embla overflow-hidden" ref="emblaRef">
             <div class="embla__container flex">
-                <div v-for="slide in slides" :key="slide.id" class="embla__slide relative w-full flex-none">
+                <div v-for="(slide, idx) in slides" :key="slide.id" class="embla__slide relative w-full flex-none">
                     <!-- Slide Background Image - KEEPING ORIGINAL DESIGN -->
                     <div class="relative h-[500px] w-full overflow-hidden md:h-[600px] lg:h-[700px]">
                         <!-- Background with gradient fallback - DYNAMIC DATA -->
                         <div
                             class="absolute inset-0 bg-cover bg-center bg-no-repeat"
-                            :style="{
-                                backgroundImage: `url(${slide.image}), ${slide.fallbackGradient}`,
-                                background: slide.fallbackGradient,
-                            }"
+                            :style="
+                                (() => {
+                                    // Use the preloaded image only when it was successfully loaded.
+                                    const valid = !!imageValid[idx];
+                                    const imagePart = valid && slide.image ? `url('${slide.image}')` : null;
+                                    const gradientPart = slide.fallbackGradient || 'none';
+                                    return {
+                                        backgroundImage: imagePart ? `${imagePart}, ${gradientPart}` : gradientPart,
+                                        backgroundSize: 'cover',
+                                        backgroundPosition: 'center',
+                                        backgroundRepeat: 'no-repeat',
+                                    };
+                                })()
+                            "
                         ></div>
                         <!-- Overlay - KEEPING ORIGINAL STYLING -->
                         <div class="absolute inset-0 bg-black/30"></div>

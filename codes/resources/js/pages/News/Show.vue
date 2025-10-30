@@ -6,14 +6,20 @@ import { Calendar, Tag } from 'lucide-vue-next'; // Added icons
 
 // 1. DEFINE INTERFACES
 interface NewsArticle {
+    id: number;
     title: string;
-    excerpt: string; // This should contain the full HTML content
+    excerpt: string;
+    content: string;
     image: string;
-    date: string;
+    slug: string;
     category: string;
     link: string;
-    author: string; // Added author and readTime for completeness
-    readTime: string;
+    is_active: boolean;
+    is_featured: boolean;
+    views_count: number;
+    published_at: string;
+    created_at: string;
+    updated_at: string;
 }
 
 interface MenuItem {
@@ -60,13 +66,14 @@ const formatDate = (dateString: string, options: Intl.DateTimeFormatOptions = { 
             <div class="grid grid-cols-1 gap-8 lg:grid-cols-3">
                 <div class="lg:col-span-2">
                     <article class="rounded-lg border border-gray-200 bg-white p-6 shadow-sm">
-                        <div class="mb-6 h-96 w-full rounded-md bg-gradient-to-br from-blue-500 to-purple-600"></div>
+                        <div v-if="props.newsArticle.image" class="mb-6 h-96 w-full rounded-md bg-cover bg-center" :style="{ backgroundImage: `url(${props.newsArticle.image})` }"></div>
+                        <div v-else class="mb-6 h-96 w-full rounded-md bg-gradient-to-br from-blue-500 to-purple-600"></div>
 
                         <div class="mb-4 flex flex-wrap items-center gap-x-4 gap-y-2 border-b border-gray-200 pb-4 text-sm text-gray-500">
                             <div class="flex items-center">
                                 <Calendar class="mr-1.5 h-4 w-4" />
-                                <time :datetime="props.newsArticle.date">
-                                    {{ formatDate(props.newsArticle.date) }}
+                                <time :datetime="props.newsArticle.published_at">
+                                    {{ formatDate(props.newsArticle.published_at) }}
                                 </time>
                             </div>
                             <div class="flex items-center">
@@ -74,14 +81,11 @@ const formatDate = (dateString: string, options: Intl.DateTimeFormatOptions = { 
                                 <span>{{ props.newsArticle.category }}</span>
                             </div>
                             <div class="flex items-center">
-                                <span class="font-medium">By:</span>&nbsp;<span>{{ props.newsArticle.author || 'Admin' }}</span>
-                            </div>
-                            <div class="flex items-center">
-                                <span class="font-medium">{{ props.newsArticle.readTime || '5 min read' }}</span>
+                                <span class="font-medium">Views:</span>&nbsp;<span>{{ props.newsArticle.views_count }}</span>
                             </div>
                         </div>
 
-                        <div class="prose lg:prose-lg max-w-none text-gray-600" v-html="props.newsArticle.excerpt"></div>
+                        <div class="prose lg:prose-lg max-w-none text-gray-600" v-html="props.newsArticle.content || props.newsArticle.excerpt"></div>
                     </article>
                 </div>
 
@@ -91,9 +95,10 @@ const formatDate = (dateString: string, options: Intl.DateTimeFormatOptions = { 
                             Latest News
                         </h3>
                         <ul class="mt-5 space-y-5">
-                            <li v-for="news in props.latestNews" :key="news.link" class="border-b border-gray-200 pb-5 last:border-b-0 last:pb-0">
+                            <li v-for="news in props.latestNews" :key="news.id" class="border-b border-gray-200 pb-5 last:border-b-0 last:pb-0">
                                 <Link :href="news.link" class="group flex items-start gap-4">
-                                    <div class="h-20 w-20 flex-shrink-0 rounded-md bg-gradient-to-br from-blue-400 to-purple-500 object-cover"></div>
+                                    <div v-if="news.image" class="h-20 w-20 flex-shrink-0 rounded-md bg-cover bg-center" :style="{ backgroundImage: `url(${news.image})` }"></div>
+                                    <div v-else class="h-20 w-20 flex-shrink-0 rounded-md bg-gradient-to-br from-blue-400 to-purple-500 object-cover"></div>
                                     <div class="flex-grow">
                                         <h4
                                             class="line-clamp-2 leading-tight font-semibold text-[hsl(var(--secondary))] transition-colors group-hover:text-[hsl(var(--primary))]"
@@ -101,8 +106,8 @@ const formatDate = (dateString: string, options: Intl.DateTimeFormatOptions = { 
                                             {{ news.title }}
                                         </h4>
                                         <div class="mt-2 flex items-center gap-3 text-xs text-gray-500">
-                                            <time :datetime="news.date">{{
-                                                formatDate(news.date, { year: 'numeric', month: 'short', day: 'numeric' })
+                                            <time :datetime="news.published_at">{{
+                                                formatDate(news.published_at, { year: 'numeric', month: 'short', day: 'numeric' })
                                             }}</time>
                                         </div>
                                     </div>

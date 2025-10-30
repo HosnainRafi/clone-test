@@ -23,6 +23,7 @@ class Site extends Model
         'domain',
         'subdomain',
         'theme_id',
+        'theme_name',
         'settings',
         'is_active',
         'created_by',
@@ -56,6 +57,14 @@ class Site extends Model
             ->withPivot(['position', 'settings', 'is_active'])
             ->withTimestamps()
             ->orderBy('position');
+    }
+
+    /**
+     * Get the site-specific components (new approach).
+     */
+    public function siteComponents()
+    {
+        return $this->hasMany(Component::class);
     }
 
     /**

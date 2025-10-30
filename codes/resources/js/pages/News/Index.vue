@@ -30,6 +30,8 @@ const message = ref('');
 const messageType = ref<'success' | 'error' | ''>('');
 const viewMode = ref<'list' | 'form'>('list'); // 'list' or 'form'
 const editingItem = ref<NewsItem | null>(null);
+const showDeleteConfirm = ref(false);
+const itemToDelete = ref<NewsItem | null>(null);
 
 // --- METHODS ---
 const initializeNewsItems = () => {
@@ -77,19 +79,36 @@ const onEditItem = (item: NewsItem) => {
     viewMode.value = 'form';
 };
 
-const onDeleteItem = (id: number) => {
-    const index = newsData.value.findIndex((item) => item.id === id);
+const onDeleteItem = (item: NewsItem) => {
+    itemToDelete.value = item;
+    showDeleteConfirm.value = true;
+};
+
+const confirmDelete = async () => {
+    if (!itemToDelete.value) return;
+
+    const index = newsData.value.findIndex((item) => item.id === itemToDelete.value!.id);
     if (index > -1) {
         newsData.value.splice(index, 1);
         // Re-order remaining items
         newsData.value.forEach((item, idx) => {
             item.displayOrder = idx + 1;
         });
-        showMessage('Item removed. Click "Save News" to persist changes.', 'success');
+
+        // Save immediately
+        await saveToServer();
     }
+
+    showDeleteConfirm.value = false;
+    itemToDelete.value = null;
 };
 
-const onSaveItem = () => {
+const cancelDelete = () => {
+    showDeleteConfirm.value = false;
+    itemToDelete.value = null;
+};
+
+const onSaveItem = async () => {
     if (!editingItem.value || !isValidConfiguration.value) {
         showMessage('Please fill all required fields before saving.', 'error');
         return;
@@ -107,7 +126,9 @@ const onSaveItem = () => {
 
     editingItem.value = null;
     viewMode.value = 'list';
-    showMessage('Changes staged. Click "Save News" to persist them.', 'success');
+
+    // Save immediately
+    await saveToServer();
 };
 
 const onCancelEdit = () => {
@@ -120,13 +141,13 @@ const resetToOriginal = () => {
     showMessage('Changes have been discarded.', 'success');
 };
 
-const validateAndSave = async () => {
+const saveToServer = async () => {
     if (!siteId) return showMessage('Site ID is missing.', 'error');
     isSaving.value = true;
     try {
         const dataToSave = newsData.value.map(({ id, ...rest }) => rest);
         const csrfToken = document.querySelector('meta[name="csrf-token"]')?.getAttribute('content');
-        const response = await fetch('/news-section/save', {
+        const response = await fetch('/admin/news-section', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json', 'X-CSRF-TOKEN': csrfToken || '', Accept: 'application/json' },
             body: JSON.stringify({ newsItems: dataToSave, siteId: props.siteId }),
@@ -162,14 +183,10 @@ const validateAndSave = async () => {
                 <div class="mb-4 flex items-center justify-between">
                     <div>
                         <h4 class="text-xl font-semibold text-black dark:text-white">News Section Management</h4>
-                        <p class="mt-1 text-sm text-gray-600 dark:text-gray-400">
-                            Site ID: {{ siteId || 'N/A' }}
-                            <span v-if="hasUnsavedChanges" class="ml-2 text-warning">• Unsaved Changes</span>
-                        </p>
+                        <p class="mt-1 text-sm text-gray-600 dark:text-gray-400">Site ID: {{ siteId || 'N/A' }}</p>
                     </div>
                     <div class="flex gap-2">
                         <button v-if="viewMode === 'list'" @click="onAddItem" class="action-btn bg-primary">Add News Item</button>
-                        <button v-if="hasUnsavedChanges" @click="resetToOriginal" class="action-btn bg-secondary">Discard All</button>
                     </div>
                 </div>
                 <div
@@ -207,7 +224,7 @@ const validateAndSave = async () => {
                                 <td class="border-b border-[#eee] px-4 py-5 dark:border-strokedark">
                                     <div class="flex items-center space-x-3.5">
                                         <button @click="onEditItem(item)" class="action-btn bg-primary px-3 py-1 text-sm">Edit</button>
-                                        <button @click="onDeleteItem(item.id)" class="action-btn bg-danger px-3 py-1 text-sm">Delete</button>
+                                        <button @click="onDeleteItem(item)" class="action-btn bg-danger px-3 py-1 text-sm">Delete</button>
                                     </div>
                                 </td>
                             </tr>
@@ -268,19 +285,21 @@ const validateAndSave = async () => {
                 </div>
             </div>
 
-            <!-- Global Save Button -->
-            <div class="mt-6 flex justify-end" v-if="hasUnsavedChanges">
-                <button
-                    @click="validateAndSave"
-                    :disabled="isSaving || !siteId || !hasUnsavedChanges"
-                    class="save-btn"
-                    :class="{
-                        'hover:bg-opacity-90 bg-primary': hasUnsavedChanges,
-                        'cursor-not-allowed bg-gray-400': isSaving || !siteId || !hasUnsavedChanges,
-                    }"
-                >
-                    {{ isSaving ? 'Saving...' : 'Save All Changes' }}
-                </button>
+            <!-- Delete Confirmation Modal -->
+            <div v-if="showDeleteConfirm" class="bg-opacity-50 fixed inset-0 z-50 flex items-center justify-center bg-black">
+                <div class="mx-4 w-full max-w-md rounded-lg bg-white p-6">
+                    <h3 class="mb-4 text-lg font-semibold text-gray-900">Confirm Delete</h3>
+                    <p class="mb-6 text-gray-600">
+                        Are you sure you want to delete "<strong>{{ itemToDelete?.title }}</strong
+                        >"? This action cannot be undone.
+                    </p>
+                    <div class="flex justify-end gap-3">
+                        <button @click="cancelDelete" class="action-btn bg-gray-500">Cancel</button>
+                        <button @click="confirmDelete" :disabled="isSaving" class="action-btn bg-danger">
+                            {{ isSaving ? 'Deleting...' : 'Delete' }}
+                        </button>
+                    </div>
+                </div>
             </div>
         </div>
     </DefaultLayout>

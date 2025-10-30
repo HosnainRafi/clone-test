@@ -123,7 +123,7 @@ const saveConfiguration = async () => {
     isSaving.value = true;
     try {
         const csrfToken = document.querySelector('meta[name="csrf-token"]')?.getAttribute('content');
-        const response = await fetch('/campus-life/save', {
+        const response = await fetch('/admin/campus-life-section', {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',

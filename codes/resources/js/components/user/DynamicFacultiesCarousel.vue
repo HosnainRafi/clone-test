@@ -182,7 +182,7 @@ console.log('FacultiesCarousel - Computed faculties:', faculties.value);
 
 <template>
     <!-- ✅ KEEPING EXACT ORIGINAL DESIGN AND STYLING -->
-    <section id="faculties-carousel" class="container pt-24">
+    <section id="faculties-carousel" class="container pt-24 pb-16">
         <!-- Section Header - ORIGINAL DESIGN -->
         <div class="mb-8 text-center">
             <h2 class="mb-4 text-center text-3xl font-bold text-[hsl(var(--secondary))] md:text-4xl">Our Academic Faculties</h2>

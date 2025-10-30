@@ -7,8 +7,10 @@ import DynamicHeroCarousel from '@/components/user/DynamicHeroCarousel.vue';
 import DynamicMessageForm from '@/components/user/DynamicMessageForm.vue';
 import DynamicNavbar from '@/components/user/DynamicNavbar.vue';
 import DynamicNewsEventsNoticeBoard from '@/components/user/DynamicNewsEventsNoticeBoard.vue';
+import DynamicTopBar from '@/components/user/DynamicTopBar.vue';
 import DynamicTopPublication from '@/components/user/DynamicTopPublication.vue';
 import DynamicWelcome from '@/components/user/DynamicWelcome.vue';
+import { computed } from 'vue';
 
 // Define the props interface to match the data structure from Laravel
 interface MenuItemProps {
@@ -250,6 +252,7 @@ interface PageProps {
     data: {
         siteData: any;
         theme: any;
+        themeName: any,
         components: any;
         viewType: any;
         fullDomain: string;
@@ -285,6 +288,7 @@ const { message, data } = props;
 console.log('Received data from Laravel:', { message, data });
 
 // Use menu items from Laravel data, with fallback to empty array
+
 const menuItems = data.menuItems || [];
 const heroSlides = data.heroSlides || [];
 const headlines = data.headlines || [];
@@ -297,7 +301,29 @@ const newsItems = data.newsItems || [];
 const eventItems = data.eventItems || [];
 const noticeItems = data.noticeItems || [];
 const publicationItems = data.publicationItems || [];
+// Ensure footerData is an object or null (component expects object); componentService may return an array or empty
+// const footerData = typeof data.footerData === 'object' && data.footerData !== null && !Array.isArray(data.footerData) ? data.footerData : null;
 const footerData = data.footerData || null;
+
+const isDepartmentPage = computed(() => {
+    console.log('University - viewType:', data.viewType);
+    return data.viewType !== 'default';
+});
+const settings = computed(() => {
+    console.log('University - settings from siteData:', data.siteData?.settings);
+    const settingsData = {
+        topBarLinks: data.siteData?.settings?.topBarLinks || [],
+        loginLink: data.siteData?.settings?.loginLink || null,
+        contactEmail: data.siteData?.settings?.contactEmail || '',
+        address: data.siteData?.settings?.address || '',
+    };
+    console.log('University - processed topbar settings:', settingsData);
+    return settingsData;
+});
+
+const themeName = data.themeName || 'default'
+
+document.documentElement.className = themeName == 'default' ? '' : themeName;
 </script>
 
 <template>
@@ -310,7 +336,7 @@ const footerData = data.footerData || null;
     <p><strong>Menu Items Count:</strong> {{ menuItems.length }}</p>
     <p><strong>Menu Items:</strong> {{ JSON.stringify(menuItems, null, 2) }}</p>
   </div> -->
-
+    <DynamicTopBar :isDepartmentPage="isDepartmentPage" :settings="settings" />
     <DynamicNavbar :menuItems="menuItems" />
     <DynamicHeroCarousel :slides="heroSlides" />
     <DynamicHeadlineMarquee :headlines="headlines" />

@@ -612,6 +612,131 @@ html {
     --radius: 0.5rem;
   }
 
+  .light-green {
+    --background: 0 0% 100%;
+    --foreground: 160 25% 10%;
+
+    --card: 0 0% 100%;
+    --card-foreground: 160 25% 10%;
+
+    --popover: 0 0% 100%;
+    --popover-foreground: 160 25% 10%;
+
+    --primary: 145 45% 40%; /* main green */
+    --primary-foreground: 0 0% 100%;
+
+    --secondary: 150 35% 50%; /* softer green */
+    --secondary-foreground: 0 0% 100%;
+
+    --tertiary: 135 40% 70%; /* mint tone */
+    --tertiary-foreground: 160 25% 10%;
+    --tertiary-hover: 135 50% 85%;
+
+    --quaternary: 140 40% 90%; /* pale background green */
+    --quaternary-foreground: 160 25% 10%;
+
+    --muted: 120 10% 94%;
+    --muted-foreground: 150 10% 40%;
+
+    --accent: 145 55% 45%; /* rich accent green */
+    --accent-foreground: 0 0% 100%;
+
+    --destructive: 0 70% 50%; /* red for danger actions */
+    --destructive-foreground: 60 9.1% 97.8%;
+
+    --border: 140 15% 85%;
+    --input: 140 15% 85%;
+    --ring: 145 60% 45%;
+    --radius: 0.5rem;
+  }
+   
+.orange {
+  --background: 0 0% 100%;
+  --foreground: 25 35% 12%;
+
+  --card: 0 0% 100%;
+  --card-foreground: 25 35% 12%;
+
+  --popover: 0 0% 100%;
+  --popover-foreground: 25 35% 12%;
+
+  --primary: 30 90% 50%; /* bright orange */
+  --primary-foreground: 0 0% 100%;
+
+  --secondary: 25 85% 60%; /* softer orange */
+  --secondary-foreground: 25 35% 12%;
+
+  --tertiary: 35 90% 75%; /* light orange/yellow tone */
+  --tertiary-foreground: 25 35% 12%;
+  --tertiary-hover: 35 95% 85%;
+
+  --accent: 28 95% 45%; /* deep accent orange */
+  --accent-foreground: 0 0% 100%;
+
+  --muted: 35 25% 94%;
+  --muted-foreground: 30 25% 40%;
+
+  --destructive: 0 70% 50%;
+  --destructive-foreground: 60 9.1% 97.8%;
+
+  --border: 35 20% 85%;
+  --input: 35 20% 85%;
+  --ring: 30 85% 50%;
+  --radius: 0.5rem;
+}
+
+.rose {
+  --background: 0 0% 100%;
+  --foreground: 340 25% 15%;
+
+  --card: 0 0% 100%;
+  --card-foreground: 340 25% 15%;
+
+  --primary: 340 65% 50%;
+  --primary-foreground: 0 0% 100%;
+
+  --secondary: 340 35% 70%;
+  --secondary-foreground: 340 25% 15%;
+
+  --tertiary: 340 45% 85%;
+  --tertiary-foreground: 340 25% 15%;
+
+  --accent: 340 55% 45%;
+  --accent-foreground: 0 0% 100%;
+
+  --muted: 340 20% 94%;
+  --muted-foreground: 340 20% 40%;
+
+  --destructive: 0 75% 50%;
+  --destructive-foreground: 60 9.1% 97.8%;
+}
+
+.ocean {
+  --background: 0 0% 100%;
+  --foreground: 210 25% 15%;
+
+  --card: 0 0% 100%;
+  --card-foreground: 210 25% 15%;
+
+  --primary: 200 70% 45%;
+  --primary-foreground: 0 0% 100%;
+
+  --secondary: 190 50% 60%;
+  --secondary-foreground: 210 25% 15%;
+
+  --tertiary: 180 40% 85%;
+  --tertiary-foreground: 210 25% 15%;
+
+  --accent: 200 75% 50%;
+  --accent-foreground: 0 0% 100%;
+
+  --muted: 200 20% 95%;
+  --muted-foreground: 200 20% 40%;
+
+  --border: 200 20% 85%;
+  --ring: 200 70% 45%;
+}
+
   .dark {
     --background: 20 14.3% 4.1%;
     --foreground: 60 9.1% 97.8%;

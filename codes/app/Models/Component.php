@@ -22,7 +22,10 @@ class Component extends Model
         'type',
         'content',
         'theme_id',
+        'site_id',
+        'page_id',
         'is_active',
+        'is_homepage_component',
         'sort_order',
         'slug',
         'created_by',
@@ -37,6 +40,7 @@ class Component extends Model
     protected $casts = [
         'content' => 'json',
         'is_active' => 'boolean',
+        'is_homepage_component' => 'boolean',
     ];
 
     /**
@@ -45,6 +49,22 @@ class Component extends Model
     public function theme(): BelongsTo
     {
         return $this->belongsTo(Theme::class);
+    }
+
+    /**
+     * Get the site that owns the component.
+     */
+    public function site(): BelongsTo
+    {
+        return $this->belongsTo(Site::class);
+    }
+
+    /**
+     * Get the page that owns the component.
+     */
+    public function page(): BelongsTo
+    {
+        return $this->belongsTo(Page::class);
     }
 
     /**
@@ -71,5 +91,61 @@ class Component extends Model
     public function updater(): BelongsTo
     {
         return $this->belongsTo(User::class, 'updated_by');
+    }
+
+    /**
+     * Scope a query to only include active components.
+     */
+    public function scopeActive($query)
+    {
+        return $query->where('is_active', true);
+    }
+
+    /**
+     * Scope a query to only include homepage components.
+     */
+    public function scopeHomepage($query)
+    {
+        return $query->where('is_homepage_component', true);
+    }
+
+    /**
+     * Scope a query to only include components for a specific site.
+     */
+    public function scopeForSite($query, $siteId)
+    {
+        return $query->where('site_id', $siteId);
+    }
+
+    /**
+     * Scope a query to only include components for a specific page.
+     */
+    public function scopeForPage($query, $pageId)
+    {
+        return $query->where('page_id', $pageId);
+    }
+
+    /**
+     * Scope a query to only include components of a specific type.
+     */
+    public function scopeOfType($query, $type)
+    {
+        return $query->where('type', $type);
+    }
+
+    /**
+     * Convert component name to snake_case type.
+     */
+    public static function nameToType($name)
+    {
+        return strtolower(preg_replace('/([a-z])([A-Z])/', '$1_$2', $name));
+    }
+
+    /**
+     * Convert snake_case type to component name.
+     */
+    public static function typeToName($type)
+    {
+        return str_replace('_', '', ucwords($type, '_'));
     }
 }

@@ -134,7 +134,7 @@ const saveConfiguration = async () => {
     isSaving.value = true;
     try {
         const csrfToken = document.querySelector('meta[name="csrf-token"]')?.getAttribute('content');
-        const response = await fetch('/campus-glance/save', {
+        const response = await fetch('/admin/campus-glance', {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',

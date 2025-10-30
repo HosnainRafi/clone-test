@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Public;
 
 use App\Http\Controllers\BaseController;
 use App\Services\SiteContentService;
+use App\Models\Notice;
 use Illuminate\Http\Request;
 use Illuminate\Pagination\LengthAwarePaginator;
 use Illuminate\Pagination\Paginator;
@@ -14,7 +15,26 @@ class NoticeController extends BaseController
     public function index(Request $request)
     {
         $siteData = $this->getSiteData($request);
-        $allNotices = collect($siteData['settings']['noticeItems'] ?? [])->sortByDesc('date')->values();
+        $siteId = $siteData['id'] ?? 1;
+
+        $allNotices = Notice::forSite($siteId)
+            ->orderBy('published_at', 'desc')
+            ->orderBy('sort_order', 'asc')
+            ->get()
+            ->map(function ($item) {
+                return [
+                    'id' => $item->id,
+                    'title' => $item->title,
+                    'excerpt' => $item->excerpt,
+                    'content' => $item->content,
+                    'image' => $item->image,
+                    'link' => $item->link,
+                    'isActive' => $item->is_active,
+                    'displayOrder' => $item->sort_order,
+                    'date' => $item->published_at?->format('Y-m-d') ?? $item->created_at->format('Y-m-d'),
+                ];
+            })
+            ->values();
 
         $paginatedNotices = new LengthAwarePaginator(
             $allNotices->forPage(Paginator::resolveCurrentPage(), 10),
@@ -24,7 +44,6 @@ class NoticeController extends BaseController
             ['path' => Paginator::resolveCurrentPath()]
         );
 
-
         return Inertia::render('Notice/IndexAll', [
             'notices' => $paginatedNotices,
             'menuItems' => $siteData['settings']['menuItems'] ?? [],
@@ -33,29 +52,53 @@ class NoticeController extends BaseController
     }
 
     public function show(Request $request, $slug)
-{
-    $siteData = $this->getSiteData($request);
-    $noticeCollection = collect($siteData['settings']['noticeItems'] ?? []);
+    {
+        $siteData = $this->getSiteData($request);
+        $siteId = $siteData['id'] ?? 1;
 
-    // --- NEW, ROBUST LOGIC ---
-    $notice = $noticeCollection->first(function ($item) use ($slug) {
-        // Extracts the last part of the 'link' path
-        $linkSlug = last(explode('/', $item['link']));
-        // Compare it to the slug from the URL
-        return $linkSlug === $slug;
-    });
+        // Try to find a notice by link ending with the slug (preserves existing link-based routing)
+        $searchedLink = '%/' . $slug;
 
-    if (!$notice) {
-        abort(404);
-    }
+        $notice = Notice::forSite($siteId)
+            ->where('link', 'like', $searchedLink)
+            ->orWhere('link', '=', '/notices/' . $slug)
+            ->first();
 
-        $latestNotices = $noticeCollection->where('link', '!=', $notice['link'])
-                                         ->sortByDesc('date')
-                                         ->take(5);
+        if (!$notice) {
+            abort(404);
+        }
+
+        $latestNotices = Notice::forSite($siteId)
+            ->where('id', '!=', $notice->id)
+            ->orderBy('published_at', 'desc')
+            ->take(5)
+            ->get()
+            ->map(fn($item) => [
+                'id' => $item->id,
+                'title' => $item->title,
+                'excerpt' => $item->excerpt,
+                'link' => $item->link,
+                'date' => $item->published_at?->format('Y-m-d') ?? $item->created_at->format('Y-m-d'),
+            ])
+            ->values()
+            ->all();
 
         return Inertia::render('Notice/Show', [
-            'notice' => $notice,
-            'latestNotices' => $latestNotices->values()->all(),
+            'notice' => [
+                'id' => $notice->id,
+                'title' => $notice->title,
+                'content' => $notice->content,
+                'excerpt' => $notice->excerpt,
+                'image' => $notice->image,
+                'link' => $notice->link,
+                'date' => $notice->published_at?->format('Y-m-d') ?? $notice->created_at->format('Y-m-d'),
+                'priority' => $notice->priority ?? 'medium',
+                'department' => $notice->department ?? 'Administration',
+                'validUntil' => $notice->valid_until?->format('Y-m-d'),
+                'category' => $notice->category ?? 'General',
+                'attachments' => $notice->attachments ?? []
+            ],
+            'latestNotices' => $latestNotices,
             'menuItems' => $siteData['settings']['menuItems'] ?? [],
             'siteData' => $siteData,
         ]);

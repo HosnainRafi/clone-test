@@ -320,7 +320,42 @@ class SiteSeeder extends Seeder
         ];
 
 
+        $defaultTopBarLinks = [
+            [
+                'title' => 'Forms & Services',
+                'href' => 'https://mbstu.ac.bd/form-download/'
+            ],
+            [
+                'title' => 'Int\'l Students',
+                'href' => 'https://mbstu.ac.bd/international-students/'
+            ],
+            [
+                'title' => 'NOC',
+                'href' => 'https://mbstu.ac.bd/noc/'
+            ],
+            [
+                'title' => 'IP Phone',
+                'href' => 'https://mbstu.ac.bd/noc/'
+            ],
+            [
+                'title' => 'UCAM',
+                'href' => 'https://mbstu.ac.bd/noc/'
+            ],
+            [
+                'title' => 'Contact',
+                'href' => 'http://ucam.mbstu.ac.bd/Security/LogIn.aspx'
+            ],
+            [
+                'title' => 'Departments',
+                'href' => 'http://ucam.mbstu.ac.bd/Security/LogIn.aspx'
+            ]
+        ];
 
+        // Default login link
+        $defaultLoginLink = [
+            'title' => 'LOGIN',
+            'href' => 'https://mbstu.ac.bd/account/'
+        ];
 
 
         $defaultHeroSlides = [
@@ -960,9 +995,14 @@ $defaultNoticeItems = [
                 'domain' => 'localhost',
                 'subdomain' => null,
                 'theme_id' => 1,
+                'theme_name' => 'default',
                 'is_active' => true,
                 'settings' => [
                     'menuItems' => $defaultMenuItems,
+                    'topBarLinks' => $defaultTopBarLinks,
+                    'loginLink' => $defaultLoginLink,
+                    'contactEmail' => 'info@mbstu.ac.bd',
+                    'address' => 'Santosh, Tangail-1902, Bangladesh',
                     'heroSlides' => $defaultHeroSlides,
                     'headlines' => $defaultHeadlines,
                     'messageFromItems' => $defaultMessageFromItems,
@@ -995,6 +1035,7 @@ $defaultNoticeItems = [
                 'domain' => 'ict.localhost',
                 'subdomain' => 'ict',
                 'theme_id' => 1,
+                'theme_name' => 'default',
                 'is_active' => true,
                 'settings' => [
                     'menuItems' => array_slice($defaultMenuItems, 0, 5), // Subset of menu items
@@ -1013,6 +1054,7 @@ $defaultNoticeItems = [
                 'domain' => 'cse.localhost',
                 'subdomain' => 'cse',
                 'theme_id' => 1,
+                'theme_name' => 'default',
                 'is_active' => true,
                 'settings' => [
                     'menuItems' => array_slice($defaultMenuItems, 0, 6), // Different subset
@@ -1032,9 +1074,11 @@ $defaultNoticeItems = [
                 'domain' => 'engineering.localhost',
                 'subdomain' => 'engineering',
                 'theme_id' => 1,
+                'theme_name' => 'default',
                 'is_active' => true,
                 'settings' => [
                     'menuItems' => $defaultMenuItems,
+                    'loginLink' => $defaultLoginLink,
                     'siteTitle' => 'Faculty of Engineering - MBSTU',
                     'siteDescription' => 'Engineering education and research excellence',
                     'contactEmail' => 'engineering@mbstu.ac.bd',
@@ -1055,6 +1099,7 @@ $defaultNoticeItems = [
                 'domain' => '127.0.0.1',
                 'subdomain' => null,
                 'theme_id' => 1,
+                'theme_name' => 'default',
                 'is_active' => true,
                 'settings' => [
                     'menuItems' => $defaultMenuItems,
@@ -1071,7 +1116,18 @@ $defaultNoticeItems = [
 
         // Insert sites
         foreach ($sites as $siteData) {
-            Site::create($siteData);
+            // Check if a site with this domain already exists
+            $existingSite = Site::where('domain', $siteData['domain'])->first();
+
+            if ($existingSite) {
+                // Update the existing site with new data
+                $existingSite->update($siteData);
+                $this->command->info("Updated existing site: {$siteData['name']}");
+            } else {
+                // Create a new site
+                Site::create($siteData);
+                $this->command->info("Created new site: {$siteData['name']}");
+            }
         }
 
         $this->command->info('Sites seeded successfully!');

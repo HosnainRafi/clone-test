@@ -3,6 +3,9 @@
 namespace App\Http\Controllers\Public;
 
 use App\Http\Controllers\BaseController;
+use App\Models\News;
+use App\Models\Publication;
+use App\Services\ComponentService;
 use App\Services\SiteContentService;
 use Illuminate\Http\Request;
 use Inertia\Inertia;
@@ -12,32 +15,114 @@ class HomeController extends BaseController
 {
     public function index(Request $request)
     {
-        //console.log('HomeController index method called',$request->all());
-        $siteData = $this->getSiteData($request);
+        // Determine site id and load model/settings
+        $siteId = $this->getSiteId($request);
+        $site = \App\Models\Site::findOrFail($siteId);
+        $siteSettings = $site->settings ?? [];
 
-        // Load all the site content
-        $menuItems = $siteData['settings']['menuItems'] ?? [];
-        $heroSlides = $siteData['settings']['heroSlides'] ?? [];
-        $headlines = $siteData['settings']['headlines'] ?? [];
-        $messageFromItems = $siteData['settings']['messageFromItems'] ?? [];
-        $facultyItems = $siteData['settings']['facultyItems'] ?? [];
-        $welcomeItems = $siteData['settings']['welcomeItems'] ?? [];
-        $campusLifeItems = $siteData['settings']['campusLifeItems'] ?? [];
-        $glanceItems = $siteData['settings']['glanceItems'] ?? $this->getDefaultGlanceItems();
-        $newsItems = $siteData['settings']['newsItems'] ?? [];
-        $eventItems = $siteData['settings']['eventItems'] ?? [];
-        $noticeItems = $siteData['settings']['noticeItems'] ?? [];
-        $publicationItems = $siteData['settings']['publicationItems'] ?? [];
-        $footerData = $siteData['settings']['footerData'] ?? [];
+        $componentService = new ComponentService();
 
+        // Prefer component service for components, fallback to site settings
+        $menuItems = $siteSettings['menuItems'] ?? [];
+        $heroSlides = $componentService->getComponentDataForFrontend($siteId, 'HeroCarousel') ?? ($siteSettings['heroSlides'] ?? []);
+        $headlines = $componentService->getComponentDataForFrontend($siteId, 'HeadlineMarquee') ?? ($siteSettings['headlines'] ?? []);
+        $messageFromItems = $componentService->getComponentDataForFrontend($siteId, 'MessageFrom') ?? ($siteSettings['messageFromItems'] ?? []);
+        $facultyItems = $componentService->getComponentDataForFrontend($siteId, 'FacultiesCarousel') ?? ($siteSettings['facultyItems'] ?? []);
+        $welcomeItems = $componentService->getComponentDataForFrontend($siteId, 'WelcomeSection') ?? ($siteSettings['welcomeItems'] ?? []);
+        $campusLifeItems = $componentService->getComponentDataForFrontend($siteId, 'CampusLife') ?? ($siteSettings['campusLifeItems'] ?? []);
+        $glanceItems = $componentService->getComponentDataForFrontend($siteId, 'AtAGlance') ?? ($siteSettings['glanceItems'] ?? $this->getDefaultGlanceItems());
+        $eventItems = $componentService->getComponentDataForFrontend($siteId, 'DynamicEvents') ?? ($siteSettings['eventItems'] ?? []);
+        $noticeItems = $componentService->getComponentDataForFrontend($siteId, 'DynamicNotices') ?? ($siteSettings['noticeItems'] ?? []);
+        $footerData = $componentService->getComponentDataForFrontend($siteId, 'Footer') ?? ($siteSettings['footerData'] ?? []);
+
+        // Get news items from database (more authoritative than settings)
+        $newsItems = News::forSite($siteId)
+            ->active()
+            ->published()
+            ->orderBy('published_at', 'desc')
+            ->orderBy('created_at', 'desc')
+            ->limit(10)
+            ->get()
+            ->map(function ($item) {
+                return [
+                    'id' => $item->id,
+                    'title' => $item->title,
+                    'excerpt' => $item->excerpt,
+                    'image' => $item->image,
+                    'date' => $item->published_at?->format('Y-m-d') ?? $item->created_at->format('Y-m-d'),
+                    'category' => $item->category,
+                    'link' => $item->link && !str_starts_with($item->link, '/news/') ? $item->link : '/news/' . $item->slug,
+                    'isActive' => $item->is_active,
+                    'slug' => $item->slug,
+                ];
+            })
+            ->toArray();
+
+        // Get publications from database
+        $publicationItems = Publication::forSite($siteId)
+            ->where('is_active', true)
+            ->orderBy('year', 'desc')
+            ->orderBy('published_at', 'desc')
+            ->limit(5)
+            ->get()
+            ->map(function ($item) {
+                // authors stored as CSV in DB — convert to array
+                $authors = [];
+                if (!empty($item->authors)) {
+                    if (is_array($item->authors)) {
+                        $authors = $item->authors;
+                    } else {
+                        $authors = array_map('trim', explode(',', $item->authors));
+                    }
+                }
+
+                $attachments = $item->attachments ?? [];
+                $meta = is_array($attachments) ? ($attachments['meta'] ?? []) : (is_object($attachments) ? ($attachments->meta ?? []) : []);
+
+                return [
+                    'id' => $item->id,
+                    'title' => $item->title,
+                    'abstract' => $item->abstract ?? '',
+                    'authors' => $authors,
+                    'correspondingAuthor' => $item->publisher ?? '',
+                    'journal' => $item->journal ?? '',
+                    'journalRank' => $item->citation ?? 'Q4',
+                    'impactFactor' => $meta['impactFactor'] ?? null,
+                    'publishDate' => $item->published_at?->format('Y-m-d') ?? null,
+                    'volume' => $item->volume,
+                    'issue' => $item->issue,
+                    'pages' => $item->pages,
+                    'doi' => $item->doi,
+                    'category' => $item->publication_type ?? 'article',
+                    'keywords' => $item->keywords ?? [],
+                    'citations' => $meta['citations'] ?? 0,
+                    'downloads' => $meta['downloads'] ?? 0,
+                    'openAccess' => $meta['openAccess'] ?? false,
+                    'featured' => $meta['featured'] ?? false,
+                    'fallbackGradient' => $meta['fallbackGradient'] ?? 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
+                    'pdfUrl' => $attachments['pdfUrl'] ?? null,
+                    'journalUrl' => $attachments['journalUrl'] ?? ($item->url ?? null),
+                    'link' => $item->link ?? null,
+                    'image' => $item->image ?? null,
+                ];
+            })
+            ->toArray();
+
+        // Optional debug logging (lightweight)
         Log::info('Home page loaded', [
+            'siteId' => $siteId,
             'menuItemsCount' => count($menuItems),
             'heroSlidesCount' => count($heroSlides),
             'newsItemsCount' => count($newsItems)
         ]);
 
         $data = [
-            'siteData' => $siteData,
+            'siteData' => [
+                'id' => $site->id ?? null,
+                'name' => $site->name ?? '',
+                'domain' => $site->domain ?? '',
+                'settings' => $siteSettings,
+            ],
             'theme' => $request->get('theme'),
             'components' => collect($request->get('components', [])),
             'viewType' => $request->get('viewType'),
@@ -59,7 +144,7 @@ class HomeController extends BaseController
         ];
 
         return Inertia::render('University', [
-            'message' => 'Hello World - Changed View!',
+            'message' => 'Welcome to the University',
             'data' => $data
         ]);
     }

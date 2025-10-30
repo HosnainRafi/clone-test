@@ -190,7 +190,7 @@ const validateAndSave = async () => {
 
         const csrfToken = document.querySelector('meta[name="csrf-token"]')?.getAttribute('content');
 
-        const response = await fetch('/headline-marquee/save', {
+        const response = await fetch('/admin/headline-marquee', {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',

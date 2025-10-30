@@ -39,6 +39,7 @@ interface NoticeItem {
     priority: 'high' | 'medium' | 'low';
     department: string;
     validUntil: string;
+    slug?: string;
     attachments: string[];
     link: string;
 }
@@ -301,7 +302,17 @@ const getEventStatus = (status: string) => {
                                 </span>
                             </div>
                         </div>
-                        <div class="text-sm text-gray-500">Valid until: {{ formatDate(notice.validUntil) }}</div>
+                        <div class="mt-3 flex items-center justify-between">
+                            <Link
+                                :href="notice.link || `/notices/${notice.slug || notice.id}`"
+                                class="inline-flex items-center rounded-md bg-[hsl(var(--tertiary))] px-3 py-2 text-sm font-medium text-white hover:opacity-90"
+                            >
+                                View Notice
+                                <ExternalLink class="ml-2 h-4 w-4" />
+                            </Link>
+
+                            <div class="text-sm text-gray-500">Valid until: {{ formatDate(notice.validUntil) }}</div>
+                        </div>
                     </div>
                 </div>
             </div>

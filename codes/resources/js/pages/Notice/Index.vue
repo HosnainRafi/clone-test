@@ -32,6 +32,9 @@ const message = ref('');
 const messageType = ref<'success' | 'error' | ''>('');
 const viewMode = ref<'list' | 'form'>('list');
 const editingItem = ref<NoticeItem | null>(null);
+const editingFiles = ref<File[]>([]);
+// map of index -> File[] for files selected per item
+const noticeFiles = ref<Record<number, File[]>>({});
 
 // --- METHODS ---
 const initializeNotices = () => {
@@ -75,11 +78,13 @@ const onAddItem = () => {
         link: `/notices/new-notice-${nextNoticeNumber}`,
     };
     viewMode.value = 'form';
+    editingFiles.value = [];
 };
 
 const onEditItem = (item: NoticeItem) => {
     editingItem.value = JSON.parse(JSON.stringify(item));
     viewMode.value = 'form';
+    editingFiles.value = [];
 };
 
 const onDeleteItem = (id: number) => {
@@ -89,7 +94,9 @@ const onDeleteItem = (id: number) => {
         noticeData.value.forEach((item, idx) => {
             item.displayOrder = idx + 1;
         });
-        showMessage('Notice removed. Save to persist changes.', 'success');
+        showMessage('Notice removed.', 'success');
+        // Auto-save on delete
+        validateAndSave();
     }
 };
 
@@ -101,12 +108,24 @@ const onSaveItem = () => {
     const index = noticeData.value.findIndex((item) => item.id === editingItem.value!.id);
     if (index > -1) {
         noticeData.value[index] = editingItem.value;
+        // attach any selected files to this index
+        if (editingFiles.value && editingFiles.value.length > 0) {
+            noticeFiles.value[index] = editingFiles.value.slice();
+        }
     } else {
         noticeData.value.push(editingItem.value);
+        // newly pushed - find its index
+        const newIndex = noticeData.value.findIndex((item) => item.id === editingItem.value!.id);
+        if (editingFiles.value && editingFiles.value.length > 0 && newIndex > -1) {
+            noticeFiles.value[newIndex] = editingFiles.value.slice();
+        }
     }
     viewMode.value = 'list';
     editingItem.value = null;
-    showMessage('Changes staged. Click "Save All Changes" to finalize.', 'success');
+    editingFiles.value = [];
+    showMessage('Notice saved.', 'success');
+    // Auto-save after adding/updating an item
+    validateAndSave();
 };
 
 const onCancelEdit = () => {
@@ -123,13 +142,43 @@ const validateAndSave = async () => {
     if (!props.siteId) return showMessage('Site ID is missing.', 'error');
     isSaving.value = true;
     try {
-        const dataToSave = noticeData.value.map(({ id, ...rest }) => rest);
+        // If there are any selected files, send multipart/form-data grouping files
         const csrfToken = document.querySelector('meta[name="csrf-token"]')?.getAttribute('content');
-        const response = await fetch('/notices-section/save', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json', 'X-CSRF-TOKEN': csrfToken || '', Accept: 'application/json' },
-            body: JSON.stringify({ noticeItems: dataToSave, siteId: props.siteId }),
-        });
+        let response;
+
+        // detect if any files were selected
+        const hasFiles = Object.keys(noticeFiles.value).some((k) => (noticeFiles.value as any)[k] && (noticeFiles.value as any)[k].length > 0);
+
+        if (hasFiles) {
+            const form = new FormData();
+            form.append('siteId', String(props.siteId));
+            form.append('noticeItems', JSON.stringify(noticeData.value));
+
+            // append files grouped per index as noticeFiles[index][]
+            Object.keys(noticeFiles.value).forEach((idx) => {
+                const files = (noticeFiles.value as any)[idx] as File[];
+                files.forEach((f) => {
+                    form.append(`noticeFiles[${idx}][]`, f);
+                });
+            });
+
+            response = await fetch('/admin/notices-section', {
+                method: 'POST',
+                headers: {
+                    'X-CSRF-TOKEN': csrfToken || '',
+                    Accept: 'application/json',
+                },
+                body: form,
+            });
+        } else {
+            // send JSON when no files
+            const dataToSave = noticeData.value;
+            response = await fetch('/admin/notices-section', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json', 'X-CSRF-TOKEN': csrfToken || '', Accept: 'application/json' },
+                body: JSON.stringify({ noticeItems: dataToSave, siteId: props.siteId }),
+            });
+        }
         const result = await response.json();
         if (response.ok && result.success) {
             showMessage(result.message, 'success');
@@ -137,11 +186,24 @@ const validateAndSave = async () => {
         } else {
             showMessage(result.message || 'Server error.', 'error');
         }
-    } catch (error) {
+    } catch (err) {
+        console.error(err);
         showMessage('Network error.', 'error');
     } finally {
         isSaving.value = false;
     }
+};
+
+const onFilesSelected = (e: Event) => {
+    const input = e.target as HTMLInputElement;
+    if (!input) return;
+    editingFiles.value = input.files ? Array.from(input.files) : [];
+};
+
+const removeAttachment = (idx: number) => {
+    if (!editingItem.value) return;
+    editingItem.value.attachments.splice(idx, 1);
+    showMessage('Attachment removed', 'success');
 };
 
 const priorityClass = (priority: string) => {
@@ -275,13 +337,22 @@ const priorityClass = (priority: string) => {
                             </div>
                         </div>
                         <div>
-                            <label class="form-label">Attachments (comma-separated)</label>
-                            <input
-                                :value="editingItem.attachments.join(', ')"
-                                @input="editingItem.attachments = ($event.target as HTMLInputElement).value.split(',').map((s) => s.trim())"
-                                type="text"
-                                class="form-input"
-                            />
+                            <label class="form-label">Attachments</label>
+                            <div v-if="editingItem.attachments && editingItem.attachments.length">
+                                <ul class="ml-5 list-disc">
+                                    <li v-for="(att, i) in editingItem.attachments" :key="i" class="flex items-center gap-3">
+                                        <a :href="att" target="_blank" class="text-primary underline">{{ att }}</a>
+                                        <button type="button" class="text-sm text-danger" @click="removeAttachment(i)">Remove</button>
+                                    </li>
+                                </ul>
+                            </div>
+                            <div class="mt-2">
+                                <input type="file" multiple @change="onFilesSelected" class="form-input" />
+                                <div v-if="editingFiles.length" class="mt-2 text-sm">
+                                    Selected files:
+                                    <span v-for="(f, i) in editingFiles" :key="i">{{ f.name }}{{ i < editingFiles.length - 1 ? ', ' : '' }}</span>
+                                </div>
+                            </div>
                         </div>
                     </div>
                 </div>

@@ -1,11 +1,31 @@
 <script setup lang="ts">
-import { ref, onMounted, onUnmounted } from 'vue'
+import { ref, onMounted, onUnmounted, computed } from 'vue'
 import { EmblaCarouselType } from 'embla-carousel'
 import useEmblaCarousel from 'embla-carousel-vue'
 import { ChevronLeft, ChevronRight } from 'lucide-vue-next'
 
-// Carousel slides data - based on MBSTU CSE website style
-const slides = [
+// Types
+interface Slide {
+  id: number
+  title: string
+  subtitle: string
+  description: string
+  image: string
+  fallbackGradient: string
+  ctaText: string
+  ctaLink: string
+}
+
+// Props
+const props = defineProps<{
+  slides?: Slide[]
+  componentData?: {
+    slides?: Slide[]
+  }
+}>()
+
+// Default carousel slides data - based on MBSTU CSE website style
+const defaultSlides = [
   {
     id: 1,
     title: 'Welcome to Computer Science and Engineering',
@@ -47,6 +67,16 @@ const slides = [
     ctaLink: '/students'
   }
 ]
+
+// Use props slides if provided, otherwise use default slides
+const slides = computed(() => {
+  // Check for slides from componentData first (for PageEditor integration)
+  if (props.componentData?.slides && props.componentData.slides.length > 0) {
+    return props.componentData.slides
+  }
+  // Fall back to default slides
+  return defaultSlides
+})
 
 // Embla carousel setup
 const [emblaRef, emblaApi] = useEmblaCarousel({

@@ -66,19 +66,7 @@ watch(
     { deep: true },
 );
 
-const hasUnsavedChanges = computed(() => {
-    // Compare local data with the original prop data
-    // Note: Simple JSON comparison might fail if order changes or IDs differ
-    // A more robust deep comparison might be needed for complex cases.
-    try {
-        // Create comparable versions (strip local IDs if they weren't in original props)
-        const currentComparable = heroSlidesData.value.map(({ id, ...rest }) => ({ ...rest }));
-        const originalComparable = (props.heroSlides || []).map(({ id, ...rest }) => ({ ...rest }));
-        return JSON.stringify(currentComparable) !== JSON.stringify(originalComparable);
-    } catch {
-        return false; // Error during comparison
-    }
-});
+// Removed hasUnsavedChanges computed - we save immediately on each action
 
 // Validation for the *currently editing* slide in the form
 const isEditingItemValid = computed(() => {
@@ -137,19 +125,62 @@ const onEditItem = (item: HeroSlide) => {
     viewMode.value = 'form'; // Switch to form view
 };
 
-const onDeleteItem = (id: number) => {
-    if (!confirm('Are you sure you want to delete this slide? This cannot be undone locally until saved.')) {
+const onDeleteItem = async (id: number) => {
+    if (!confirm('Are you sure you want to delete this slide? This cannot be undone.')) {
         return;
     }
     const index = heroSlidesData.value.findIndex((slide) => slide.id === id);
     if (index > -1) {
+        // Remove locally first for instant UI feedback
         heroSlidesData.value.splice(index, 1);
-        showMessage('Slide removed locally. Click "Save All Changes" to finalize.', 'success');
+
+        // Immediately persist to server
+        isSaving.value = true;
+        try {
+            const dataToSave = heroSlidesData.value.map((slide) => {
+                const rest: any = JSON.parse(JSON.stringify(slide));
+                delete rest.id;
+                if (rest.secondaryCta && (!rest.secondaryCta.text?.trim() || !rest.secondaryCta.link?.trim())) {
+                    rest.secondaryCta = null;
+                }
+                return rest;
+            });
+
+            const csrfToken = document.querySelector('meta[name="csrf-token"]')?.getAttribute('content');
+            const response = await fetch('/admin/hero-carousel', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRF-TOKEN': csrfToken || '',
+                    Accept: 'application/json',
+                },
+                body: JSON.stringify({ heroSlides: dataToSave, siteId: props.siteId }),
+            });
+            const result = await response.json();
+
+            if (response.ok && result.success) {
+                showMessage(result.message || 'Slide deleted', 'success');
+                // Reload server data and reinitialize
+                router.reload({ only: ['heroSlides'], onSuccess: () => initializeHeroSlides() });
+            } else {
+                if (response.status === 422 && result.errors) {
+                    const errorMessages = Object.values(result.errors).flat().join(' ');
+                    showMessage(`Validation failed: ${errorMessages}`, 'error');
+                } else {
+                    showMessage(result.message || 'Server error during delete.', 'error');
+                }
+            }
+        } catch (err: any) {
+            console.error('Delete error:', err);
+            showMessage('Network error: ' + (err.message || 'Unknown'), 'error');
+        } finally {
+            isSaving.value = false;
+        }
     }
 };
 
 // Saves the item being edited (in editingItem) back to the local list (heroSlidesData)
-const onSaveItem = () => {
+const onSaveItem = async () => {
     if (!editingItem.value || !isEditingItemValid.value) {
         showMessage('Please fill all required fields (*) correctly.', 'error');
         return;
@@ -168,9 +199,51 @@ const onSaveItem = () => {
         // Add new item to the list
         heroSlidesData.value.push(editingItem.value);
     }
-    viewMode.value = 'list'; // Go back to list view
-    editingItem.value = null; // Clear editing state
-    showMessage('Changes staged locally. Click "Save All Changes" to persist.', 'success');
+
+    // Persist immediately
+    isSaving.value = true;
+    try {
+        const dataToSave = heroSlidesData.value.map((slide) => {
+            const rest: any = JSON.parse(JSON.stringify(slide));
+            delete rest.id;
+            if (rest.secondaryCta && (!rest.secondaryCta.text?.trim() || !rest.secondaryCta.link?.trim())) {
+                rest.secondaryCta = null;
+            }
+            return rest;
+        });
+
+        const csrfToken = document.querySelector('meta[name="csrf-token"]')?.getAttribute('content');
+        const response = await fetch('/admin/hero-carousel', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'X-CSRF-TOKEN': csrfToken || '',
+                Accept: 'application/json',
+            },
+            body: JSON.stringify({ heroSlides: dataToSave, siteId: props.siteId }),
+        });
+        const result = await response.json();
+
+        if (response.ok && result.success) {
+            showMessage(result.message || 'Slides saved', 'success');
+            // reload server data and re-initialize
+            router.reload({ only: ['heroSlides'], onSuccess: () => initializeHeroSlides() });
+            viewMode.value = 'list';
+            editingItem.value = null;
+        } else {
+            if (response.status === 422 && result.errors) {
+                const errorMessages = Object.values(result.errors).flat().join(' ');
+                showMessage(`Validation failed: ${errorMessages}`, 'error');
+            } else {
+                showMessage(result.message || 'Server error during save.', 'error');
+            }
+        }
+    } catch (err: any) {
+        console.error('Save error:', err);
+        showMessage('Network error: ' + (err.message || 'Unknown'), 'error');
+    } finally {
+        isSaving.value = false;
+    }
 };
 
 const onCancelEdit = () => {
@@ -190,82 +263,7 @@ const removeSecondaryCta = () => {
     }
 };
 
-const resetToOriginal = () => {
-    if (confirm('Discard all unsaved changes and reload original data?')) {
-        initializeHeroSlides();
-        showMessage('Configuration reset to original state.', 'success');
-    }
-};
-
-// Saves ALL local changes (heroSlidesData) to the backend
-const validateAndSave = async () => {
-    if (!props.siteId) return showMessage('Site ID is missing.', 'error');
-    if (!hasUnsavedChanges.value) return showMessage('No changes to save.', 'success');
-
-    // Optional: Add a final validation check across all slides before saving
-    const allSlidesValid = heroSlidesData.value.every(
-        (slide) =>
-            slide.title?.trim() &&
-            slide.subtitle?.trim() &&
-            slide.description?.trim() &&
-            slide.ctaText?.trim() &&
-            slide.ctaLink?.trim() &&
-            slide.fallbackGradient?.trim() &&
-            (!slide.secondaryCta || (slide.secondaryCta.text?.trim() && slide.secondaryCta.link?.trim())),
-    );
-    if (!allSlidesValid) {
-        return showMessage('One or more slides have missing required fields. Please edit and complete them before saving.', 'error');
-    }
-
-    isSaving.value = true;
-    try {
-        // Prepare data for saving (remove temporary frontend IDs)
-        const dataToSave = heroSlidesData.value.map(({ id, ...rest }) => {
-            // Ensure secondaryCta is null if empty, before sending
-            if (rest.secondaryCta && (!rest.secondaryCta.text?.trim() || !rest.secondaryCta.link?.trim())) {
-                rest.secondaryCta = null;
-            }
-            return rest;
-        });
-
-        const csrfToken = document.querySelector('meta[name="csrf-token"]')?.getAttribute('content');
-        const response = await fetch('/hero-carousel/save', {
-            // Use your existing save route
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-                'X-CSRF-TOKEN': csrfToken || '',
-                Accept: 'application/json',
-            },
-            body: JSON.stringify({
-                heroSlides: dataToSave, // The key your backend expects
-                siteId: props.siteId,
-            }),
-        });
-        const result = await response.json();
-
-        if (response.ok && result.success) {
-            showMessage(result.message, 'success');
-            // Reload page data to get fresh props from server
-            router.reload({
-                only: ['heroSlides'], // Only fetch updated heroSlides
-                onSuccess: () => initializeHeroSlides(), // Re-initialize local state
-            });
-        } else {
-            if (response.status === 422 && result.errors) {
-                const errorMessages = Object.values(result.errors).flat().join(' ');
-                showMessage(`Validation failed: ${errorMessages}`, 'error');
-            } else {
-                showMessage(result.message || 'Save failed with status: ' + response.status, 'error');
-            }
-        }
-    } catch (err: any) {
-        console.error('Save error:', err);
-        showMessage('Network error: ' + err.message, 'error');
-    } finally {
-        isSaving.value = false;
-    }
-};
+// Removed save-all helpers: immediate save happens on each add/edit/delete action
 </script>
 
 <template>
@@ -277,16 +275,10 @@ const validateAndSave = async () => {
                 <div class="mb-4 flex items-center justify-between">
                     <div>
                         <h4 class="text-xl font-semibold text-black dark:text-white">Hero Carousel Management</h4>
-                        <p class="mt-1 text-sm text-gray-600 dark:text-gray-400">
-                            Site ID: {{ siteId || 'Not Available' }}
-                            <span v-if="hasUnsavedChanges" class="ml-2 text-warning">• Unsaved Changes</span>
-                        </p>
+                        <p class="mt-1 text-sm text-gray-600 dark:text-gray-400">Site ID: {{ siteId || 'Not Available' }}</p>
                     </div>
                     <div class="flex gap-2">
                         <button v-if="viewMode === 'list'" @click="onAddItem" class="action-btn bg-primary">Add Hero Slide</button>
-                        <button v-if="hasUnsavedChanges && viewMode === 'list'" @click="resetToOriginal" class="action-btn bg-secondary">
-                            Discard All
-                        </button>
                     </div>
                 </div>
                 <div
@@ -460,33 +452,7 @@ const validateAndSave = async () => {
                 </form>
             </div>
 
-            <div class="mt-6 flex justify-end" v-if="hasUnsavedChanges && viewMode === 'list'">
-                <button
-                    @click="validateAndSave"
-                    :disabled="isSaving || !siteId || !hasUnsavedChanges"
-                    class="save-btn"
-                    :class="{
-                        'hover:bg-opacity-90 bg-primary': hasUnsavedChanges,
-                        'cursor-not-allowed bg-gray-400': isSaving || !siteId || !hasUnsavedChanges,
-                    }"
-                >
-                    <svg
-                        v-if="isSaving"
-                        class="mr-3 -ml-1 h-5 w-5 animate-spin text-white"
-                        xmlns="http://www.w3.org/2000/svg"
-                        fill="none"
-                        viewBox="0 0 24 24"
-                    >
-                        <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
-                        <path
-                            class="opacity-75"
-                            fill="currentColor"
-                            d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
-                        ></path>
-                    </svg>
-                    {{ isSaving ? 'Saving...' : 'Save All Changes to Server' }}
-                </button>
-            </div>
+            <!-- Save-all removed: we persist changes immediately on add/edit/delete -->
 
             <details class="mt-6" v-if="viewMode === 'list'">
                 <summary class="cursor-pointer text-sm font-medium text-gray-600 hover:text-primary dark:text-gray-400">

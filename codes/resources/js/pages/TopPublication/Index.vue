@@ -1,7 +1,6 @@
 <script setup lang="ts">
 import TiptapEditor from '@/components/TiptapEditor.vue';
 import DefaultLayout from '@/layouts/DefaultLayout.vue';
-import { router } from '@inertiajs/vue3';
 import { computed, ref } from 'vue';
 
 // --- INTERFACES & PROPS ---
@@ -57,10 +56,7 @@ const initializeItems = () => {
 };
 initializeItems();
 
-const hasUnsavedChanges = computed(() => {
-    // Need a deep comparison function or rely on JSON stringify for simplicity here
-    return JSON.stringify(publicationData.value) !== JSON.stringify(props.publicationItems);
-});
+// Remove hasUnsavedChanges since we're saving immediately
 
 // Updated validation: Ensure required fields are present and have values
 const isValidConfiguration = computed(() => {
@@ -130,24 +126,67 @@ const onEditItem = (item: PublicationItem) => {
     viewMode.value = 'form';
 };
 
-const onDeleteItem = (id: number) => {
+const onDeleteItem = async (id: number) => {
     // Add confirmation dialog
-    if (!confirm('Are you sure you want to delete this publication? This action cannot be undone locally until saved.')) {
+    if (!confirm('Are you sure you want to delete this publication? This action cannot be undone.')) {
         return;
     }
+
     const index = publicationData.value.findIndex((item) => item.id === id);
     if (index > -1) {
         publicationData.value.splice(index, 1);
-        showMessage('Publication removed locally. Click "Save All Changes" to finalize.', 'success');
+
+        // Save to server immediately
+        isSaving.value = true;
+        try {
+            const dataToSave = publicationData.value.map(({ id, ...rest }) => {
+                rest.impactFactor = Number(rest.impactFactor) || 0;
+                rest.citations = Number(rest.citations) || 0;
+                rest.downloads = Number(rest.downloads) || 0;
+                rest.openAccess = Boolean(rest.openAccess);
+                rest.featured = Boolean(rest.featured);
+                return id > 1000000000000 ? rest : { id, ...rest };
+            });
+
+            const csrfToken = document.querySelector('meta[name="csrf-token"]')?.getAttribute('content');
+            const response = await fetch('/admin/publications-section', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRF-TOKEN': csrfToken || '',
+                    Accept: 'application/json',
+                },
+                body: JSON.stringify({ publicationItems: dataToSave, siteId: props.siteId }),
+            });
+            const result = await response.json();
+
+            if (response.ok && result.success) {
+                showMessage(result.message || 'Publication deleted successfully!', 'success');
+                // Update local data with server response
+                publicationData.value = result.publicationItems;
+            } else {
+                if (response.status === 422 && result.errors) {
+                    const errorMessages = Object.values(result.errors).flat().join(' ');
+                    showMessage(`Validation failed: ${errorMessages}`, 'error');
+                } else {
+                    showMessage(result.message || 'Server error during delete.', 'error');
+                }
+            }
+        } catch (error: any) {
+            console.error('Delete error:', error);
+            showMessage(`Network or delete error: ${error.message || 'Unknown error'}`, 'error');
+        } finally {
+            isSaving.value = false;
+        }
     }
 };
 
-const onSaveItem = () => {
+const onSaveItem = async () => {
     if (!editingItem.value || !isValidConfiguration.value) {
         showMessage('Please fill all required fields (*) correctly.', 'error');
         return;
     }
-    // Clean up potentially empty optional fields before saving locally
+    // Clean up potentially empty optional fields
     const cleanItem = { ...editingItem.value }; // Copy item
     if (!cleanItem.volume?.trim()) cleanItem.volume = undefined;
     if (!cleanItem.issue?.trim()) cleanItem.issue = undefined;
@@ -168,44 +207,21 @@ const onSaveItem = () => {
         // Add new item
         publicationData.value.push(cleanItem);
     }
-    viewMode.value = 'list';
-    editingItem.value = null; // Clear editing state
-    showMessage('Changes staged locally. Click "Save All Changes" to persist.', 'success');
-};
 
-const onCancelEdit = () => {
-    editingItem.value = null; // Clear editing state
-    viewMode.value = 'list';
-};
-
-const resetToOriginal = () => {
-    if (confirm('Are you sure you want to discard all unsaved changes?')) {
-        initializeItems(); // Reload original data
-        showMessage('Unsaved changes have been discarded.', 'success');
-    }
-};
-
-const validateAndSave = async () => {
-    if (!props.siteId) return showMessage('Site ID is missing.', 'error');
-    if (!hasUnsavedChanges.value) return showMessage('No changes to save.', 'success');
-
+    // Save to server immediately
     isSaving.value = true;
     try {
-        // Prepare data: remove temporary IDs and ensure correct types
         const dataToSave = publicationData.value.map(({ id, ...rest }) => {
-            // Ensure numeric types
             rest.impactFactor = Number(rest.impactFactor) || 0;
             rest.citations = Number(rest.citations) || 0;
             rest.downloads = Number(rest.downloads) || 0;
-            // Ensure boolean types
             rest.openAccess = Boolean(rest.openAccess);
             rest.featured = Boolean(rest.featured);
-            // Remove temporary IDs (large numbers)
             return id > 1000000000000 ? rest : { id, ...rest };
         });
 
         const csrfToken = document.querySelector('meta[name="csrf-token"]')?.getAttribute('content');
-        const response = await fetch('/publications-section/save', {
+        const response = await fetch('/admin/publications-section', {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
@@ -217,17 +233,12 @@ const validateAndSave = async () => {
         const result = await response.json();
 
         if (response.ok && result.success) {
-            showMessage(result.message, 'success');
-            // Reload page data to get potentially new IDs from the backend
-            router.reload({
-                only: ['publicationItems'], // Only fetch updated publicationItems
-                onSuccess: (page) => {
-                    // Re-initialize local state with potentially updated IDs/data
-                    initializeItems();
-                },
-            });
+            showMessage(result.message || 'Publication saved successfully!', 'success');
+            // Update local data with server response
+            publicationData.value = result.publicationItems;
+            viewMode.value = 'list';
+            editingItem.value = null;
         } else {
-            // Handle specific errors like validation
             if (response.status === 422 && result.errors) {
                 const errorMessages = Object.values(result.errors).flat().join(' ');
                 showMessage(`Validation failed: ${errorMessages}`, 'error');
@@ -242,6 +253,13 @@ const validateAndSave = async () => {
         isSaving.value = false;
     }
 };
+
+const onCancelEdit = () => {
+    editingItem.value = null; // Clear editing state
+    viewMode.value = 'list';
+};
+
+// Removed unused functions since we're saving immediately
 
 // Helper for array inputs/outputs
 const arrayInput = (value: string): string[] =>
@@ -261,16 +279,10 @@ const arrayOutput = (arr: string[] | undefined): string => (arr || []).join(', '
                 <div class="mb-4 flex items-center justify-between">
                     <div>
                         <h4 class="text-xl font-semibold text-black dark:text-white">Top Publications Management</h4>
-                        <p class="mt-1 text-sm text-gray-600 dark:text-gray-400">
-                            Site ID: {{ siteId || 'N/A' }}
-                            <span v-if="hasUnsavedChanges" class="ml-2 text-warning">• Unsaved Changes</span>
-                        </p>
+                        <p class="mt-1 text-sm text-gray-600 dark:text-gray-400">Site ID: {{ siteId || 'N/A' }}</p>
                     </div>
                     <div class="flex gap-2">
                         <button v-if="viewMode === 'list'" @click="onAddItem" class="action-btn bg-primary">Add Publication</button>
-                        <button v-if="hasUnsavedChanges && viewMode === 'list'" @click="resetToOriginal" class="action-btn bg-secondary">
-                            Discard All
-                        </button>
                     </div>
                 </div>
                 <div
@@ -514,19 +526,7 @@ const arrayOutput = (arr: string[] | undefined): string => (arr || []).join(', '
                 </form>
             </div>
 
-            <div class="mt-6 flex justify-end" v-if="hasUnsavedChanges && viewMode === 'list'">
-                <button
-                    @click="validateAndSave"
-                    :disabled="isSaving || !siteId || !hasUnsavedChanges"
-                    class="save-btn"
-                    :class="{
-                        'hover:bg-opacity-90 bg-primary': hasUnsavedChanges,
-                        'cursor-not-allowed bg-gray-400': isSaving || !siteId || !hasUnsavedChanges,
-                    }"
-                >
-                    {{ isSaving ? 'Saving...' : 'Save All Changes' }}
-                </button>
-            </div>
+            <!-- Removed save all changes button since we're saving immediately -->
         </div>
     </DefaultLayout>
 </template>
@@ -549,9 +549,7 @@ select.form-input {
 .form-checkbox {
     @apply h-5 w-5 cursor-pointer rounded border-stroke text-primary focus:ring-transparent dark:border-strokedark;
 }
-.save-btn {
-    @apply inline-flex items-center justify-center rounded-md px-6 py-3 text-center font-medium text-white transition-colors;
-}
+
 .line-clamp-2 {
     display: -webkit-box;
     -webkit-line-clamp: 2;
