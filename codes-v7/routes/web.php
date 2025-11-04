@@ -7,8 +7,6 @@ use App\Http\Controllers\Admin\NewsController as AdminNewsController;
 use App\Http\Controllers\Admin\EventController as AdminEventController;
 use App\Http\Controllers\Admin\NoticeController as AdminNoticeController;
 use App\Http\Controllers\Admin\PublicationController;
-use App\Http\Controllers\Admin\TenderController as AdminTenderController;
-use App\Http\Controllers\Admin\TeacherController as AdminTeacherController;
 use App\Http\Controllers\Admin\MessageFromController;
 use App\Http\Controllers\Admin\HeadlineMarqueeController;
 use App\Http\Controllers\Admin\FacultiesController;
@@ -18,10 +16,8 @@ use App\Http\Controllers\Admin\FooterController;
 use App\Http\Controllers\Admin\TopBarController;
 use App\Http\Controllers\Public\HomeController;
 use App\Http\Controllers\Public\NewsController;
-use App\Http\Controllers\Public\TenderController;
 use App\Http\Controllers\Public\EventController;
 use App\Http\Controllers\Public\NoticeController;
-use App\Http\Controllers\Public\TeacherController as PublicTeacherController;
 use App\Http\Controllers\Api\NewsController as ApiNewsController;
 use App\Models\Component;
 use Illuminate\Http\Request;
@@ -47,11 +43,7 @@ Route::middleware(['web', 'subdomain'])->group(function () {
     Route::get('/events/{slug}', [EventController::class, 'show'])->name('events.show');
     Route::get('/notices', [NoticeController::class, 'index'])->name('notices.index');
     Route::get('/notices/{slug}', [NoticeController::class, 'show'])->name('notices.show');
-    Route::get('/tenders', [TenderController::class, 'index'])->name('tenders.index');
-    Route::get('/tenders/{slug}', [TenderController::class, 'show'])->name('tenders.show');
-    // Teachers
-    Route::get('/teachers', [PublicTeacherController::class, 'index'])->name('teachers.index');
-    Route::get('/teacher/{slug}', [PublicTeacherController::class, 'show'])->name('teachers.show');
+
     // ==========================================
     // API ROUTES
     // ==========================================
@@ -75,10 +67,6 @@ Route::middleware(['web', 'subdomain'])->group(function () {
         // Menu Management
         Route::get('/menu', [MenuController::class, 'index'])->name('admin.menu');
         Route::post('/menu', [MenuController::class, 'save'])->name('admin.menu.save');
-
-        //Tender Management
-        Route::get('/tenders-section', [AdminTenderController::class, 'index'])->name('admin.tenders.index');
-        Route::post('/tenders-section', [AdminTenderController::class, 'save'])->name('admin.tenders.save');
 
         // Topbar Management
         Route::get('/topbar', [TopBarController::class, 'index'])->name('admin.topbar.index');
@@ -111,11 +99,6 @@ Route::middleware(['web', 'subdomain'])->group(function () {
         // Campus Life Management
         Route::get('/campus-life-section', [CampusLifeController::class, 'index'])->name('admin.campus-life.index');
         Route::post('/campus-life-section', [CampusLifeController::class, 'save'])->name('admin.campus-life.save');
-
-    // Teachers Management
-    Route::get('/teachers', [AdminTeacherController::class, 'index'])->name('admin.teachers.index');
-    Route::post('/teachers', [AdminTeacherController::class, 'save'])->name('admin.teachers.save');
-    Route::post('/teachers/upload-image', [AdminTeacherController::class, 'uploadImage'])->name('admin.teachers.upload-image');
 
         // Campus Glance Management
         Route::get('/campus-glance', [CampusLifeController::class, 'glance'])->name('admin.campus-glance.index');
@@ -223,6 +206,16 @@ Route::get('/test-db', function () {
                 'pageId' => $id
             ]);
         })->name('admin.pages.edit');
+
+        // Themes Management Routes
+        Route::get('/admin/themes', function () {
+            return Inertia::render('Themes');
+        })->name('admin.themes.index');
+
+        // Keep singular /admin/theme redirect for backward-compatibility
+        Route::get('/admin/theme', function () {
+            return redirect('/admin/themes');
+        })->name('admin.theme.redirect');
 
 // API route to fetch pages for current domain
 Route::get('/api/pages', function (Illuminate\Http\Request $request) {
@@ -665,13 +658,7 @@ Route::middleware(SubdomainMiddleware::class)
 
             // Load components directly from components table using ComponentService
             $componentService = new \App\Services\ComponentService();
-            // Determine site id (prefer from siteData if available)
             $siteId = 1; // Default site_id, adjust as needed
-            if (is_array($siteData)) {
-                $siteId = $siteData['id'] ?? $siteId;
-            } elseif (is_object($siteData)) {
-                $siteId = $siteData->id ?? $siteId;
-            }
 
             // Get all components for this page from components table
             $pageComponents = Component::forSite($siteId)
@@ -702,16 +689,6 @@ Route::middleware(SubdomainMiddleware::class)
 
             // Add componentSettings to data object
             $data->componentSettings = $componentSettings;
-
-            // Footer data: prefer component data, fallback to site settings
-            $siteSettings = [];
-            if (is_array($siteData)) {
-                $siteSettings = $siteData['settings'] ?? [];
-            } elseif (is_object($siteData)) {
-                $siteSettings = $siteData->settings ?? [];
-            }
-            $footerData = $componentService->getComponentDataForFrontend($siteId, 'Footer') ?? ($siteSettings['footerData'] ?? []);
-            $data->footerData = $footerData;
 
             // Return the page view with components and all site data
             return Inertia::render('PublicPage', [

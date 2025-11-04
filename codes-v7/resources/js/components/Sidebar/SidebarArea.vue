@@ -55,9 +55,6 @@ const iconFor = (key: string) => {
     if (k.includes('footer')) {
         return `<svg class="fill-current" width="18" height="18" viewBox="0 0 24 24"><path d="M2 3h20v4H2V3zm0 7h14v4H2v-4zm0 7h8v4H2v-4z"/></svg>`;
     }
-    if (k.includes('teacher')) {
-        return `<svg class="fill-current" width="18" height="18" viewBox="0 0 24 24"><path d="M12 12a5 5 0 1 0-5-5 5 5 0 0 0 5 5zm-7 9v-1a7 7 0 0 1 14 0v1z"/></svg>`;
-    }
     if (k.includes('pages') || k.includes('page')) {
         return `<svg class="fill-current" width="18" height="18" viewBox="0 0 24 24"><path d="M3 3h7v7H3V3zm0 11h7v7H3v-7zM14 3h7v7h-7V3zm0 11h7v7h-7v-7z"/></svg>`;
     }
@@ -82,16 +79,14 @@ const menuGroups = ref([
             { label: 'News Section', route: '/admin/news-section', icon: iconFor('news-section') },
             { label: 'Events Section', route: '/admin/events-section', icon: iconFor('events-section') },
             { label: 'Notices Section', route: '/admin/notices-section', icon: iconFor('notices-section') },
-            { label: 'Tender Section', route: '/admin/tenders-section', icon: iconFor('news-section') },
             { label: 'Publications Section', route: '/admin/publications-section', icon: iconFor('publications-section') },
             { label: 'Footer Section', route: '/admin/footer-section', icon: iconFor('footer-section') },
-            { label: 'Teachers', route: '/admin/teachers', icon: iconFor('teacher') },
             { label: 'Pages', route: '/admin/pages', icon: iconFor('pages') },
             { label: 'Themes', route: '/admin/themes', icon: iconFor('pages') },
 
             { label: 'Settings', route: '/admin/settings', icon: iconFor('settings') },
             {
-                icon: `<svg
+              icon: `<svg
                         class="fill-current"
                         width="18"
                         height="18"
@@ -108,8 +103,8 @@ const menuGroups = ref([
                           fill=""
                         />
                       </svg>`,
-                label: 'Site',
-                route: '/admin/sites',
+              label: 'Site',
+              route: '/admin/sites'
             },
         ],
     },

@@ -7,28 +7,21 @@ use App\Http\Controllers\Admin\NewsController as AdminNewsController;
 use App\Http\Controllers\Admin\EventController as AdminEventController;
 use App\Http\Controllers\Admin\NoticeController as AdminNoticeController;
 use App\Http\Controllers\Admin\PublicationController;
-use App\Http\Controllers\Admin\TenderController as AdminTenderController;
-use App\Http\Controllers\Admin\TeacherController as AdminTeacherController;
 use App\Http\Controllers\Admin\MessageFromController;
 use App\Http\Controllers\Admin\HeadlineMarqueeController;
 use App\Http\Controllers\Admin\FacultiesController;
 use App\Http\Controllers\Admin\WelcomeSectionController;
 use App\Http\Controllers\Admin\CampusLifeController;
 use App\Http\Controllers\Admin\FooterController;
-use App\Http\Controllers\Admin\TopBarController;
 use App\Http\Controllers\Public\HomeController;
 use App\Http\Controllers\Public\NewsController;
-use App\Http\Controllers\Public\TenderController;
 use App\Http\Controllers\Public\EventController;
 use App\Http\Controllers\Public\NoticeController;
-use App\Http\Controllers\Public\TeacherController as PublicTeacherController;
 use App\Http\Controllers\Api\NewsController as ApiNewsController;
 use App\Models\Component;
 use Illuminate\Http\Request;
 use Inertia\Inertia;
 use App\Http\Middleware\SubdomainMiddleware;
-
-require __DIR__.'/admin.php';
 // Apply SubdomainMiddleware to all routes that need site data
 Route::middleware(['web', 'subdomain'])->group(function () {
 
@@ -47,11 +40,7 @@ Route::middleware(['web', 'subdomain'])->group(function () {
     Route::get('/events/{slug}', [EventController::class, 'show'])->name('events.show');
     Route::get('/notices', [NoticeController::class, 'index'])->name('notices.index');
     Route::get('/notices/{slug}', [NoticeController::class, 'show'])->name('notices.show');
-    Route::get('/tenders', [TenderController::class, 'index'])->name('tenders.index');
-    Route::get('/tenders/{slug}', [TenderController::class, 'show'])->name('tenders.show');
-    // Teachers
-    Route::get('/teachers', [PublicTeacherController::class, 'index'])->name('teachers.index');
-    Route::get('/teacher/{slug}', [PublicTeacherController::class, 'show'])->name('teachers.show');
+
     // ==========================================
     // API ROUTES
     // ==========================================
@@ -76,18 +65,6 @@ Route::middleware(['web', 'subdomain'])->group(function () {
         Route::get('/menu', [MenuController::class, 'index'])->name('admin.menu');
         Route::post('/menu', [MenuController::class, 'save'])->name('admin.menu.save');
 
-        //Tender Management
-        Route::get('/tenders-section', [AdminTenderController::class, 'index'])->name('admin.tenders.index');
-        Route::post('/tenders-section', [AdminTenderController::class, 'save'])->name('admin.tenders.save');
-
-        // Topbar Management
-        Route::get('/topbar', [TopBarController::class, 'index'])->name('admin.topbar.index');
-        Route::post('/topbar', [TopBarController::class, 'save'])->name('admin.topbar.save');
-
-        // Hero Carousel Management
-        Route::get('/hero-carousel', [HeroCarouselController::class, 'index'])->name('admin.hero-carousel');
-        Route::post('/hero-carousel', [HeroCarouselController::class, 'save'])->name('admin.hero-carousel.save');
-
         // Hero Carousel Management
         Route::get('/hero-carousel', [HeroCarouselController::class, 'index'])->name('admin.hero-carousel');
         Route::post('/hero-carousel', [HeroCarouselController::class, 'save'])->name('admin.hero-carousel.save');
@@ -111,11 +88,6 @@ Route::middleware(['web', 'subdomain'])->group(function () {
         // Campus Life Management
         Route::get('/campus-life-section', [CampusLifeController::class, 'index'])->name('admin.campus-life.index');
         Route::post('/campus-life-section', [CampusLifeController::class, 'save'])->name('admin.campus-life.save');
-
-    // Teachers Management
-    Route::get('/teachers', [AdminTeacherController::class, 'index'])->name('admin.teachers.index');
-    Route::post('/teachers', [AdminTeacherController::class, 'save'])->name('admin.teachers.save');
-    Route::post('/teachers/upload-image', [AdminTeacherController::class, 'uploadImage'])->name('admin.teachers.upload-image');
 
         // Campus Glance Management
         Route::get('/campus-glance', [CampusLifeController::class, 'glance'])->name('admin.campus-glance.index');
@@ -209,16 +181,16 @@ Route::get('/test-db', function () {
     }
 })->name('test.db');
 
-        // Pages Management Routes (admin)
-        Route::get('/admin/pages', function () {
+        // Pages Management Routes
+        Route::get('/pages', function () {
             return Inertia::render('Pages');
         })->name('admin.pages.index');
 
-        Route::get('/admin/pages/create', function () {
+        Route::get('/pages/create', function () {
             return Inertia::render('PageEditor');
         })->name('admin.pages.create');
 
-        Route::get('/admin/pages/{id}/edit', function ($id) {
+        Route::get('/pages/{id}/edit', function ($id) {
             return Inertia::render('PageEditor', [
                 'pageId' => $id
             ]);
@@ -321,24 +293,23 @@ Route::post('/api/pages', function (Illuminate\Http\Request $request) {
         // Ensure componentSettings is an object, not an array
         $componentSettings = $validated['componentSettings'] ?? [];
         if (empty($componentSettings)) {
-            $componentSettings = [];
+            $componentSettings = (object)[];
         }
 
         // Don't store component data in pages table anymore - store only basic page info
-        $siteId = $request->get('siteData.id', 1);
-
         $pageId = \DB::table('pages')->insertGetId([
             'name' => $validated['title'], // Using 'name' column
             'slug' => $validated['slug'],
             'description' => null,
             'content' => json_encode(['components' => [], 'componentSettings' => []]), // Empty structure for backward compatibility
-            'site_id' => $siteId,
+            'site_id' => 1, // Default site_id, adjust as needed
             'created_at' => now(),
             'updated_at' => now()
         ]);
 
         // Save component data to components table using ComponentService
         $componentService = new \App\Services\ComponentService();
+        $siteId = 1; // Default site_id, adjust as needed
 
         \Log::info('Saving components for page', [
             'page_id' => $pageId,
@@ -364,20 +335,17 @@ Route::post('/api/pages', function (Illuminate\Http\Request $request) {
             if ($componentId && $componentType) {
                 try {
                     // Always save component, even if no data yet (for structure)
-                    $saved = $componentService->saveDynamicPageComponent($siteId, $pageId, $componentId, $componentType, $componentData, $sortOrder);
+                    $componentService->saveDynamicPageComponent($siteId, $pageId, $componentId, $componentType, $componentData, $sortOrder);
                     \Log::info('Component saved successfully', [
                         'component_id' => $componentId,
                         'component_type' => $componentType,
-                        'sort_order' => $sortOrder,
-                        'saved_db_id' => $saved?->id ?? null,
-                        'saved_content' => $saved?->content ?? null
+                        'sort_order' => $sortOrder
                     ]);
                 } catch (\Exception $e) {
                     \Log::error('Failed to save component', [
                         'component_id' => $componentId,
                         'component_type' => $componentType,
-                        'error' => $e->getMessage(),
-                        'trace' => $e->getTraceAsString()
+                        'error' => $e->getMessage()
                     ]);
                 }
             }
@@ -439,10 +407,10 @@ Route::put('/api/pages/{id}', function (Illuminate\Http\Request $request, $id) {
         });
 
         // Prepare content with ordered components and settings
-        // Ensure componentSettings is an array
+        // Ensure componentSettings is an object, not an array
         $componentSettings = $validated['componentSettings'] ?? [];
         if (empty($componentSettings)) {
-            $componentSettings = [];
+            $componentSettings = (object)[];
         }
 
         $content = [
@@ -462,14 +430,14 @@ Route::put('/api/pages/{id}', function (Illuminate\Http\Request $request, $id) {
             'updated_at' => now()
         ]);
 
-    // Save component data to components table using ComponentService
-    $siteId = $request->get('siteData.id', 1);
-    $componentService = new \App\Services\ComponentService();
+        // Save component data to components table using ComponentService
+        $componentService = new \App\Services\ComponentService();
+        $siteId = 1; // Default site_id, adjust as needed
 
         \Log::info('Updating components for page', [
             'page_id' => $id,
             'components_count' => count($components),
-            'component_settings_count' => count((array)$componentSettings)
+            'component_settings_count' => count($componentSettings)
         ]);
 
         // First, delete components that are no longer present
@@ -491,20 +459,17 @@ Route::put('/api/pages/{id}', function (Illuminate\Http\Request $request, $id) {
             if ($componentId && $componentType) {
                 try {
                     // Always save component, even if no data yet (for structure)
-                    $saved = $componentService->saveDynamicPageComponent($siteId, $id, $componentId, $componentType, $componentData, $sortOrder);
+                    $componentService->saveDynamicPageComponent($siteId, $id, $componentId, $componentType, $componentData, $sortOrder);
                     \Log::info('Component updated successfully', [
                         'component_id' => $componentId,
                         'component_type' => $componentType,
-                        'sort_order' => $sortOrder,
-                        'saved_db_id' => $saved?->id ?? null,
-                        'saved_content' => $saved?->content ?? null
+                        'sort_order' => $sortOrder
                     ]);
                 } catch (\Exception $e) {
                     \Log::error('Failed to update component', [
                         'component_id' => $componentId,
                         'component_type' => $componentType,
-                        'error' => $e->getMessage(),
-                        'trace' => $e->getTraceAsString()
+                        'error' => $e->getMessage()
                     ]);
                 }
             }
@@ -665,13 +630,7 @@ Route::middleware(SubdomainMiddleware::class)
 
             // Load components directly from components table using ComponentService
             $componentService = new \App\Services\ComponentService();
-            // Determine site id (prefer from siteData if available)
             $siteId = 1; // Default site_id, adjust as needed
-            if (is_array($siteData)) {
-                $siteId = $siteData['id'] ?? $siteId;
-            } elseif (is_object($siteData)) {
-                $siteId = $siteData->id ?? $siteId;
-            }
 
             // Get all components for this page from components table
             $pageComponents = Component::forSite($siteId)
@@ -702,16 +661,6 @@ Route::middleware(SubdomainMiddleware::class)
 
             // Add componentSettings to data object
             $data->componentSettings = $componentSettings;
-
-            // Footer data: prefer component data, fallback to site settings
-            $siteSettings = [];
-            if (is_array($siteData)) {
-                $siteSettings = $siteData['settings'] ?? [];
-            } elseif (is_object($siteData)) {
-                $siteSettings = $siteData->settings ?? [];
-            }
-            $footerData = $componentService->getComponentDataForFrontend($siteId, 'Footer') ?? ($siteSettings['footerData'] ?? []);
-            $data->footerData = $footerData;
 
             // Return the page view with components and all site data
             return Inertia::render('PublicPage', [

@@ -55,9 +55,6 @@ const iconFor = (key: string) => {
     if (k.includes('footer')) {
         return `<svg class="fill-current" width="18" height="18" viewBox="0 0 24 24"><path d="M2 3h20v4H2V3zm0 7h14v4H2v-4zm0 7h8v4H2v-4z"/></svg>`;
     }
-    if (k.includes('teacher')) {
-        return `<svg class="fill-current" width="18" height="18" viewBox="0 0 24 24"><path d="M12 12a5 5 0 1 0-5-5 5 5 0 0 0 5 5zm-7 9v-1a7 7 0 0 1 14 0v1z"/></svg>`;
-    }
     if (k.includes('pages') || k.includes('page')) {
         return `<svg class="fill-current" width="18" height="18" viewBox="0 0 24 24"><path d="M3 3h7v7H3V3zm0 11h7v7H3v-7zM14 3h7v7h-7V3zm0 11h7v7h-7v-7z"/></svg>`;
     }
@@ -71,7 +68,6 @@ const menuGroups = ref([
         name: 'MENU',
         menuItems: [
             { label: 'Dashboard', route: '/admin/dashboard', icon: iconFor('dashboard') },
-            { label: 'Topbar', route: '/admin/topbar', icon: iconFor('menu') },
             { label: 'Menu', route: '/admin/menu', icon: iconFor('menu') },
             { label: 'Hero Slides', route: '/admin/hero-carousel', icon: iconFor('hero-carousel') },
             { label: 'Headline Marquee', route: '/admin/headline-marquee', icon: iconFor('headline-marquee') },
@@ -82,35 +78,9 @@ const menuGroups = ref([
             { label: 'News Section', route: '/admin/news-section', icon: iconFor('news-section') },
             { label: 'Events Section', route: '/admin/events-section', icon: iconFor('events-section') },
             { label: 'Notices Section', route: '/admin/notices-section', icon: iconFor('notices-section') },
-            { label: 'Tender Section', route: '/admin/tenders-section', icon: iconFor('news-section') },
             { label: 'Publications Section', route: '/admin/publications-section', icon: iconFor('publications-section') },
             { label: 'Footer Section', route: '/admin/footer-section', icon: iconFor('footer-section') },
-            { label: 'Teachers', route: '/admin/teachers', icon: iconFor('teacher') },
             { label: 'Pages', route: '/admin/pages', icon: iconFor('pages') },
-            { label: 'Themes', route: '/admin/themes', icon: iconFor('pages') },
-
-            { label: 'Settings', route: '/admin/settings', icon: iconFor('settings') },
-            {
-                icon: `<svg
-                        class="fill-current"
-                        width="18"
-                        height="18"
-                        viewBox="0 0 18 18"
-                        fill="none"
-                        xmlns="http://www.w3.org/2000/svg"
-                      >
-                        <path
-                          d="M9.0002 7.79065C11.0814 7.79065 12.7689 6.1594 12.7689 4.1344C12.7689 2.1094 11.0814 0.478149 9.0002 0.478149C6.91895 0.478149 5.23145 2.1094 5.23145 4.1344C5.23145 6.1594 6.91895 7.79065 9.0002 7.79065ZM9.0002 1.7719C10.3783 1.7719 11.5033 2.84065 11.5033 4.16252C11.5033 5.4844 10.3783 6.55315 9.0002 6.55315C7.62207 6.55315 6.49707 5.4844 6.49707 4.16252C6.49707 2.84065 7.62207 1.7719 9.0002 1.7719Z"
-                          fill=""
-                        />
-                        <path
-                          d="M10.8283 9.05627H7.17207C4.16269 9.05627 1.71582 11.5313 1.71582 14.5406V16.875C1.71582 17.2125 1.99707 17.5219 2.3627 17.5219C2.72832 17.5219 3.00957 17.2407 3.00957 16.875V14.5406C3.00957 12.2344 4.89394 10.3219 7.22832 10.3219H10.8564C13.1627 10.3219 15.0752 12.2063 15.0752 14.5406V16.875C15.0752 17.2125 15.3564 17.5219 15.7221 17.5219C16.0877 17.5219 16.3689 17.2407 16.3689 16.875V14.5406C16.2846 11.5313 13.8377 9.05627 10.8283 9.05627Z"
-                          fill=""
-                        />
-                      </svg>`,
-                label: 'Site',
-                route: '/admin/sites',
-            },
         ],
     },
 ]);

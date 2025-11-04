@@ -1,52 +1,54 @@
 <script setup lang="ts">
-import DynamicNavbar from '@/components/user/DynamicNavbar.vue'
-import Footer from '@/components/user/Footer.vue'
+import DynamicFooter from '@/components/user/DynamicFooter.vue';
+import DynamicNavbar from '@/components/user/DynamicNavbar.vue';
 
 // Props for menu items and other site data
 interface MenuItemProps {
-  title: string;
-  col: number;
-  subItems: {
     title: string;
-    description: string;
-    href: string;
-  }[];
+    col: number;
+    subItems: {
+        title: string;
+        description: string;
+        href: string;
+    }[];
 }
 
 interface Props {
-  menuItems?: MenuItemProps[]
-  siteData?: any
+    menuItems?: MenuItemProps[];
+    siteData?: any;
+    footerData?: any;
 }
 
-const props = withDefaults(defineProps<Props>(), {
-  menuItems: () => [],
-  siteData: () => ({})
-})
+withDefaults(defineProps<Props>(), {
+    menuItems: () => [],
+    siteData: () => ({}),
+    footerData: null,
+});
 </script>
 
 <template>
-  <!-- ===== Public Site Wrapper Start ===== -->
-  <div class="min-h-screen bg-white">
-    <!-- ===== Dynamic Navbar Start ===== -->
-    <DynamicNavbar :menuItems="menuItems" />
-    <!-- ===== Dynamic Navbar End ===== -->
+    <!-- ===== Public Site Wrapper Start ===== -->
+    <div class="min-h-screen bg-white">
+        <!-- ===== Dynamic Navbar Start ===== -->
+        <DynamicNavbar :menuItems="menuItems" />
+        <!-- ===== Dynamic Navbar End ===== -->
 
-    <!-- ===== Main Content Start ===== -->
-    <main>
-      <slot></slot>
-    </main>
-    <!-- ===== Main Content End ===== -->
+        <!-- ===== Main Content Start ===== -->
+        <main>
+            <slot></slot>
+        </main>
+        <!-- ===== Main Content End ===== -->
 
-    <!-- ===== Footer Start ===== -->
-    <Footer />
-    <!-- ===== Footer End ===== -->
-  </div>
-  <!-- ===== Public Site Wrapper End ===== -->
+        <!-- ===== Footer Start ===== -->
+        <DynamicFooter :footer-data="footerData" />
+        <!-- ===== Footer End ===== -->
+    </div>
+    <!-- ===== Public Site Wrapper End ===== -->
 </template>
 
 <style scoped>
 /* Ensure the layout takes full height */
 .min-h-screen {
-  min-height: 100vh;
+    min-height: 100vh;
 }
 </style>
