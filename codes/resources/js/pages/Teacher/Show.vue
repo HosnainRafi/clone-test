@@ -3,7 +3,7 @@ import DynamicFooter from '@/components/user/DynamicFooter.vue';
 import DynamicNavbar from '@/components/user/DynamicNavbar.vue';
 import { Link } from '@inertiajs/vue3';
 import { Award, BookOpen, Briefcase, FileText, Globe, GraduationCap, Linkedin, Mail, MapPin, MessageSquare, Phone, User } from 'lucide-vue-next';
-import { ref } from 'vue';
+import { computed, ref } from 'vue';
 
 // --- INTERFACES ---
 interface Education {
@@ -26,6 +26,7 @@ interface Publication {
     conference?: string;
     year: number;
     link: string;
+    category?: string;
 }
 
 interface Project {
@@ -87,6 +88,41 @@ const tabs = [
 
 const switchTab = (tabId: string) => {
     activeTab.value = tabId;
+};
+
+// Publication filters
+const selectedCategory = ref<string>('');
+const selectedYear = ref<string>('');
+
+// Get unique categories from publications
+const availableCategories = computed(() => {
+    if (!props.teacher.publications) return [];
+    const categories = props.teacher.publications.map((pub) => pub.category).filter((cat): cat is string => !!cat);
+    return [...new Set(categories)].sort();
+});
+
+// Get unique years from publications
+const availableYears = computed(() => {
+    if (!props.teacher.publications) return [];
+    const years = props.teacher.publications.map((pub) => pub.year).filter((year): year is number => !!year);
+    return [...new Set(years)].sort((a, b) => b - a);
+});
+
+// Filtered publications based on selected category and year
+const filteredPublications = computed(() => {
+    if (!props.teacher.publications) return [];
+
+    return props.teacher.publications.filter((pub) => {
+        const categoryMatch = !selectedCategory.value || pub.category === selectedCategory.value;
+        const yearMatch = !selectedYear.value || pub.year?.toString() === selectedYear.value;
+        return categoryMatch && yearMatch;
+    });
+});
+
+// Reset filters
+const resetFilters = () => {
+    selectedCategory.value = '';
+    selectedYear.value = '';
 };
 </script>
 
@@ -335,9 +371,83 @@ const switchTab = (tabId: string) => {
                                 Publications
                             </h2>
 
-                            <div v-if="props.teacher.publications && props.teacher.publications.length > 0" class="space-y-4">
+                            <!-- Filters Section -->
+                            <div
+                                v-if="props.teacher.publications && props.teacher.publications.length > 0"
+                                class="mb-6 rounded-xl border border-gray-200 bg-gray-50 p-5"
+                            >
+                                <div class="mb-4 flex items-center justify-between">
+                                    <h3 class="text-sm font-semibold text-gray-700">Filter Publications</h3>
+                                    <button
+                                        v-if="selectedCategory || selectedYear"
+                                        @click="resetFilters"
+                                        class="text-sm font-medium text-blue-600 hover:text-blue-800"
+                                    >
+                                        Reset Filters
+                                    </button>
+                                </div>
+                                <div class="grid gap-4 sm:grid-cols-2">
+                                    <!-- Category Filter -->
+                                    <div>
+                                        <label class="mb-2 block text-sm font-medium text-gray-700">Category</label>
+                                        <select
+                                            v-model="selectedCategory"
+                                            class="w-full rounded-lg border border-gray-300 bg-white px-4 py-2.5 text-sm focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20 focus:outline-none"
+                                        >
+                                            <option value="">All Categories</option>
+                                            <option v-for="cat in availableCategories" :key="cat" :value="cat">
+                                                {{ cat }}
+                                            </option>
+                                        </select>
+                                    </div>
+
+                                    <!-- Year Filter -->
+                                    <div>
+                                        <label class="mb-2 block text-sm font-medium text-gray-700">Year</label>
+                                        <select
+                                            v-model="selectedYear"
+                                            class="w-full rounded-lg border border-gray-300 bg-white px-4 py-2.5 text-sm focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20 focus:outline-none"
+                                        >
+                                            <option value="">All Years</option>
+                                            <option v-for="year in availableYears" :key="year" :value="year.toString()">
+                                                {{ year }}
+                                            </option>
+                                        </select>
+                                    </div>
+                                </div>
+
+                                <!-- Active Filters Display -->
+                                <div v-if="selectedCategory || selectedYear" class="mt-4 flex flex-wrap items-center gap-2">
+                                    <span class="text-sm text-gray-600">Active filters:</span>
+                                    <span
+                                        v-if="selectedCategory"
+                                        class="inline-flex items-center gap-1.5 rounded-full bg-blue-100 px-3 py-1 text-sm font-medium text-blue-700"
+                                    >
+                                        {{ selectedCategory }}
+                                        <button @click="selectedCategory = ''" class="hover:text-blue-900">
+                                            <svg class="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+                                            </svg>
+                                        </button>
+                                    </span>
+                                    <span
+                                        v-if="selectedYear"
+                                        class="inline-flex items-center gap-1.5 rounded-full bg-green-100 px-3 py-1 text-sm font-medium text-green-700"
+                                    >
+                                        Year: {{ selectedYear }}
+                                        <button @click="selectedYear = ''" class="hover:text-green-900">
+                                            <svg class="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+                                            </svg>
+                                        </button>
+                                    </span>
+                                </div>
+                            </div>
+
+                            <!-- Publications List -->
+                            <div v-if="filteredPublications.length > 0" class="space-y-4">
                                 <div
-                                    v-for="(pub, index) in props.teacher.publications"
+                                    v-for="(pub, index) in filteredPublications"
                                     :key="index"
                                     class="group rounded-xl border border-gray-200 bg-white p-6 transition-all hover:border-blue-300 hover:shadow-md"
                                 >
@@ -353,6 +463,9 @@ const switchTab = (tabId: string) => {
                                             </h3>
                                             <p class="mt-2 text-sm text-gray-600">{{ pub.authors }}</p>
                                             <div class="mt-3 flex flex-wrap items-center gap-3 text-sm">
+                                                <span v-if="pub.category" class="rounded-full bg-blue-50 px-3 py-1 font-medium text-blue-700">
+                                                    {{ pub.category }}
+                                                </span>
                                                 <span v-if="pub.journal" class="rounded-full bg-green-50 px-3 py-1 font-medium text-green-700">
                                                     {{ pub.journal }}
                                                 </span>
@@ -382,6 +495,20 @@ const switchTab = (tabId: string) => {
                                 </div>
                             </div>
 
+                            <!-- No Results Message -->
+                            <div v-else-if="props.teacher.publications && props.teacher.publications.length > 0" class="py-16 text-center">
+                                <BookOpen class="mx-auto mb-4 h-16 w-16 text-gray-300" />
+                                <p class="text-lg font-medium text-gray-900">No publications found</p>
+                                <p class="mt-2 text-gray-500">Try adjusting your filters</p>
+                                <button
+                                    @click="resetFilters"
+                                    class="mt-4 rounded-lg bg-blue-600 px-6 py-2.5 text-sm font-medium text-white hover:bg-blue-700"
+                                >
+                                    Clear Filters
+                                </button>
+                            </div>
+
+                            <!-- No Publications at All -->
                             <div v-else class="py-16 text-center">
                                 <BookOpen class="mx-auto mb-4 h-16 w-16 text-gray-300" />
                                 <p class="text-lg text-gray-500">No publications available</p>

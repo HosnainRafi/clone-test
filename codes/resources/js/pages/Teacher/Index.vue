@@ -20,7 +20,7 @@ interface TeacherItem {
     research_interests: string[];
     education: Array<{ degree: string; field: string; university: string; year: string }>;
     experience: Array<{ role: string; institution: string; period: string }>;
-    publications: Array<{ title: string; authors?: string; journal?: string; conference?: string; year?: number; link?: string }>;
+    publications: Array<{ title: string; authors?: string; journal?: string; conference?: string; year?: number; link?: string; category?: string }>;
     projects: Array<{ title: string; role?: string; funding_source?: string; status?: string }>;
     courses_taught: Array<{ code?: string; title: string }>;
     awards: Array<{ title: string; event?: string; year?: string }>;
@@ -491,19 +491,32 @@ const onProfileImageSelected = async (e: Event) => {
                                         <input v-model="p.authors" class="form-input" placeholder="Author names" />
                                     </div>
                                     <div>
-                                        <label class="mb-1 block text-sm font-medium text-black dark:text-white">Journal/Conference</label>
-                                        <input v-model="p.journal" class="form-input" placeholder="Journal or Conference name" />
+                                        <label class="mb-1 block text-sm font-medium text-black dark:text-white">Category</label>
+                                        <select v-model="p.category" class="form-input">
+                                            <option value="">Select category</option>
+                                            <option value="Journal Article">Journal Article</option>
+                                            <option value="Conference Paper">Conference Paper</option>
+                                            <option value="Book Chapter">Book Chapter</option>
+                                            <option value="Book">Book</option>
+                                            <option value="Technical Report">Technical Report</option>
+                                            <option value="Thesis">Thesis</option>
+                                            <option value="Other">Other</option>
+                                        </select>
                                     </div>
                                 </div>
                                 <div class="grid grid-cols-1 gap-3 md:grid-cols-2">
                                     <div>
+                                        <label class="mb-1 block text-sm font-medium text-black dark:text-white">Journal/Conference</label>
+                                        <input v-model="p.journal" class="form-input" placeholder="Journal or Conference name" />
+                                    </div>
+                                    <div>
                                         <label class="mb-1 block text-sm font-medium text-black dark:text-white">Year</label>
                                         <input v-model.number="p.year" type="number" class="form-input" placeholder="2024" />
                                     </div>
-                                    <div>
-                                        <label class="mb-1 block text-sm font-medium text-black dark:text-white">Link</label>
-                                        <input v-model="p.link" class="form-input" placeholder="https://..." />
-                                    </div>
+                                </div>
+                                <div>
+                                    <label class="mb-1 block text-sm font-medium text-black dark:text-white">Link</label>
+                                    <input v-model="p.link" class="form-input" placeholder="https://..." />
                                 </div>
                             </div>
                             <div class="flex justify-end">

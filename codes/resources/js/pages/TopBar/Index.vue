@@ -2,7 +2,7 @@
 import DefaultLayout from '@/layouts/DefaultLayout.vue';
 import { router, usePage } from '@inertiajs/vue3';
 import { Trash2 } from 'lucide-vue-next';
-import { ref } from 'vue';
+import { ref, computed } from 'vue';
 
 // Define interfaces
 interface TopBarLink {
@@ -27,6 +27,10 @@ interface PageProps {
 
 const props = defineProps<PageProps>();
 const page = usePage();
+
+const siteData = computed(() => {
+  return props.siteData || page.props.siteData || null
+})
 
 // State management
 const { siteId } = props;
@@ -99,7 +103,7 @@ const saveConfiguration = () => {
             </div>
 
             <!-- University Links Section -->
-            <div class="mb-6 rounded-sm border border-stroke bg-gray-50 p-4 dark:bg-meta-4">
+            <div v-if="!siteData" class="mb-6 rounded-sm border border-stroke bg-gray-50 p-4 dark:bg-meta-4">
                 <div class="mb-4 flex items-start justify-between">
                     <div class="flex-1">
                         <div class="mb-3">
@@ -178,7 +182,7 @@ const saveConfiguration = () => {
             </div>
 
             <!-- Login Link Section -->
-            <div class="mb-6 rounded-sm border border-stroke bg-gray-50 p-4 dark:bg-meta-4">
+            <div v-if="!siteData" class="mb-6 rounded-sm border border-stroke bg-gray-50 p-4 dark:bg-meta-4">
                 <div class="flex-1">
                     <div class="mb-3">
                         <label class="mb-2.5 block font-medium text-black dark:text-white"> Login Link (common) </label>

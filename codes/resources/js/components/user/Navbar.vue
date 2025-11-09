@@ -18,200 +18,34 @@ import { Button } from "@/components/user/ui/button";
 
 import { Menu, GraduationCap, X } from "lucide-vue-next";
 
-interface RouteProps {
-  href: string;
-  label: string;
-  children?: RouteProps[];
-}
-
 interface SubMenuProps {
-  title: string;
-  description: string;
-  href: string;
+    title: string;
+    description: string;
+    href: string;
 }
 
-const mainNavItems: RouteProps[] = [
-  {
-    href: "/",
-    label: "Home",
-  },
-  {
-    href: "#about",
-    label: "About",
-    children: [
-      { href: "#message-chairman", label: "Message from Chairman" },
-      { href: "#message-department", label: "Message from Department" },
-      { href: "#history", label: "History of CSE, MBSTU" },
-      { href: "#mission-vision", label: "Our Mission and Vision" },
-      { href: "#achievements", label: "Achievements" },
-      { href: "#facilities", label: "Facilities" },
-    ]
-  },
-  {
-    href: "#academic",
-    label: "Academic",
-    children: [
-      { href: "#undergraduate", label: "Undergraduate Program" },
-      { href: "#graduate", label: "Graduate Program" },
-      { href: "#admission", label: "Admission" },
-      { href: "#curriculum", label: "Curriculum" },
-      { href: "#calendar", label: "Academic Calendar" },
-    ]
-  },
-  {
-    href: "#research",
-    label: "Research",
-    children: [
-      { href: "#publications", label: "Publications" },
-      { href: "#projects", label: "Projects" },
-      { href: "#labs", label: "Research Labs" },
-    ]
-  },
-  {
-    href: "#people",
-    label: "People",
-    children: [
-      { href: "#faculty", label: "Faculty" },
-      { href: "#staff", label: "Staff" },
-      { href: "#students", label: "Students" },
-    ]
-  },
-  {
-    href: "#notices",
-    label: "Notice",
-  },
-  {
-    href: "#news",
-    label: "News",
-  },
-  {
-    href: "#contact",
-    label: "Contact",
-  },
-];
+interface MenuItemProps {
+    title: string;
+    col: number;
+    subItems: SubMenuProps[];
+}
 
-const aboutItems: SubMenuProps[] = [
-  {
-    title: "Message from Department",
-    description: "Welcome message and overview from the department",
-    href: "/page/message-from-department"
-  },
-  {
-    title: "Message from Chairman",
-    description: "Welcome message and vision from department chairman",
-    href: "/page/message-from-chairman"
-  },
-  {
-    title: "History of CSE, MBSTU",
-    description: "Learn about our department's journey since 2003",
-    href: "/page/history-of-cse-mbstu"
-  },
-  {
-    title: "Why CSE, MBSTU?",
-    description: "Discover what makes our department unique and distinguished",
-    href: "/page/why-cse-mbstu"
-  },
-  {
-    title: "Our Mission and Vision",
-    description: "Our commitment to excellence in computer science education",
-    href: "/page/our-mission-and-vision"
-  },
-  {
-    title: "Achievements",
-    description: "Awards, recognitions and milestones of our department",
-    href: "/page/achievements"
-  },
-  {
-    title: "Facilities",
-    description: "State-of-the-art laboratories and infrastructure",
-    href: "/page/facilities"
-  }
-];
-
-const academicItems: SubMenuProps[] = [
-  {
-    title: "Undergraduate Program",
-    description: "Bachelor of Science in Computer Science and Engineering",
-    href: "/page/undergraduate-program"
-  },
-  {
-    title: "Graduate Program",
-    description: "Master's and PhD programs in Computer Science",
-    href: "/page/graduate-program"
-  },
-  {
-    title: "Professional Program",
-    description: "Professional development and certification programs",
-    href: "/page/professional-program"
-  },
-  {
-    title: "Others Program",
-    description: "Specialized and continuing education programs",
-    href: "/page/other-program"
-  },
-  {
-    title: "Undergraduate Admission",
-    description: "Admission requirements and process for undergraduate programs",
-    href: "/page/undergraduate-admission"
-  },
-  {
-    title: "Graduate Admission",
-    description: "Admission requirements and process for graduate programs",
-    href: "/page/graduate-admission"
-  },
-  {
-    title: "Undergraduate Curriculum",
-    description: "Course structure and curriculum for undergraduate programs",
-    href: "/academic/curriculum/undergraduate"
-  },
-  {
-    title: "Graduate Curriculum",
-    description: "Course structure and curriculum for graduate programs",
-    href: "/academic/curriculum/graduate"
-  },
-  {
-    title: "Academic Calendar",
-    description: "Academic calendar, schedules and important dates",
-    href: "/academic/calendar"
-  }
-];
-
-const researchItems: SubMenuProps[] = [
-  {
-    title: "Publications",
-    description: "Research papers, journal articles and conference proceedings",
-    href: "/publications"
-  },
-  {
-    title: "Projects",
-    description: "Current and completed research projects and initiatives",
-    href: "/projects"
-  },
-  {
-    title: "Research Labs",
-    description: "Specialized laboratories and research facilities",
-    href: "/research/labs"
-  },
-  {
-    title: "Research Areas",
-    description: "Key areas of research expertise and specialization",
-    href: "/research/areas"
-  }
-];
+defineProps<{
+    menuItems: MenuItemProps[];
+    address: any;
+    contactEmail: any;
+    siteTitle: any;
+}>();
 
 const isOpen = ref<boolean>(false);
 
-defineProps<{
-  message?: string;
-}>();
-const isDepartmentPage = ref<boolean>(true);
 </script>
 
 <template>
   <!-- <span> POC message from navbar {{message}} </span> -->
   <header class="bg-white border-b border-gray-200 shadow-sm sticky top-0 z-50">
     <!-- Top Bar with University Info -->
-    <div v-if="isDepartmentPage" class="block bg-[hsl(var(--secondary))] text-[hsl(var(--secondary-foreground))] py-2 text-sm">
+    <div class="block bg-[hsl(var(--secondary))] text-[hsl(var(--secondary-foreground))] py-2 text-sm">
       <div class="container mx-auto flex justify-between items-center">
         <div class="hidden md:flex items-center space-x-6">
           <span class="flex items-center">
@@ -219,49 +53,17 @@ const isDepartmentPage = ref<boolean>(true);
               <path d="M2.003 5.884L10 9.882l7.997-3.998A2 2 0 0016 4H4a2 2 0 00-1.997 1.884z"/>
               <path d="M18 8.118l-8 4-8-4V14a2 2 0 002 2h12a2 2 0 002-2V8.118z"/>
             </svg>
-            cse@mbstu.ac.bd
+            {{ contactEmail }}
           </span>
           <span class="flex items-center">
             <svg class="w-4 h-4 mr-1" fill="currentColor" viewBox="0 0 20 20">
               <path fill-rule="evenodd" d="M5.05 4.05a7 7 0 119.9 9.9L10 18.9l-4.95-4.95a7 7 0 010-9.9zM10 11a2 2 0 100-4 2 2 0 000 4z" clip-rule="evenodd"/>
             </svg>
-            Santosh, Tangail, Bangladesh
+            {{ address }}
           </span>
         </div>
         <div class="block">
           <span class="text-xs">Mawlana Bhashani Science and Technology University</span>
-        </div>
-      </div>
-    </div>
-    <div v-else class="block bg-[hsl(var(--secondary))] text-[hsl(var(--secondary-foreground))] py-2 text-sm">
-      <div class="container mx-auto flex justify-between items-center">
-        <div class="flex items-center flex-wrap space-x-1 2xsm:space-x-0 text-xs">
-          <a href="https://mbstu.ac.bd/form-download/" class="hover:text-[hsl(var(--primary))] transition-colors px-2 py-1 rounded border-r border-gray-300 last:border-r-0">
-            Forms & Services
-          </a>
-          <a href="https://mbstu.ac.bd/international-students/" class="hover:text-[hsl(var(--primary))] transition-colors px-2 py-1 rounded border-r border-gray-300 last:border-r-0">
-            Int'l Students
-          </a>
-          <a href="https://mbstu.ac.bd/noc/" class="hover:text-[hsl(var(--primary))] transition-colors px-2 py-1 rounded border-r border-gray-300 last:border-r-0">
-            NOC
-          </a>
-          <a href="https://mbstu.ac.bd/noc/" class="hover:text-[hsl(var(--primary))] transition-colors px-2 py-1 rounded border-r border-gray-300 last:border-r-0">
-            IP Phone
-          </a>
-          <a href="https://mbstu.ac.bd/noc/" class="hover:text-[hsl(var(--primary))] transition-colors px-2 py-1 rounded border-r border-gray-300 last:border-r-0">
-            UCAM
-          </a>
-          <a href="http://ucam.mbstu.ac.bd/Security/LogIn.aspx" target="_blank" class="hover:text-[hsl(var(--primary))] transition-colors px-2 py-1 rounded border-r border-gray-300 last:border-r-0">
-            Contact
-          </a>
-          <a href="http://ucam.mbstu.ac.bd/Security/LogIn.aspx" target="_blank" class="hover:text-[hsl(var(--primary))] transition-colors px-2 py-1 rounded border-r border-gray-300 last:border-r-0">
-            Departments
-          </a>
-        </div>
-        <div class="flex items-center space-x-1 text-xs">
-          <a href="https://mbstu.ac.bd/account/" class="hover:text-[hsl(var(--primary))] transition-colors px-2 py-1 rounded border-r border-gray-300 last:border-r-0">
-            LOGIN
-          </a>
         </div>
       </div>
     </div>
@@ -275,7 +77,7 @@ const isDepartmentPage = ref<boolean>(true);
               <GraduationCap class="h-8 w-8 text-[hsl(var(--primary-foreground))]" />
             </div>
             <div>
-              <h1 class="text-xl font-bold text-[hsl(var(--primary))] leading-tight">Computer Science and Engineering</h1>
+              <h1 class="text-xl font-bold text-[hsl(var(--primary))] leading-tight">{{ siteTitle }}</h1>
             </div>
           </div>
         </div>
@@ -293,196 +95,40 @@ const isDepartmentPage = ref<boolean>(true);
               </a>
             </li>
 
-            <!-- About (with dropdown) -->
-            <li class="relative group">
-              <button 
-                class="bg-transparent hover:bg-[hsl(var(--tertiary-hover))] hover:bg-opacity-60 text-gray-700 hover:text-[hsl(var(--primary))] px-4 py-2 rounded-md text-sm font-medium transition-colors inline-flex items-center"
-              >
-                About
-                <svg class="ml-1 h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
-                </svg>
-              </button>
-              <!-- Dropdown content -->
-              <div class="absolute left-0 mt-1 w-[600px] bg-white rounded-lg shadow-lg border border-gray-200 opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-200 z-50">
-                <div class="p-4">
-                  <div class="grid grid-cols-2 gap-3">
-                    <div 
-                      v-for="subItem in aboutItems" 
-                      :key="subItem.title"
-                      class="group/item rounded-lg p-3 hover:bg-[hsl(var(--tertiary-hover))] transition-colors"
-                    >
-                      <a :href="subItem.href" class="block">
-                        <h3 class="font-medium text-[hsl(var(--secondary))] group-hover/item:text-[hsl(var(--primary))]  mb-1 text-sm">
-                          {{ subItem.title }}
-                        </h3>
-                        <p class="text-xs text-gray-600 leading-snug">
-                          {{ subItem.description }}
-                        </p>
-                      </a>
+            <!-- Dynamic Menu Items -->
+            <li v-for="menuItem in menuItems" :key="menuItem.title" class="group relative">
+                <button
+                    class="hover:bg-opacity-60 inline-flex items-center rounded-md bg-transparent px-4 py-2 text-sm font-medium text-gray-700 transition-colors hover:bg-[hsl(var(--tertiary-hover))] hover:text-[hsl(var(--primary))]"
+                >
+                    {{ menuItem.title }}
+                    <svg class="ml-1 h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
+                    </svg>
+                </button>
+                <!-- Dropdown content -->
+                <div
+                    :class="`absolute -left-24 mt-1 ${menuItem.title === 'Administration and Offices' ? 'w-[900px]' : 'w-[600px]'} invisible z-50 rounded-lg border border-gray-200 bg-white opacity-0 shadow-lg transition-all duration-200 group-hover:visible group-hover:opacity-100`"
+                >
+                    <div class="p-4">
+                        <div :class="`grid grid-cols-${menuItem.col} gap-3`">
+                            <div
+                                v-for="subItem in menuItem.subItems" :key="subItem.title"
+                                class="group/item rounded-lg p-3 transition-colors hover:bg-[hsl(var(--tertiary-hover))]"
+                            >
+                                <a :href="subItem.href" class="block">
+                                    <h3
+                                        class="mb-1 text-sm font-medium text-[hsl(var(--secondary))] group-hover/item:text-[hsl(var(--primary))]"
+                                    >
+                                        {{ subItem.title }}
+                                    </h3>
+                                    <p class="text-xs leading-snug text-gray-600">
+                                        {{ subItem.description }}
+                                    </p>
+                                </a>
+                            </div>
+                        </div>
                     </div>
-                  </div>
                 </div>
-              </div>
-            </li>
-
-            <!-- Academic (with dropdown) -->
-            <li class="relative group">
-              <button 
-                class="bg-transparent hover:bg-[hsl(var(--tertiary-hover))] hover:bg-opacity-60 text-gray-700 hover:text-[hsl(var(--primary))]  px-4 py-2 rounded-md text-sm font-medium transition-colors inline-flex items-center"
-              >
-                Academic
-                <svg class="ml-1 h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
-                </svg>
-              </button>
-              <!-- Dropdown content -->
-              <div class="absolute left-0 mt-1 w-[600px] bg-white rounded-lg shadow-lg border border-gray-200 opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-200 z-50">
-                <div class="p-4">
-                  <div class="grid grid-cols-2 gap-3">
-                    <div 
-                      v-for="subItem in academicItems" 
-                      :key="subItem.title"
-                      class="group/item rounded-lg p-3 hover:bg-[hsl(var(--tertiary-hover))] transition-colors"
-                    >
-                      <a :href="subItem.href" class="block">
-                        <h3 class="font-medium text-[hsl(var(--secondary))] group-hover/item:text-[hsl(var(--primary))]  mb-1 text-sm">
-                          {{ subItem.title }}
-                        </h3>
-                        <p class="text-xs text-gray-600 leading-snug">
-                          {{ subItem.description }}
-                        </p>
-                      </a>
-                    </div>
-                  </div>
-                </div>
-              </div>
-            </li>
-
-            <!-- Research (with dropdown) -->
-            <li class="relative group">
-              <button 
-                class="bg-transparent hover:bg-[hsl(var(--tertiary-hover))] hover:bg-opacity-60 text-gray-700 hover:text-[hsl(var(--primary))]  px-4 py-2 rounded-md text-sm font-medium transition-colors inline-flex items-center"
-              >
-                Research
-                <svg class="ml-1 h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
-                </svg>
-              </button>
-              <!-- Dropdown content -->
-              <div class="absolute left-0 mt-1 w-[500px] bg-white rounded-lg shadow-lg border border-gray-200 opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-200 z-50">
-                <div class="p-4">
-                  <div class="grid grid-cols-1 gap-3">
-                    <div 
-                      v-for="subItem in researchItems" 
-                      :key="subItem.title"
-                      class="group/item rounded-lg p-3 hover:bg-[hsl(var(--tertiary-hover))] transition-colors"
-                    >
-                      <a :href="subItem.href" class="block">
-                        <h3 class="font-medium text-[hsl(var(--secondary))] group-hover/item:text-[hsl(var(--primary))]  mb-1">
-                          {{ subItem.title }}
-                        </h3>
-                        <p class="text-sm text-gray-600 leading-snug">
-                          {{ subItem.description }}
-                        </p>
-                      </a>
-                    </div>
-                  </div>
-                </div>
-              </div>
-            </li>
-
-            <!-- People (with dropdown) -->
-            <li class="relative group">
-              <button 
-                class="bg-transparent hover:bg-[hsl(var(--tertiary-hover))] hover:bg-opacity-60 text-gray-700 hover:text-[hsl(var(--primary))]  px-4 py-2 rounded-md text-sm font-medium transition-colors inline-flex items-center"
-              >
-                People
-                <svg class="ml-1 h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
-                </svg>
-              </button>
-              <!-- Dropdown content -->
-              <div class="absolute left-0 mt-1 w-[300px] bg-white rounded-lg shadow-lg border border-gray-200 opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-200 z-50">
-                <div class="p-4">
-                  <div class="grid grid-cols-1 gap-2">
-                    <a 
-                      href="/people/faculty"
-                      class="block px-3 py-2 rounded-md text-sm text-gray-700 hover:bg-[hsl(var(--tertiary-hover))] hover:text-[hsl(var(--primary))]  transition-colors"
-                    >
-                      Faculty
-                    </a>
-                    <a 
-                      href="/people/staff"
-                      class="block px-3 py-2 rounded-md text-sm text-gray-700 hover:bg-[hsl(var(--tertiary-hover))] hover:text-[hsl(var(--primary))]  transition-colors"
-                    >
-                      Staff
-                    </a>
-                    <a 
-                      href="/people/students"
-                      class="block px-3 py-2 rounded-md text-sm text-gray-700 hover:bg-[hsl(var(--tertiary-hover))] hover:text-[hsl(var(--primary))]  transition-colors"
-                    >
-                      Current Students
-                    </a>
-                    <a 
-                      href="/people/alumni"
-                      class="block px-3 py-2 rounded-md text-sm text-gray-700 hover:bg-[hsl(var(--tertiary-hover))] hover:text-[hsl(var(--primary))]  transition-colors"
-                    >
-                      Alumni
-                    </a>
-                  </div>
-                </div>
-              </div>
-            </li>
-
-            <!-- Notice -->
-            <li>
-              <a 
-                href="/notices" 
-                class="bg-transparent hover:bg-[hsl(var(--tertiary-hover))] hover:bg-opacity-60 text-gray-700 hover:text-[hsl(var(--primary))]  px-4 py-2 rounded-md text-sm font-medium transition-colors inline-flex items-center"
-              >
-                Notice
-              </a>
-            </li>
-
-            <!-- News -->
-            <li>
-              <a 
-                href="/news" 
-                class="bg-transparent hover:bg-[hsl(var(--tertiary-hover))] hover:bg-opacity-60 text-gray-700 hover:text-[hsl(var(--primary))]  px-4 py-2 rounded-md text-sm font-medium transition-colors inline-flex items-center"
-              >
-                News
-              </a>
-            </li>
-
-            <!-- Publications -->
-            <li>
-              <a 
-                href="/publications" 
-                class="bg-transparent hover:bg-[hsl(var(--tertiary-hover))] hover:bg-opacity-60 text-gray-700 hover:text-[hsl(var(--primary))]  px-4 py-2 rounded-md text-sm font-medium transition-colors inline-flex items-center"
-              >
-                Publications
-              </a>
-            </li>
-
-            <!-- Projects -->
-            <li>
-              <a 
-                href="/projects" 
-                class="bg-transparent hover:bg-[hsl(var(--tertiary-hover))] hover:bg-opacity-60 text-gray-700 hover:text-[hsl(var(--primary))]  px-4 py-2 rounded-md text-sm font-medium transition-colors inline-flex items-center"
-              >
-                Projects
-              </a>
-            </li>
-
-            <!-- Contact -->
-            <li>
-              <a 
-                href="/contact" 
-                class="bg-transparent hover:bg-[hsl(var(--tertiary-hover))] hover:bg-opacity-60 text-gray-700 hover:text-[hsl(var(--primary))]  px-4 py-2 rounded-md text-sm font-medium transition-colors inline-flex items-center"
-              >
-                Contact
-              </a>
             </li>
           </ul>
         </nav>
@@ -510,8 +156,7 @@ const isDepartmentPage = ref<boolean>(true);
                     <div class="flex items-center">
                       <GraduationCap class="h-7 w-7 mr-3" />
                       <div>
-                        <div class="font-bold">CSE, MBSTU</div>
-                        <div class="text-xs text-blue-100 font-normal">Computer Science and Engineering</div>
+                        <div class="font-bold">{{ siteTitle }}</div>
                       </div>
                     </div>
                     <!-- Close Button -->
@@ -542,163 +187,24 @@ const isDepartmentPage = ref<boolean>(true);
                     </a>
                   </div>
                   <!-- About Section -->
-                  <div class="mb-4 mobile-nav-section">
+                  <div v-for="menuItem in menuItems" :key="menuItem.title" class="mb-4 mobile-nav-section">
                     <div class="flex items-center px-4 py-3 text-[hsl(var(--primary))]  font-semibold text-sm uppercase tracking-wide mobile-section-title">
                       <svg class="w-5 h-5 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
                       </svg>
-                      About
+                      {{ menuItem.title }}
                     </div>
                     <div class="ml-4 space-y-1">
                       <a
-                        v-for="item in aboutItems"
-                        :key="item.title"
-                        :href="item.href"
+                        v-for="subItem in menuItem.subItems" :key="subItem.title"
+                        :href="subItem.href"
                         @click="isOpen = false"
                         class="block px-4 py-2 text-sm text-gray-600 hover:text-[hsl(var(--primary))]  hover:bg-[hsl(var(--tertiary-hover))] rounded-md transition-colors mobile-nav-item"
                       >
-                        {{ item.title }}
+                        {{ subItem.title }}
                       </a>
                     </div>
                   </div>
-
-                  <!-- Academic Section -->
-                  <div class="mb-4 mobile-nav-section">
-                    <div class="flex items-center px-4 py-3 text-[hsl(var(--primary))]  font-semibold text-sm uppercase tracking-wide mobile-section-title">
-                      <svg class="w-5 h-5 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253" />
-                      </svg>
-                      Academic
-                    </div>
-                    <div class="ml-4 space-y-1">
-                      <a
-                        v-for="item in academicItems"
-                        :key="item.title"
-                        :href="item.href"
-                        @click="isOpen = false"
-                        class="block px-4 py-2 text-sm text-gray-600 hover:text-[hsl(var(--primary))]  hover:bg-[hsl(var(--tertiary-hover))] rounded-md transition-colors mobile-nav-item"
-                      >
-                        {{ item.title }}
-                      </a>
-                    </div>
-                  </div>
-
-                  <!-- Research Section -->
-                  <div class="mb-4 mobile-nav-section">
-                    <div class="flex items-center px-4 py-3 text-[hsl(var(--primary))]  font-semibold text-sm uppercase tracking-wide mobile-section-title">
-                      <svg class="w-5 h-5 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4M7.835 4.697a3.42 3.42 0 001.946-.806 3.42 3.42 0 014.438 0 3.42 3.42 0 001.946.806 3.42 3.42 0 013.138 3.138 3.42 3.42 0 00.806 1.946 3.42 3.42 0 010 4.438 3.42 3.42 0 00-.806 1.946 3.42 3.42 0 01-3.138 3.138 3.42 3.42 0 00-1.946.806 3.42 3.42 0 01-4.438 0 3.42 3.42 0 00-1.946-.806 3.42 3.42 0 01-3.138-3.138 3.42 3.42 0 00-.806-1.946 3.42 3.42 0 010-4.438 3.42 3.42 0 00.806-1.946 3.42 3.42 0 013.138-3.138z" />
-                      </svg>
-                      Research
-                    </div>
-                    <div class="ml-4 space-y-1">
-                      <a
-                        v-for="item in researchItems"
-                        :key="item.title"
-                        :href="item.href"
-                        @click="isOpen = false"
-                        class="block px-4 py-2 text-sm text-gray-600 hover:text-[hsl(var(--primary))]  hover:bg-[hsl(var(--tertiary-hover))] rounded-md transition-colors mobile-nav-item"
-                      >
-                        {{ item.title }}
-                      </a>
-                    </div>
-                  </div>
-
-                  <!-- People Section -->
-                  <div class="mb-4 mobile-nav-section">
-                    <div class="flex items-center px-4 py-3 text-[hsl(var(--primary))]  font-semibold text-sm uppercase tracking-wide mobile-section-title">
-                      <svg class="w-5 h-5 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z" />
-                      </svg>
-                      People
-                    </div>
-                    <div class="ml-4 space-y-1">
-                      <a
-                        href="/people/faculty"
-                        @click="isOpen = false"
-                        class="block px-4 py-2 text-sm text-gray-600 hover:text-[hsl(var(--primary))]  hover:bg-[hsl(var(--tertiary-hover))] rounded-md transition-colors mobile-nav-item"
-                      >
-                        Faculty
-                      </a>
-                      <a
-                        href="/people/staff"
-                        @click="isOpen = false"
-                        class="block px-4 py-2 text-sm text-gray-600 hover:text-[hsl(var(--primary))]  hover:bg-[hsl(var(--tertiary-hover))] rounded-md transition-colors mobile-nav-item"
-                      >
-                        Staff
-                      </a>
-                      <a
-                        href="/people/students"
-                        @click="isOpen = false"
-                        class="block px-4 py-2 text-sm text-gray-600 hover:text-[hsl(var(--primary))]  hover:bg-[hsl(var(--tertiary-hover))] rounded-md transition-colors mobile-nav-item"
-                      >
-                        Current Students
-                      </a>
-                      <a
-                        href="/people/alumni"
-                        @click="isOpen = false"
-                        class="block px-4 py-2 text-sm text-gray-600 hover:text-[hsl(var(--primary))]  hover:bg-[hsl(var(--tertiary-hover))] rounded-md transition-colors mobile-nav-item"
-                      >
-                        Alumni
-                      </a>
-                    </div>
-                  </div>
-
-                    <div class="mb-4 mobile-nav-section">
-                      <a 
-                        href="/notices"
-                        @click="isOpen = false"
-                        class="flex items-center px-4 py-3 text-[hsl(var(--primary))]  font-semibold text-sm uppercase tracking-wide mobile-section-title">
-                        <svg class="w-5 h-5 mr-3 mobile-nav-icon flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 17h5l-5 5v-5zM9 2v5H4L9 2zm0 0l5 5M4 12h16m-7 7h7" />
-                        </svg>
-                        Notice
-                      </a>
-                    </div>
-                    <div class="mb-4 mobile-nav-section">
-                      <a 
-                        href="/news"
-                        @click="isOpen = false"
-                        class="flex items-center px-4 py-3 text-[hsl(var(--primary))]  font-semibold text-sm uppercase tracking-wide mobile-section-title">
-                        <svg class="w-5 h-5 mr-3 mobile-nav-icon flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 20H5a2 2 0 01-2-2V6a2 2 0 012-2h10a2 2 0 012 2v1m2 13a2 2 0 01-2-2V7m2 13a2 2 0 002-2V9.5a2 2 0 00-2-2h-2m-4-3H9M7 16h6M7 8h6v4H7V8z" />
-                        </svg>
-                        News
-                      </a>
-                    </div>
-                    <div class="mb-4 mobile-nav-section">
-                      <a 
-                        href="/publications"
-                        @click="isOpen = false"
-                        class="flex items-center px-4 py-3 text-[hsl(var(--primary))]  font-semibold text-sm uppercase tracking-wide mobile-section-title">
-                        <svg class="w-5 h-5 mr-3 mobile-nav-icon flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
-                        </svg>
-                        Publications
-                      </a>
-                    </div>
-                    <div class="mb-4 mobile-nav-section">
-                      <a 
-                        href="/projects"
-                        @click="isOpen = false"
-                        class="flex items-center px-4 py-3 text-[hsl(var(--primary))]  font-semibold text-sm uppercase tracking-wide mobile-section-title">
-                        <svg class="w-5 h-5 mr-3 mobile-nav-icon flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10" />
-                        </svg>
-                        Projects
-                      </a>
-                    </div>
-                    <div class="mb-4 mobile-nav-section">
-                      <a 
-                        href="/contact"
-                        @click="isOpen = false"
-                        class="flex items-center px-4 py-3 text-[hsl(var(--primary))]  font-semibold text-sm uppercase tracking-wide mobile-section-title">
-                        <svg class="w-5 h-5 mr-3 mobile-nav-icon flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
-                        </svg>
-                        Contact
-                      </a>
-                    </div>
                 </div>
               </div>
 
@@ -706,7 +212,7 @@ const isDepartmentPage = ref<boolean>(true);
               <div class="border-t border-gray-200 p-4 bg-[hsl(var(--tertiary-hover))] flex-shrink-0 mobile-footer">
                 <div class="text-center">
                   <div class="text-xs text-gray-500 mb-2">
-                    © 2025 CSE, MBSTU. All rights reserved.
+                    © 2025 {{ siteTitle }}. All rights reserved.
                   </div>
                   <div class="text-xs text-gray-400">
                     Mawlana Bhashani Science and Technology University

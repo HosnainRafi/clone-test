@@ -1,57 +1,140 @@
 <script setup lang="ts">
-import { ref, onMounted } from 'vue'
-import { Users, GraduationCap, Eye, MousePointer } from 'lucide-vue-next'
+import { ref, onMounted, computed } from 'vue'
+import { 
+  Users, GraduationCap, Eye, MousePointer, Star, Award, Book, 
+  Briefcase, Calendar, Clock, Globe, Heart, Home, MapPin,
+  Phone, Search, Settings, Target, TrendingUp, Trophy
+} from 'lucide-vue-next'
 
-// Statistics data
-const stats = [
-  {
-    id: 1,
-    icon: GraduationCap,
-    number: 19,
-    suffix: '+',
-    label: 'Current Teachers',
-    description: 'Experienced faculty members',
-    color: 'blue',
-    bgGradient: 'from-blue-500 to-blue-600'
-  },
-  {
-    id: 2,
-    icon: Users,
-    number: 250,
-    suffix: '+',
-    label: 'Current Students',
-    description: 'Active enrolled students',
-    color: 'green',
-    bgGradient: 'from-green-500 to-green-600'
-  },
-  {
-    id: 3,
-    icon: Eye,
-    number: 66483,
-    suffix: '+',
-    label: 'Total Visitors',
-    description: 'Unique website visitors',
-    color: 'purple',
-    bgGradient: 'from-purple-500 to-purple-600'
-  },
-  {
-    id: 4,
-    icon: MousePointer,
-    number: 387405,
-    suffix: '+',
-    label: 'Total Visits',
-    description: 'Total website visits',
-    color: 'orange',
-    bgGradient: 'from-orange-500 to-orange-600'
-  }
-]
+// Define interfaces for the data structure
+interface AtAGlanceStatistic {
+    id: number;
+    icon: string; // Icon name as string
+    number: number;
+    suffix: string;
+    label: string;
+    description: string;
+    color: 'blue' | 'green' | 'purple' | 'orange' | 'red' | 'indigo';
+    bgGradient: string;
+    isActive: boolean;
+    order: number;
+}
+
+interface AtAGlanceData {
+    sectionTitle: string;
+    sectionSubtitle: string;
+    statistics: AtAGlanceStatistic[];
+    isVisible: boolean;
+    animationDuration: number;
+    animationDelay: number;
+}
+
+interface Props {
+    atAGlanceData?: AtAGlanceData;
+}
+
+const props = withDefaults(defineProps<Props>(), {
+    atAGlanceData: () => ({
+        sectionTitle: 'At a Glance',
+        sectionSubtitle: 'Key statistics about the Department of Computer Science and Engineering at MBSTU',
+        isVisible: true,
+        animationDuration: 2500,
+        animationDelay: 200,
+        statistics: [
+            {
+                id: 1,
+                icon: 'GraduationCap',
+                number: 19,
+                suffix: '+',
+                label: 'Current Teachers',
+                description: 'Experienced faculty members',
+                color: 'blue',
+                bgGradient: 'from-blue-500 to-blue-600',
+                isActive: true,
+                order: 1
+            },
+            {
+                id: 2,
+                icon: 'Users',
+                number: 250,
+                suffix: '+',
+                label: 'Current Students',
+                description: 'Active enrolled students',
+                color: 'green',
+                bgGradient: 'from-green-500 to-green-600',
+                isActive: true,
+                order: 2
+            },
+            {
+                id: 3,
+                icon: 'Eye',
+                number: 66483,
+                suffix: '+',
+                label: 'Total Visitors',
+                description: 'Unique website visitors',
+                color: 'purple',
+                bgGradient: 'from-purple-500 to-purple-600',
+                isActive: true,
+                order: 3
+            },
+            {
+                id: 4,
+                icon: 'MousePointer',
+                number: 387405,
+                suffix: '+',
+                label: 'Total Visits',
+                description: 'Total website visits',
+                color: 'orange',
+                bgGradient: 'from-orange-500 to-orange-600',
+                isActive: true,
+                order: 4
+            }
+        ]
+    })
+});
+
+// Filter active statistics and sort by order
+const activeStats = computed(() => 
+    props.atAGlanceData.statistics
+        .filter(stat => stat.isActive)
+        .sort((a, b) => a.order - b.order)
+);
+
+// Icon mapping for dynamic icon rendering
+const iconMap = {
+    GraduationCap,
+    Users,
+    Eye,
+    MousePointer,
+    Star,
+    Award,
+    Book,
+    Briefcase,
+    Calendar,
+    Clock,
+    Globe,
+    Heart,
+    Home,
+    MapPin,
+    Phone,
+    Search,
+    Settings,
+    Target,
+    TrendingUp,
+    Trophy
+};
+
+// Function to get the icon component from string name
+const getIconComponent = (iconName: string) => {
+    return iconMap[iconName as keyof typeof iconMap] || Star;
+};
 
 // Animation state
-const animatedNumbers = ref(stats.map(() => 0))
+const animatedNumbers = ref(activeStats.value.map(() => 0))
 const isVisible = ref(false)
 
 // Number animation function
-const animateNumber = (targetNumber: number, index: number, duration: number = 2000) => {
+const animateNumber = (targetNumber: number, index: number, duration: number = props.atAGlanceData.animationDuration) => {
   const startTime = Date.now()
   const startNumber = 0
   
@@ -115,10 +198,10 @@ onMounted(() => {
       if (entry.isIntersecting && !isVisible.value) {
         isVisible.value = true
         // Start animations with staggered delays
-        stats.forEach((stat, index) => {
+        activeStats.value.forEach((stat, index) => {
           setTimeout(() => {
-            animateNumber(stat.number, index, 2500)
-          }, index * 200)
+            animateNumber(stat.number, index, props.atAGlanceData.animationDuration)
+          }, index * props.atAGlanceData.animationDelay)
         })
       }
     })
@@ -133,21 +216,21 @@ onMounted(() => {
 </script>
 
 <template>
-  <section class="at-a-glance-section container pt-24">
+  <section v-if="props.atAGlanceData.isVisible" class="at-a-glance-section container pt-24">
     <!-- Section Header -->
     <div class="text-center mb-12">
     <h2 class="text-3xl md:text-4xl font-bold text-[hsl(var(--secondary))] mb-4">
-        At a Glance
+        {{ props.atAGlanceData.sectionTitle }}
     </h2>
     <p class="text-lg text-gray-600 max-w-2xl mx-auto">
-        Key statistics about the Department of Computer Science and Engineering at MBSTU
+        {{ props.atAGlanceData.sectionSubtitle }}
     </p>
     </div>
 
     <!-- Statistics Grid -->
     <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
     <div
-        v-for="(stat, index) in stats"
+        v-for="(stat, index) in activeStats"
         :key="stat.id"
         class="group relative bg-white rounded-2xl p-8 shadow-lg hover:shadow-2xl transition-all duration-500 transform hover:-translate-y-2 border-2"
         :class="getColorClasses(stat.color).border"
@@ -164,7 +247,7 @@ onMounted(() => {
         :class="getColorClasses(stat.color).bg"
         >
         <component 
-            :is="stat.icon" 
+            :is="getIconComponent(stat.icon)" 
             class="w-8 h-8 transition-colors duration-300"
             :class="getColorClasses(stat.color).icon"
         />

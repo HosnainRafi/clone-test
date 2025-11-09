@@ -19,6 +19,15 @@ class FooterController extends BaseController
             // Get footer data from site settings
             $footerData = $this->siteContentService->getSiteSettings($siteId, 'footerData');
 
+            $subdomain = $request->input('siteData')['subdomain'];
+
+            if ($subdomain) {
+                return Inertia::render('Footer/DepartmentFooter', [
+                    'footerData' => empty($footerData) ? null : $footerData,
+                    'siteId' => $siteId
+                ]);
+            }
+
             // If no footer data, provide defaults
             if (empty($footerData)) {
                 $footerData = $this->getDefaultFooterData();
@@ -40,6 +49,20 @@ class FooterController extends BaseController
 
     public function save(Request $request)
     {
+        $subdomain = $request->input('siteData')['subdomain'];
+        if ($subdomain) {
+            // For department subdomains, we might have different validation or handling
+            $validationRules = [
+                'footerData' => 'required|array',
+                'footerData.departmentName' => 'required|string|max:255',
+                'footerData.departmentFullName' => 'required|string|max:255',
+                'footerData.universityName' => 'required|string|max:255',
+                'footerData.email' => 'required|email|max:255',
+                'siteId' => 'required|integer|exists:sites,id'
+            ];
+            return $this->handleSave($request, 'footerData', 'footerData', $validationRules);
+        }
+
         $validationRules = [
             'footerData' => 'required|array',
             'footerData.universityName' => 'required|string|max:255',

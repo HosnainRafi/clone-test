@@ -1,319 +1,475 @@
-<script setup lang="ts">
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardHeader,
-  CardTitle,
-} from "@/components/user/ui/card";
-
-import {
-  Carousel,
-  CarouselContent,
-  CarouselItem,
-  CarouselNext,
-  CarouselPrevious,
-} from "@/components/user/ui/carousel";
-
-import { Badge } from "@/components/user/ui/badge";
-import { Button } from "@/components/user/ui/button";
-
-import { Calendar, Users, GitBranch, ExternalLink, Github, Award, Code2 } from "lucide-vue-next";
-
-interface ProjectProps {
-  id: number;
-  title: string;
-  description: string;
-  image: string;
-  fallbackGradient: string;
-  category: string;
-  status: 'Completed' | 'Ongoing' | 'Research';
-  duration: string;
-  team: string[];
-  technologies: string[];
-  supervisor: string;
-  achievements?: string[];
-  githubUrl?: string;
-  demoUrl?: string;
-  year: string;
-}
-
-const latestProjects: ProjectProps[] = [
-  {
-    id: 1,
-    title: "AI-Powered Student Performance Prediction System",
-    description: "A machine learning system that analyzes student academic data to predict performance and recommend personalized learning paths. Uses ensemble learning techniques for improved accuracy.",
-    image: "/images/projects/ai-prediction.jpg",
-    fallbackGradient: "linear-gradient(135deg, #667eea 0%, #764ba2 100%)",
-    category: "Artificial Intelligence",
-    status: "Completed",
-    duration: "8 months",
-    team: ["Aminul Islam", "Fatema Khatun", "Rohit Kumar"],
-    technologies: ["Python", "TensorFlow", "Django", "PostgreSQL", "React"],
-    supervisor: "Dr. Rahman Ahmed",
-    achievements: ["Best Final Year Project 2024", "Published in IEEE Conference"],
-    githubUrl: "https://github.com/cse-mbstu/ai-prediction",
-    demoUrl: "https://ai-prediction-demo.mbstu.edu",
-    year: "2024"
-  },
-  {
-    id: 2,
-    title: "Smart Campus Management System",
-    description: "IoT-based campus management platform integrating attendance tracking, resource monitoring, and security systems with real-time analytics dashboard.",
-    image: "/images/projects/smart-campus.jpg",
-    fallbackGradient: "linear-gradient(135deg, #f093fb 0%, #f5576c 100%)",
-    category: "Internet of Things",
-    status: "Ongoing",
-    duration: "6 months",
-    team: ["Md. Karim", "Rashida Begum", "Arif Hassan", "Nusrat Jahan"],
-    technologies: ["Arduino", "Node.js", "MongoDB", "Vue.js", "MQTT"],
-    supervisor: "Prof. Sarah Khan",
-    achievements: ["Innovation Award 2024"],
-    githubUrl: "https://github.com/cse-mbstu/smart-campus",
-    year: "2024"
-  },
-  {
-    id: 3,
-    title: "Blockchain-Based Academic Credential Verification",
-    description: "Decentralized system for issuing and verifying academic certificates using blockchain technology, ensuring tamper-proof credential management.",
-    image: "/images/projects/blockchain-credentials.jpg",
-    fallbackGradient: "linear-gradient(135deg, #a8edea 0%, #fed6e3 100%)",
-    category: "Blockchain",
-    status: "Research",
-    duration: "12 months",
-    team: ["Tanvir Ahmed", "Sadia Rahman"],
-    technologies: ["Ethereum", "Solidity", "Web3.js", "IPFS", "Next.js"],
-    supervisor: "Dr. Mohammad Ali",
-    achievements: ["Research Grant Recipient"],
-    githubUrl: "https://github.com/cse-mbstu/blockchain-credentials",
-    year: "2024"
-  },
-  {
-    id: 4,
-    title: "Real-time Bengali Speech Recognition System",
-    description: "Deep learning-based speech recognition system specifically trained for Bengali language with noise reduction and accent adaptation capabilities.",
-    image: "/images/projects/speech-recognition.jpg",
-    fallbackGradient: "linear-gradient(135deg, #ffecd2 0%, #fcb69f 100%)",
-    category: "Natural Language Processing",
-    status: "Completed",
-    duration: "10 months",
-    team: ["Rafiul Islam", "Marium Sultana", "Jakir Hossain"],
-    technologies: ["Python", "PyTorch", "FastAPI", "React Native", "Docker"],
-    supervisor: "Dr. Nasir Uddin",
-    achievements: ["Best Innovation Project 2023", "Patent Application Filed"],
-    githubUrl: "https://github.com/cse-mbstu/bengali-speech",
-    demoUrl: "https://bengali-speech-demo.mbstu.edu",
-    year: "2023"
-  },
-  {
-    id: 5,
-    title: "Automated Code Review and Bug Detection Tool",
-    description: "ML-powered static code analysis tool that automatically reviews code quality, detects potential bugs, and suggests improvements for multiple programming languages.",
-    image: "/images/projects/code-review.jpg",
-    fallbackGradient: "linear-gradient(135deg, #a18cd1 0%, #fbc2eb 100%)",
-    category: "Software Engineering",
-    status: "Ongoing",
-    duration: "7 months",
-    team: ["Habibur Rahman", "Ashraful Alam", "Nazma Khatun"],
-    technologies: ["Python", "AST", "Machine Learning", "Docker", "GraphQL"],
-    supervisor: "Prof. Kamrul Islam",
-    achievements: ["Industry Collaboration Award"],
-    githubUrl: "https://github.com/cse-mbstu/code-review-tool",
-    year: "2024"
-  },
-  {
-    id: 6,
-    title: "Augmented Reality Campus Navigation App",
-    description: "Mobile AR application that provides interactive navigation assistance for new students and visitors using computer vision and GPS technology.",
-    image: "/images/projects/ar-navigation.jpg",
-    fallbackGradient: "linear-gradient(135deg, #667eea 0%, #764ba2 100%)",
-    category: "Augmented Reality",
-    status: "Completed",
-    duration: "9 months",
-    team: ["Salim Reza", "Ruma Akter", "Fahim Ahmed"],
-    technologies: ["Unity", "ARCore", "Firebase", "C#", "Google Maps API"],
-    supervisor: "Dr. Ashik Rahman",
-    achievements: ["Mobile App Development Excellence"],
-    githubUrl: "https://github.com/cse-mbstu/ar-navigation",
-    demoUrl: "https://play.google.com/store/apps/details?id=mbstu.ar.nav",
-    year: "2023"
-  }
-];
-
-// Get status color classes
-const getStatusColor = (status: string) => {
-  switch (status) {
-    case 'Completed':
-      return 'bg-green-100 text-green-800 hover:bg-green-200'
-    case 'Ongoing':
-      return 'bg-blue-100 text-blue-800 hover:bg-blue-200'
-    case 'Research':
-      return 'bg-purple-100 text-purple-800 hover:bg-purple-200'
-    default:
-      return 'bg-gray-100 text-[hsl(var(--secondary))] hover:bg-gray-200'
-  }
-}
-
-// Get category icon
-const getCategoryIcon = (category: string) => {
-  if (category.includes('AI') || category.includes('Intelligence')) return '🤖'
-  if (category.includes('IoT')) return '📡'
-  if (category.includes('Blockchain')) return '⛓️'
-  if (category.includes('Language')) return '🗣️'
-  if (category.includes('Software')) return '💻'
-  if (category.includes('AR') || category.includes('Augmented')) return '👓'
-  return '🔬'
-}
-</script>
-
 <template>
-  <section class="pt-24 container">
+  <section v-if="props.latestProjectsData.isVisible" class="pt-24 container">
     <!-- Section Header -->
     <div class="text-center mb-12">
-    <h2 class="text-3xl md:text-4xl font-bold text-[hsl(var(--secondary))] mb-4">
-        Latest Projects
-    </h2>
-    <p class="text-lg text-gray-600 max-w-3xl mx-auto">
-        Discover the innovative projects developed by our talented students under expert faculty supervision
-    </p>
+      <h2 class="text-3xl md:text-4xl font-bold text-[hsl(var(--secondary))] mb-4">
+        {{ props.latestProjectsData.sectionTitle }}
+      </h2>
+      <p class="text-lg text-gray-600 max-w-3xl mx-auto">
+        {{ props.latestProjectsData.sectionSubtitle }}
+      </p>
     </div>
 
     <!-- Projects Carousel -->
     <Carousel
-    :opts="{
+      v-if="props.latestProjectsData.showCarousel"
+      :opts="{
         align: 'start',
         loop: true,
-    }"
-    class="relative w-full max-w-7xl mx-auto"
+      }"
+      class="relative w-full max-w-7xl mx-auto"
     >
-    <CarouselContent class="-ml-2 md:-ml-4">
+      <CarouselContent class="-ml-2 md:-ml-4">
         <CarouselItem
-        v-for="project in latestProjects"
-        :key="project.id"
-        class="pl-2 md:pl-4 md:basis-1/2 lg:basis-1/3"
+          v-for="project in displayProjects"
+          :key="project.id"
+          class="pl-2 md:pl-4 md:basis-1/2 lg:basis-1/3"
         >
-        <Card class="group h-full bg-white hover:shadow-2xl transition-all duration-500 transform hover:-translate-y-2 border-2 border-gray-100 hover:border-blue-200">
+          <Card class="group h-full bg-white hover:shadow-2xl transition-all duration-500 transform hover:-translate-y-2 border-2 border-gray-100 hover:border-blue-200">
             <!-- Project Image/Preview -->
             <div class="relative h-48 overflow-hidden rounded-t-lg">
-            <div
+              <div
                 class="absolute inset-0 bg-cover bg-center bg-no-repeat transition-transform duration-500 group-hover:scale-110"
                 :style="{ 
-                backgroundImage: `url(${project.image}), ${project.fallbackGradient}`,
-                background: project.fallbackGradient
+                  backgroundImage: `url(${project.image}), ${project.fallbackGradient}`,
+                  background: project.fallbackGradient
                 }"
-            >
+              >
                 <div class="absolute inset-0 bg-black/20 group-hover:bg-black/30 transition-all duration-300"></div>
-            </div>
-            
-            <!-- Category Badge -->
-            <div class="absolute top-4 left-4">
+              </div>
+              
+              <!-- Category Badge -->
+              <div class="absolute top-4 left-4">
                 <Badge class="bg-white/90 text-[hsl(var(--secondary))] hover:bg-white">
-                {{ getCategoryIcon(project.category) }} {{ project.category }}
+                  {{ getCategoryIcon(project.category) }} {{ project.category }}
                 </Badge>
-            </div>
-            
-            <!-- Status Badge -->
-            <div class="absolute top-4 right-4">
+              </div>
+              
+              <!-- Status Badge -->
+              <div class="absolute top-4 right-4">
                 <Badge :class="getStatusColor(project.status)">
-                {{ project.status }}
+                  {{ project.status }}
                 </Badge>
-            </div>
+              </div>
 
-            <!-- Project Year -->
-            <div class="absolute bottom-4 right-4">
+              <!-- Project Year -->
+              <div class="absolute bottom-4 right-4">
                 <div class="bg-[hsl(var(--tertiary))] text-white px-3 py-1 rounded-full text-sm font-semibold">
-                {{ project.year }}
+                  {{ project.year }}
                 </div>
-            </div>
+              </div>
             </div>
 
             <CardHeader class="pb-3">
-            <div class="flex items-start justify-between mb-2">
+              <div class="flex items-start justify-between mb-2">
                 <CardTitle class="text-xl font-bold text-[hsl(var(--secondary))] line-clamp-2 group-hover:text-[hsl(var(--primary))] transition-colors">
-                {{ project.title }}
+                  {{ project.title }}
                 </CardTitle>
-            </div>
-            
-            <CardDescription class="text-gray-600 line-clamp-3 leading-relaxed">
+              </div>
+              
+              <CardDescription class="text-gray-600 line-clamp-3 leading-relaxed">
                 {{ project.description }}
-            </CardDescription>
+              </CardDescription>
             </CardHeader>
 
             <CardContent class="pt-0">
-            <!-- Project Details -->
-            <div class="space-y-3 mb-4">
+              <!-- Project Details -->
+              <div class="space-y-3 mb-4">
                 <div class="flex items-center text-sm text-gray-600">
-                <Calendar class="w-4 h-4 mr-2 text-[hsl(var(--secondary))] " />
-                <span>Duration: {{ project.duration }}</span>
+                  <Calendar class="w-4 h-4 mr-2 text-[hsl(var(--secondary))]" />
+                  <span>Duration: {{ project.duration }}</span>
                 </div>
                 
                 <div class="flex items-center text-sm text-gray-600">
-                <Users class="w-4 h-4 mr-2 text-green-600" />
-                <span>Team: {{ project.team.length }} members</span>
+                  <Users class="w-4 h-4 mr-2 text-green-600" />
+                  <span>Team: {{ project.team.length }} members</span>
                 </div>
 
                 <div class="flex items-start text-sm text-gray-600">
-                <Code2 class="w-4 h-4 mr-2 mt-0.5 text-purple-600 flex-shrink-0" />
-                <div class="flex flex-wrap gap-1">
+                  <Code2 class="w-4 h-4 mr-2 mt-0.5 text-purple-600 flex-shrink-0" />
+                  <div class="flex flex-wrap gap-1">
                     <Badge 
-                    v-for="tech in project.technologies.slice(0, 3)" 
-                    :key="tech"
-                    variant="outline" 
-                    class="text-xs"
+                      v-for="tech in project.technologies.slice(0, 3)" 
+                      :key="tech"
+                      variant="outline" 
+                      class="text-xs"
                     >
-                    {{ tech }}
+                      {{ tech }}
                     </Badge>
                     <Badge 
-                    v-if="project.technologies.length > 3"
-                    variant="outline" 
-                    class="text-xs"
+                      v-if="project.technologies.length > 3"
+                      variant="outline" 
+                      class="text-xs"
                     >
-                    +{{ project.technologies.length - 3 }}
+                      +{{ project.technologies.length - 3 }}
                     </Badge>
+                  </div>
                 </div>
-                </div>
-            </div>
+              </div>
 
-            <!-- Achievements -->
-            <div v-if="project.achievements && project.achievements.length > 0" class="mb-4">
+              <!-- Achievements -->
+              <div v-if="project.achievements && project.achievements.length > 0" class="mb-4">
                 <div class="flex items-center text-sm font-medium text-gray-700 mb-2">
-                <Award class="w-4 h-4 mr-2 text-yellow-600" />
-                Achievements
+                  <Award class="w-4 h-4 mr-2 text-yellow-600" />
+                  Achievements
                 </div>
                 <div class="space-y-1">
-                <Badge 
+                  <Badge 
                     v-for="achievement in project.achievements" 
                     :key="achievement"
                     class="bg-yellow-100 text-yellow-800 hover:bg-yellow-200 text-xs mr-1 mb-1"
-                >
+                  >
                     🏆 {{ achievement }}
-                </Badge>
+                  </Badge>
                 </div>
-            </div>
+              </div>
 
-            <!-- Supervisor -->
-            <div class="mb-4 p-3 bg-gray-50 rounded-lg">
+              <!-- Supervisor -->
+              <div class="mb-4 p-3 bg-gray-50 rounded-lg">
                 <div class="text-xs text-gray-500 mb-1">Supervised by</div>
                 <div class="font-medium text-[hsl(var(--secondary))]">{{ project.supervisor }}</div>
-            </div>
+              </div>
             </CardContent>
-        </Card>
+          </Card>
         </CarouselItem>
-    </CarouselContent>
-    
-    <CarouselPrevious class="hidden sm:flex -left-12 lg:-left-16" />
-    <CarouselNext class="hidden sm:flex -right-12 lg:-right-16" />
+      </CarouselContent>
+      
+      <CarouselPrevious class="hidden sm:flex -left-12 lg:-left-16" />
+      <CarouselNext class="hidden sm:flex -right-12 lg:-right-16" />
     </Carousel>
 
-    <!-- View All Projects Button -->
-    <div class="text-center mt-12">
-    <Button size="lg" class="bg-[hsl(var(--secondary))] hover:bg-[hsl(var(--primary))] text-white px-8 py-3">
-        <GitBranch class="w-5 h-5 mr-2" />
-        View All Projects
-    </Button>
+    <!-- Projects Grid (when not using carousel) -->
+    <div v-else class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+      <Card v-for="project in displayProjects" :key="project.id" class="group h-full bg-white hover:shadow-2xl transition-all duration-500 transform hover:-translate-y-2 border-2 border-gray-100 hover:border-blue-200">
+        <!-- Project Image/Preview -->
+        <div class="relative h-48 overflow-hidden rounded-t-lg">
+          <div
+            class="absolute inset-0 bg-cover bg-center bg-no-repeat transition-transform duration-500 group-hover:scale-110"
+            :style="{ 
+              backgroundImage: `url(${project.image}), ${project.fallbackGradient}`,
+              background: project.fallbackGradient
+            }"
+          >
+            <div class="absolute inset-0 bg-black/20 group-hover:bg-black/30 transition-all duration-300"></div>
+          </div>
+          
+          <!-- Category Badge -->
+          <div class="absolute top-4 left-4">
+            <Badge class="bg-white/90 text-[hsl(var(--secondary))] hover:bg-white">
+              {{ getCategoryIcon(project.category) }} {{ project.category }}
+            </Badge>
+          </div>
+          
+          <!-- Status Badge -->
+          <div class="absolute top-4 right-4">
+            <Badge :class="getStatusColor(project.status)">
+              {{ project.status }}
+            </Badge>
+          </div>
+
+          <!-- Project Year -->
+          <div class="absolute bottom-4 right-4">
+            <div class="bg-[hsl(var(--tertiary))] text-white px-3 py-1 rounded-full text-sm font-semibold">
+              {{ project.year }}
+            </div>
+          </div>
+        </div>
+
+        <CardHeader class="pb-3">
+          <div class="flex items-start justify-between mb-2">
+            <CardTitle class="text-xl font-bold text-[hsl(var(--secondary))] line-clamp-2 group-hover:text-[hsl(var(--primary))] transition-colors">
+              {{ project.title }}
+            </CardTitle>
+          </div>
+          
+          <CardDescription class="text-gray-600 line-clamp-3 leading-relaxed">
+            {{ project.description }}
+          </CardDescription>
+        </CardHeader>
+
+        <CardContent class="pt-0">
+          <!-- Project Details -->
+          <div class="space-y-3 mb-4">
+            <div class="flex items-center text-sm text-gray-600">
+              <Calendar class="w-4 h-4 mr-2 text-[hsl(var(--secondary))]" />
+              <span>Duration: {{ project.duration }}</span>
+            </div>
+            
+            <div class="flex items-center text-sm text-gray-600">
+              <Users class="w-4 h-4 mr-2 text-green-600" />
+              <span>Team: {{ project.team.length }} members</span>
+            </div>
+
+            <div class="flex items-start text-sm text-gray-600">
+              <Code2 class="w-4 h-4 mr-2 mt-0.5 text-purple-600 flex-shrink-0" />
+              <div class="flex flex-wrap gap-1">
+                <Badge 
+                  v-for="tech in project.technologies.slice(0, 3)" 
+                  :key="tech"
+                  variant="outline" 
+                  class="text-xs"
+                >
+                  {{ tech }}
+                </Badge>
+                <Badge 
+                  v-if="project.technologies.length > 3"
+                  variant="outline" 
+                  class="text-xs"
+                >
+                  +{{ project.technologies.length - 3 }}
+                </Badge>
+              </div>
+            </div>
+          </div>
+
+          <!-- Achievements -->
+          <div v-if="project.achievements && project.achievements.length > 0" class="mb-4">
+            <div class="flex items-center text-sm font-medium text-gray-700 mb-2">
+              <Award class="w-4 h-4 mr-2 text-yellow-600" />
+              Achievements
+            </div>
+            <div class="space-y-1">
+              <Badge 
+                v-for="achievement in project.achievements" 
+                :key="achievement"
+                class="bg-yellow-100 text-yellow-800 hover:bg-yellow-200 text-xs mr-1 mb-1"
+              >
+                🏆 {{ achievement }}
+              </Badge>
+            </div>
+          </div>
+
+          <!-- Supervisor -->
+          <div class="mb-4 p-3 bg-gray-50 rounded-lg">
+            <div class="text-xs text-gray-500 mb-1">Supervised by</div>
+            <div class="font-medium text-[hsl(var(--secondary))]">{{ project.supervisor }}</div>
+          </div>
+        </CardContent>
+      </Card>
     </div>
   </section>
 </template>
+
+<script setup lang="ts">
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from './ui/card'
+import { Badge } from './ui/badge'
+import { Carousel, CarouselContent, CarouselItem, CarouselNext, CarouselPrevious } from './ui/carousel'
+import { Calendar, Users, Code2, Award } from 'lucide-vue-next'
+import { computed } from 'vue'
+
+// Define interfaces
+interface Project {
+  id: number
+  title: string
+  description: string
+  category: string
+  status: string
+  year: number
+  duration: string
+  supervisor: string
+  team: string[]
+  technologies: string[]
+  achievements: string[]
+  image: string
+  fallbackGradient: string
+  isActive: boolean
+}
+
+interface LatestProjectsData {
+  isVisible: boolean
+  sectionTitle: string
+  sectionSubtitle: string
+  showCarousel: boolean
+  sortBy: 'title' | 'year' | 'status'
+  sortOrder: 'asc' | 'desc'
+  projects: Project[]
+}
+
+interface Props {
+  latestProjectsData?: LatestProjectsData
+}
+
+// Props with defaults
+const props = withDefaults(defineProps<Props>(), {
+  latestProjectsData: () => ({
+    isVisible: true,
+    sectionTitle: 'Latest Projects',
+    sectionSubtitle: 'Discover the innovative projects developed by our talented students under expert faculty supervision',
+    showCarousel: true,
+    sortBy: 'year',
+    sortOrder: 'desc',
+    projects: [
+      {
+        id: 1,
+        title: "E-Learning Platform",
+        description: "A comprehensive online learning management system with real-time collaboration features, video conferencing, and advanced analytics for tracking student progress.",
+        category: "Web Development",
+        status: "Completed",
+        year: 2024,
+        duration: "6 months",
+        supervisor: "Dr. Ahmed Rahman",
+        team: [
+          "Sakib Ahmed",
+          "Rashida Khan", 
+          "Fahim Hasan"
+        ],
+        technologies: ["Vue.js", "Laravel", "MySQL", "WebRTC"],
+        achievements: ["Best Project Award 2024", "Innovation Excellence"],
+        image: "/images/project/elearning.jpg",
+        fallbackGradient: "linear-gradient(135deg, #667eea 0%, #764ba2 100%)",
+        isActive: true
+      },
+      {
+        id: 2,
+        title: "Smart Campus IoT System",
+        description: "An intelligent campus management system using IoT sensors for monitoring energy consumption, security, and environmental conditions across university facilities.",
+        category: "IoT",
+        status: "In Progress",
+        year: 2024,
+        duration: "8 months",
+        supervisor: "Prof. Sultana Begum",
+        team: [
+          "Mahmud Hassan",
+          "Nafisa Rahman",
+          "Karim Ahmed",
+          "Fatema Khatun"
+        ],
+        technologies: ["Arduino", "Raspberry Pi", "Node.js", "MongoDB", "MQTT"],
+        achievements: ["Research Excellence Grant"],
+        image: "/images/project/iot-campus.jpg",
+        fallbackGradient: "linear-gradient(135deg, #f093fb 0%, #f5576c 100%)",
+        isActive: true
+      },
+      {
+        id: 3,
+        title: "Mobile Health Tracker",
+        description: "A cross-platform mobile application for health monitoring with AI-powered recommendations, medication reminders, and integration with wearable devices.",
+        category: "Mobile App",
+        status: "Completed",
+        year: 2023,
+        duration: "5 months",
+        supervisor: "Dr. Mohammad Ali",
+        team: [
+          "Raihan Uddin",
+          "Sumiya Akter"
+        ],
+        technologies: ["React Native", "Firebase", "TensorFlow", "SQLite"],
+        achievements: ["Health Innovation Award", "Top Mobile App 2023"],
+        image: "/images/project/health-app.jpg",
+        fallbackGradient: "linear-gradient(135deg, #4facfe 0%, #00f2fe 100%)",
+        isActive: true
+      },
+      {
+        id: 4,
+        title: "Blockchain Voting System",
+        description: "A secure and transparent digital voting platform using blockchain technology to ensure vote integrity and real-time result verification.",
+        category: "Blockchain",
+        status: "Under Review",
+        year: 2024,
+        duration: "7 months",
+        supervisor: "Dr. Rashida Sultana",
+        team: [
+          "Tanvir Ahmed",
+          "Samira Khatun",
+          "Rafiq Islam"
+        ],
+        technologies: ["Solidity", "Web3.js", "Ethereum", "React", "Node.js"],
+        achievements: ["Security Excellence Recognition"],
+        image: "/images/project/blockchain-voting.jpg",
+        fallbackGradient: "linear-gradient(135deg, #fa709a 0%, #fee140 100%)",
+        isActive: true
+      },
+      {
+        id: 5,
+        title: "AI-Powered Study Assistant",
+        description: "An intelligent study companion that uses natural language processing to help students with research, note-taking, and personalized learning recommendations.",
+        category: "AI/ML",
+        status: "Planning",
+        year: 2024,
+        duration: "4 months",
+        supervisor: "Prof. Khalid Rahman",
+        team: [
+          "Nusrat Jahan",
+          "Sabbir Hasan",
+          "Ayesha Rahman"
+        ],
+        technologies: ["Python", "TensorFlow", "NLTK", "FastAPI", "PostgreSQL"],
+        achievements: [],
+        image: "/images/project/ai-assistant.jpg",
+        fallbackGradient: "linear-gradient(135deg, #a8edea 0%, #fed6e3 100%)",
+        isActive: false
+      },
+      {
+        id: 6,
+        title: "Green Energy Monitor",
+        description: "A comprehensive system for monitoring and optimizing renewable energy sources in smart grids with predictive analytics and automated control systems.",
+        category: "Embedded Systems",
+        status: "Completed",
+        year: 2023,
+        duration: "9 months",
+        supervisor: "Dr. Mahmuda Khatun",
+        team: [
+          "Sharif Ahmed",
+          "Ruma Begum",
+          "Habib Rahman",
+          "Salma Akter"
+        ],
+        technologies: ["C++", "Arduino", "Python", "InfluxDB", "Grafana"],
+        achievements: ["Green Technology Award 2023", "Research Publication"],
+        image: "/images/project/green-energy.jpg",
+        fallbackGradient: "linear-gradient(135deg, #96fbc4 0%, #f9f586 100%)",
+        isActive: true
+      }
+    ]
+  })
+})
+
+// Computed property to filter and sort projects
+const displayProjects = computed(() => {
+  let projects = props.latestProjectsData.projects.filter(project => project.isActive)
+  
+  // Sort projects
+  projects.sort((a, b) => {
+    const sortBy = props.latestProjectsData.sortBy
+    const order = props.latestProjectsData.sortOrder === 'asc' ? 1 : -1
+    
+    if (sortBy === 'year') {
+      return (a.year - b.year) * order
+    } else if (sortBy === 'title') {
+      return a.title.localeCompare(b.title) * order
+    } else if (sortBy === 'status') {
+      return a.status.localeCompare(b.status) * order
+    }
+    
+    return 0
+  })
+  
+  return projects
+})
+
+// Helper functions
+const getCategoryIcon = (category: string): string => {
+  const icons: Record<string, string> = {
+    'Web Development': '🌐',
+    'Mobile App': '📱',
+    'IoT': '🔗',
+    'AI/ML': '🤖',
+    'Blockchain': '⛓️',
+    'Embedded Systems': '🔧'
+  }
+  return icons[category] || '💻'
+}
+
+const getStatusColor = (status: string): string => {
+  const colors: Record<string, string> = {
+    'Completed': 'bg-green-100 text-green-800 hover:bg-green-200',
+    'In Progress': 'bg-blue-100 text-blue-800 hover:bg-blue-200',
+    'Under Review': 'bg-yellow-100 text-yellow-800 hover:bg-yellow-200',
+    'Planning': 'bg-gray-100 text-gray-800 hover:bg-gray-200'
+  }
+  return colors[status] || 'bg-gray-100 text-gray-800 hover:bg-gray-200'
+}
+</script>
 
 <style scoped>
 .line-clamp-2 {
@@ -332,7 +488,7 @@ const getCategoryIcon = (category: string) => {
   overflow: hidden;
 }
 
-/* Custom hover effects */
+/* Image hover effect */
 .group:hover .absolute.inset-0 {
   transform: scale(1.05);
 }

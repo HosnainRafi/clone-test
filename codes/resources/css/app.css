@@ -1,6 +1,38 @@
 @import 'tailwindcss';
 /* @import '@selemondev/vue3-marquee/dist/style.css'; */
 
+/* Vue Toastification Custom Styles */
+:root {
+  --toastify-color-success: #219653;
+  --toastify-color-error: #d34053;
+  --toastify-color-warning: #ffa70b;
+  --toastify-color-info: #3c50e0;
+}
+
+.Vue-Toastification__toast {
+  @apply rounded-lg shadow-lg font-medium;
+}
+
+.Vue-Toastification__toast--success {
+  @apply bg-success text-white;
+}
+
+.Vue-Toastification__toast--error {
+  @apply bg-danger text-white;
+}
+
+.Vue-Toastification__toast--warning {
+  @apply bg-warning text-white;
+}
+
+.Vue-Toastification__toast--info {
+  @apply bg-primary text-white;
+}
+
+.Vue-Toastification__progress-bar {
+  @apply bg-white/30;
+}
+
 @theme {
   /* Container configuration */
   --container-center: true;
@@ -47,7 +79,7 @@
   --color-popover-foreground: hsl(var(--popover-foreground));
   --color-card-default: hsl(var(--card));
   --color-card-foreground: hsl(var(--card-foreground));
-  
+
   /* Meta colors */
   --color-meta-1: #dc3545;
   --color-meta-2: #eff2f7;
@@ -59,19 +91,19 @@
   --color-meta-8: #f0950c;
   --color-meta-9: #e5e7eb;
   --color-meta-10: #0fadcf;
-  
+
   /* Gray scale */
   --color-gray: #eff4fb;
   --color-gray-2: #f7f9fc;
   --color-gray-3: #fafafa;
-  
+
   /* Black scale */
   --color-black: #1c2434;
   --color-black-2: #010101;
-  
+
   /* Red scale */
   --color-red: #fb5454;
-  
+
   /* Spacing */
   --spacing-4_5: 1.125rem;
   --spacing-5_5: 1.375rem;
@@ -141,7 +173,7 @@
   --spacing-67: 16.75rem;
   --spacing-67_5: 16.875rem;
   --spacing-70: 17.5rem;
-  
+
   /* Font sizes with line heights */
   --font-size-title-xxl: 44px;
   --font-size-title-xxl--line-height: 55px;
@@ -163,11 +195,11 @@
   --font-size-title-sm2--line-height: 28px;
   --font-size-title-xsm: 18px;
   --font-size-title-xsm--line-height: 24px;
-  
+
   /* Shadows */
   --shadow-7: 0px 7px 12px -3px rgba(0, 0, 0, 0.06);
   --shadow-8: 0px 8px 13px -3px rgba(0, 0, 0, 0.07);
-  
+
   /* Breakpoints */
   --breakpoint-sm: 640px;
   --breakpoint-md: 768px;
@@ -255,7 +287,7 @@
         padding-right: 1.5rem;
         overflow-x: hidden;
     }
-    
+
     @media (min-width: 1400px) {
         .container {
             max-width: 1400px;
@@ -649,7 +681,7 @@ html {
     --ring: 145 60% 45%;
     --radius: 0.5rem;
   }
-   
+
 .orange {
   --background: 0 0% 100%;
   --foreground: 25 35% 12%;
@@ -773,7 +805,7 @@ html {
         overflow-x: hidden;
         max-width: 100%;
     }
-    
+
     body {
         @apply relative z-1 bg-[hsl(var(--background))] text-base font-normal text-body dark:text-bodydark dark:bg-boxdark-2;
     }

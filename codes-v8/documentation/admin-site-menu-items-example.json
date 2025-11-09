@@ -1,0 +1,82 @@
+{
+  "description": "Example JSON structure for Site menuItems field in admin CRUD",
+  "note": "This matches the structure used in SiteSeeder.php",
+  "example": [
+    {
+      "title": "Academic",
+      "col": "lg",
+      "subItems": [
+        {
+          "title": "Departments",
+          "description": "Explore our academic departments and programs",
+          "href": "/academic/departments"
+        },
+        {
+          "title": "Admissions",
+          "description": "Information about admissions process",
+          "href": "/academic/admissions"
+        },
+        {
+          "title": "Research",
+          "description": "Research activities and opportunities",
+          "href": "/academic/research"
+        }
+      ]
+    },
+    {
+      "title": "Student Life",
+      "col": "md",
+      "subItems": [
+        {
+          "title": "Campus Life",
+          "description": "Life on campus and student activities",
+          "href": "/student-life/campus"
+        },
+        {
+          "title": "Clubs & Organizations",
+          "description": "Student clubs and organizations",
+          "href": "/student-life/clubs"
+        },
+        {
+          "title": "Sports",
+          "description": "Sports and recreational activities",
+          "href": "/student-life/sports"
+        }
+      ]
+    },
+    {
+      "title": "About",
+      "col": "sm",
+      "subItems": [
+        {
+          "title": "History",
+          "description": "Our institution's history and heritage",
+          "href": "/about/history"
+        },
+        {
+          "title": "Leadership",
+          "description": "University leadership and administration",
+          "href": "/about/leadership"
+        },
+        {
+          "title": "Contact",
+          "description": "Contact information and location",
+          "href": "/about/contact"
+        }
+      ]
+    }
+  ],
+  "validation_rules": {
+    "required_fields": {
+      "menu_item": ["title", "col", "subItems"],
+      "sub_item": ["title", "description", "href"]
+    },
+    "data_types": {
+      "title": "string",
+      "col": "string (lg, md, sm)",
+      "subItems": "array",
+      "description": "string",
+      "href": "string (valid URL path)"
+    }
+  }
+}

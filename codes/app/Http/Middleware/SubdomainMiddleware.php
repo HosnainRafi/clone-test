@@ -64,6 +64,14 @@ class SubdomainMiddleware
         $page = \App\Models\Page::where('slug', trim($path, '/'))->first();
         logger('Page data: ' . json_encode($page));
 
+        // Determine route prefix based on site type
+        $siteType = $site->site_type ?? 'university';
+        $adminPrefix = match ($siteType) {
+            'department' => 'admin/department',
+            'faculty' => 'admin/faculty',
+            default => 'admin/university',
+        };
+
         // Inject data into the request for controller access
         $request->merge([
             'siteData' => $site,
@@ -73,6 +81,8 @@ class SubdomainMiddleware
             'fullDomain' => $host,
             'page' => $page,
             'themeName' => $site ? $site->theme_name : null,
+            'siteType' => $siteType,
+            'adminPrefix' => $adminPrefix,
         ]);
 
         // Share data with all views
@@ -82,6 +92,8 @@ class SubdomainMiddleware
         View::share('viewType', $viewType);
         View::share('fullDomain', $host);
         View::share('themeName', $site ? $site->theme_name : null);
+        View::share('siteType', $siteType);
+        View::share('adminPrefix', $adminPrefix);
         return $next($request);
     }
 }

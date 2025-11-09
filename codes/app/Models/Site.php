@@ -11,7 +11,7 @@ use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 class Site extends Model
 {
     use HasFactory, SoftDeletes;
-    
+
     /**
      * The attributes that are mass assignable.
      *
@@ -22,6 +22,7 @@ class Site extends Model
         'description',
         'domain',
         'subdomain',
+        'site_type',
         'theme_id',
         'theme_name',
         'settings',

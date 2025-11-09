@@ -15,6 +15,119 @@ import {
   ExternalLink
 } from "lucide-vue-next";
 import Separator from "@/components/user/ui/separator/Separator.vue";
+
+// Define interfaces for the footer data
+interface FooterLink {
+    text: string;
+    href: string;
+}
+
+interface SocialLink {
+    platform: 'facebook' | 'twitter' | 'linkedin' | 'youtube' | 'website';
+    href: string;
+}
+
+interface FooterData {
+    departmentName: string;
+    departmentFullName: string;
+    departmentDescription?: string;
+    logoUrl: string;
+    universityName: string;
+    address: string;
+    phone: string;
+    email: string;
+    website?: string;
+    quickLinksTitle: string;
+    quickLinks: FooterLink[];
+    resourcesTitle: string;
+    resourcesLinks: FooterLink[];
+    academicLinksTitle?: string;
+    academicLinks?: FooterLink[];
+    socialLinks: SocialLink[];
+    copyrightText: string;
+    privacyPolicyUrl?: string;
+    termsOfServiceUrl?: string;
+    sitemapUrl?: string;
+    showUniversityLink?: boolean;
+    universityWebsite?: string;
+}
+
+interface Props {
+    footerData?: FooterData;
+}
+
+const props = withDefaults(defineProps<Props>(), {
+    footerData: () => ({
+        departmentName: 'CSE',
+        departmentFullName: 'Department of Computer Science & Engineering',
+        departmentDescription: 'Leading innovation in computer science education and research, preparing students for the future of technology.',
+        logoUrl: '/images/university/logo/MBSTU_logo.png',
+        universityName: 'MBSTU',
+        address: 'Santosh, Tangail-1902, Bangladesh',
+        phone: '+880-921-55399',
+        email: 'info.cse@mbstu.ac.bd',
+        website: '',
+        quickLinksTitle: 'Quick Links',
+        quickLinks: [
+            { text: 'About Department', href: '/about' },
+            { text: 'Faculty Members', href: '/faculty' },
+            { text: 'Academic Programs', href: '/programs' },
+            { text: 'Research Areas', href: '/research' },
+            { text: 'Laboratories', href: '/labs' },
+            { text: 'Admissions', href: '/admissions' },
+            { text: 'Publications', href: '/publications' }
+        ],
+        resourcesTitle: 'Resources',
+        resourcesLinks: [
+            { text: 'Digital Library', href: '/library' },
+            { text: 'Course Curriculum', href: '/curriculum' },
+            { text: 'Thesis Repository', href: '/thesis' },
+            { text: 'Conferences', href: '/conferences' },
+            { text: 'Academic Journals', href: '/journals' },
+            { text: 'Events & Seminars', href: '/events' },
+            { text: 'Career Services', href: '/career' }
+        ],
+        academicLinksTitle: 'Academic',
+        academicLinks: [],
+        socialLinks: [
+            { platform: 'facebook', href: '#' },
+            { platform: 'twitter', href: '#' },
+            { platform: 'linkedin', href: '#' },
+            { platform: 'youtube', href: '#' },
+            { platform: 'website', href: 'https://mbstu.ac.bd' }
+        ],
+        copyrightText: `© ${new Date().getFullYear()} Department of Computer Science & Engineering, MBSTU`,
+        privacyPolicyUrl: '/privacy',
+        termsOfServiceUrl: '/terms',
+        sitemapUrl: '/sitemap',
+        showUniversityLink: true,
+        universityWebsite: 'https://mbstu.ac.bd'
+    })
+});
+
+// Helper function to get social icon component
+const getSocialIcon = (platform: string) => {
+    switch (platform) {
+        case 'facebook': return Facebook;
+        case 'twitter': return Twitter;
+        case 'linkedin': return Linkedin;
+        case 'youtube': return Youtube;
+        case 'website': return Globe;
+        default: return Globe;
+    }
+};
+
+// Helper function to get social platform color
+const getSocialColor = (platform: string) => {
+    switch (platform) {
+        case 'facebook': return 'bg-[hsl(var(--secondary))] hover:bg-[hsl(var(--primary))]';
+        case 'twitter': return 'bg-sky-500 hover:bg-sky-600';
+        case 'linkedin': return 'bg-blue-700 hover:bg-blue-800';
+        case 'youtube': return 'bg-red-600 hover:bg-red-700';
+        case 'website': return 'bg-green-600 hover:bg-green-700';
+        default: return 'bg-gray-600 hover:bg-gray-700';
+    }
+};
 </script>
 
 <template>
@@ -25,92 +138,87 @@ import Separator from "@/components/user/ui/separator/Separator.vue";
     <div class="container py-16">
       <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
         
-        <!-- University Logo & Info -->
+        <!-- Department Logo & Info -->
         <div class="lg:col-span-2">
           <div class="flex items-center mb-6">
             <div class="w-12 h-12 bg-[hsl(var(--primary))] rounded-lg flex items-center justify-center mr-4">
-              <GraduationCap class="w-7 h-7 text-white" />
+              <img v-if="footerData.logoUrl" :src="footerData.logoUrl" :alt="footerData.departmentName" class="w-8 h-8 object-contain" />
+              <GraduationCap v-else class="w-7 h-7 text-white" />
             </div>
             <div>
-              <h3 class="text-xl font-bold text-[hsl(var(--secondary))]">MBSTU CSE</h3>
-              <p class="text-sm text-gray-600">Department of Computer Science & Engineering</p>
+              <h3 class="text-xl font-bold text-[hsl(var(--secondary))]">{{ footerData.universityName }} {{ footerData.departmentName }}</h3>
+              <p class="text-sm text-gray-600">{{ footerData.departmentFullName }}</p>
             </div>
           </div>
           
-          <p class="text-gray-600 mb-6 leading-relaxed">
-            Mawlana Bhashani Science and Technology University - Leading innovation in computer science 
-            education and research, preparing students for the future of technology.
+          <p v-if="footerData.departmentDescription" class="text-gray-600 mb-6 leading-relaxed">
+            {{ footerData.departmentDescription }}
           </p>
           
           <!-- Contact Info -->
           <div class="space-y-3">
-            <div class="flex items-center text-gray-600">
-              <MapPin class="w-4 h-4 mr-3 text-[hsl(var(--secondary))] " />
-              <span class="text-sm">Santosh, Tangail-1902, Bangladesh</span>
+            <div v-if="footerData.address" class="flex items-center text-gray-600">
+              <MapPin class="w-4 h-4 mr-3 text-[hsl(var(--secondary))]" />
+              <span class="text-sm">{{ footerData.address }}</span>
             </div>
-            <div class="flex items-center text-gray-600">
-              <Phone class="w-4 h-4 mr-3 text-[hsl(var(--secondary))] " />
-              <span class="text-sm">+880-921-55399</span>
+            <div v-if="footerData.phone" class="flex items-center text-gray-600">
+              <Phone class="w-4 h-4 mr-3 text-[hsl(var(--secondary))]" />
+              <span class="text-sm">{{ footerData.phone }}</span>
             </div>
-            <div class="flex items-center text-gray-600">
-              <Mail class="w-4 h-4 mr-3 text-[hsl(var(--secondary))] " />
-              <span class="text-sm">info.cse@mbstu.ac.bd</span>
+            <div v-if="footerData.email" class="flex items-center text-gray-600">
+              <Mail class="w-4 h-4 mr-3 text-[hsl(var(--secondary))]" />
+              <span class="text-sm">{{ footerData.email }}</span>
+            </div>
+            <div v-if="footerData.website" class="flex items-center text-gray-600">
+              <Globe class="w-4 h-4 mr-3 text-[hsl(var(--secondary))]" />
+              <a :href="footerData.website" target="_blank" class="text-sm hover:text-[hsl(var(--secondary))] transition-colors duration-200">
+                {{ footerData.website }}
+              </a>
             </div>
           </div>
         </div>
 
         <!-- Quick Links -->
-        <div>
-          <h4 class="font-bold text-lg text-[hsl(var(--secondary))] mb-4">Quick Links</h4>
+        <div v-if="footerData.quickLinks && footerData.quickLinks.length > 0">
+          <h4 class="font-bold text-lg text-[hsl(var(--secondary))] mb-4">{{ footerData.quickLinksTitle }}</h4>
           <div class="space-y-2">
-            <a href="/about" class="block text-gray-600 hover:text-[hsl(var(--secondary))]  transition-colors duration-200 text-sm">
-              About Department
-            </a>
-            <a href="/faculty" class="block text-gray-600 hover:text-[hsl(var(--secondary))]  transition-colors duration-200 text-sm">
-              Faculty Members
-            </a>
-            <a href="/programs" class="block text-gray-600 hover:text-[hsl(var(--secondary))]  transition-colors duration-200 text-sm">
-              Academic Programs
-            </a>
-            <a href="/research" class="block text-gray-600 hover:text-[hsl(var(--secondary))]  transition-colors duration-200 text-sm">
-              Research Areas
-            </a>
-            <a href="/labs" class="block text-gray-600 hover:text-[hsl(var(--secondary))]  transition-colors duration-200 text-sm">
-              Laboratories
-            </a>
-            <a href="/admissions" class="block text-gray-600 hover:text-[hsl(var(--secondary))]  transition-colors duration-200 text-sm">
-              Admissions
-            </a>
-            <a href="/publications" class="block text-gray-600 hover:text-[hsl(var(--secondary))]  transition-colors duration-200 text-sm">
-              Publications
+            <a 
+              v-for="link in footerData.quickLinks" 
+              :key="link.href" 
+              :href="link.href" 
+              class="block text-gray-600 hover:text-[hsl(var(--secondary))] transition-colors duration-200 text-sm"
+            >
+              {{ link.text }}
             </a>
           </div>
         </div>
 
         <!-- Resources -->
-        <div>
-          <h4 class="font-bold text-lg text-[hsl(var(--secondary))] mb-4">Resources</h4>
+        <div v-if="footerData.resourcesLinks && footerData.resourcesLinks.length > 0">
+          <h4 class="font-bold text-lg text-[hsl(var(--secondary))] mb-4">{{ footerData.resourcesTitle }}</h4>
           <div class="space-y-2">
-            <a href="/library" class="block text-gray-600 hover:text-[hsl(var(--secondary))]  transition-colors duration-200 text-sm">
-              Digital Library
+            <a 
+              v-for="link in footerData.resourcesLinks" 
+              :key="link.href" 
+              :href="link.href" 
+              class="block text-gray-600 hover:text-[hsl(var(--secondary))] transition-colors duration-200 text-sm"
+            >
+              {{ link.text }}
             </a>
-            <a href="/curriculum" class="block text-gray-600 hover:text-[hsl(var(--secondary))]  transition-colors duration-200 text-sm">
-              Course Curriculum
-            </a>
-            <a href="/thesis" class="block text-gray-600 hover:text-[hsl(var(--secondary))]  transition-colors duration-200 text-sm">
-              Thesis Repository
-            </a>
-            <a href="/conferences" class="block text-gray-600 hover:text-[hsl(var(--secondary))]  transition-colors duration-200 text-sm">
-              Conferences
-            </a>
-            <a href="/journals" class="block text-gray-600 hover:text-[hsl(var(--secondary))]  transition-colors duration-200 text-sm">
-              Academic Journals
-            </a>
-            <a href="/events" class="block text-gray-600 hover:text-[hsl(var(--secondary))]  transition-colors duration-200 text-sm">
-              Events & Seminars
-            </a>
-            <a href="/career" class="block text-gray-600 hover:text-[hsl(var(--secondary))]  transition-colors duration-200 text-sm">
-              Career Services
+          </div>
+        </div>
+
+        <!-- Additional Academic Links (if exists and different from resources) -->
+        <div v-if="footerData.academicLinks && footerData.academicLinks.length > 0 && footerData.academicLinksTitle" class="lg:col-span-1">
+          <h4 class="font-bold text-lg text-[hsl(var(--secondary))] mb-4">{{ footerData.academicLinksTitle }}</h4>
+          <div class="space-y-2">
+            <a 
+              v-for="link in footerData.academicLinks" 
+              :key="link.href" 
+              :href="link.href" 
+              class="block text-gray-600 hover:text-[hsl(var(--secondary))] transition-colors duration-200 text-sm"
+            >
+              {{ link.text }}
             </a>
           </div>
         </div>
@@ -121,23 +229,18 @@ import Separator from "@/components/user/ui/separator/Separator.vue";
         <div class="flex flex-col md:flex-row justify-between items-center">
           
           <!-- Social Media Links -->
-          <div class="flex items-center space-x-4 mb-6 md:mb-0">
+          <div v-if="footerData.socialLinks && footerData.socialLinks.length > 0" class="flex items-center space-x-4 mb-6 md:mb-0">
             <span class="text-gray-600 text-sm font-medium">Follow Us:</span>
             <div class="flex space-x-3">
-              <a href="#" class="w-10 h-10 bg-[hsl(var(--secondary))] hover:bg-[hsl(var(--primary))] rounded-lg flex items-center justify-center transition-colors duration-200">
-                <Facebook class="w-5 h-5 text-white" />
-              </a>
-              <a href="#" class="w-10 h-10 bg-sky-500 hover:bg-sky-600 rounded-lg flex items-center justify-center transition-colors duration-200">
-                <Twitter class="w-5 h-5 text-white" />
-              </a>
-              <a href="#" class="w-10 h-10 bg-blue-700 hover:bg-blue-800 rounded-lg flex items-center justify-center transition-colors duration-200">
-                <Linkedin class="w-5 h-5 text-white" />
-              </a>
-              <a href="#" class="w-10 h-10 bg-red-600 hover:bg-red-700 rounded-lg flex items-center justify-center transition-colors duration-200">
-                <Youtube class="w-5 h-5 text-white" />
-              </a>
-              <a href="https://mbstu.ac.bd" target="_blank" class="w-10 h-10 bg-green-600 hover:bg-green-700 rounded-lg flex items-center justify-center transition-colors duration-200">
-                <Globe class="w-5 h-5 text-white" />
+              <a 
+                v-for="social in footerData.socialLinks" 
+                :key="social.platform"
+                :href="social.href" 
+                :target="social.platform === 'website' ? '_blank' : '_self'"
+                :class="getSocialColor(social.platform)"
+                class="w-10 h-10 rounded-lg flex items-center justify-center transition-colors duration-200"
+              >
+                <component :is="getSocialIcon(social.platform)" class="w-5 h-5 text-white" />
               </a>
             </div>
           </div>
@@ -145,14 +248,32 @@ import Separator from "@/components/user/ui/separator/Separator.vue";
           <!-- Copyright & Links -->
           <div class="text-center md:text-right">
             <p class="text-gray-600 text-sm mb-2">
-              © 2024 Department of Computer Science & Engineering, MBSTU
+              {{ footerData.copyrightText }}
             </p>
             <div class="flex items-center justify-center md:justify-end space-x-4 text-xs text-gray-500">
-              <a href="/privacy" class="hover:text-[hsl(var(--secondary))]  transition-colors duration-200">Privacy Policy</a>
-              <span>•</span>
-              <a href="/terms" class="hover:text-[hsl(var(--secondary))]  transition-colors duration-200">Terms of Service</a>
-              <span>•</span>
-              <a href="/sitemap" class="hover:text-[hsl(var(--secondary))]  transition-colors duration-200">Sitemap</a>
+              <a 
+                v-if="footerData.privacyPolicyUrl" 
+                :href="footerData.privacyPolicyUrl" 
+                class="hover:text-[hsl(var(--secondary))] transition-colors duration-200"
+              >
+                Privacy Policy
+              </a>
+              <span v-if="footerData.privacyPolicyUrl && footerData.termsOfServiceUrl">•</span>
+              <a 
+                v-if="footerData.termsOfServiceUrl" 
+                :href="footerData.termsOfServiceUrl" 
+                class="hover:text-[hsl(var(--secondary))] transition-colors duration-200"
+              >
+                Terms of Service
+              </a>
+              <span v-if="(footerData.privacyPolicyUrl || footerData.termsOfServiceUrl) && footerData.sitemapUrl">•</span>
+              <a 
+                v-if="footerData.sitemapUrl" 
+                :href="footerData.sitemapUrl" 
+                class="hover:text-[hsl(var(--secondary))] transition-colors duration-200"
+              >
+                Sitemap
+              </a>
             </div>
           </div>
         </div>

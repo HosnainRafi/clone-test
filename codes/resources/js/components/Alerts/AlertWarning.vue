@@ -1,8 +1,8 @@
 <template>
   <div
-    class="flex w-full border-l-6 border-warning bg-warning bg-opacity-[15%] px-7 py-8 shadow-md dark:bg-[#1B1B24] dark:bg-opacity-30 md:p-9"
+    class="flex w-full border-l-6 border-warning bg-warning/[15%] px-7 py-8 shadow-md dark:bg-[#1B1B24]/30 md:p-9"
   >
-    <div class="mr-5 flex h-9 w-9 items-center justify-center rounded-lg bg-warning bg-opacity-30">
+    <div class="mr-5 flex h-9 w-9 items-center justify-center rounded-lg bg-warning/30">
       <svg
         width="19"
         height="16"

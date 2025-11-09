@@ -34,6 +34,12 @@ class HomeController extends BaseController
         $eventItems = $componentService->getComponentDataForFrontend($siteId, 'DynamicEvents') ?? ($siteSettings['eventItems'] ?? []);
         $noticeItems = $componentService->getComponentDataForFrontend($siteId, 'DynamicNotices') ?? ($siteSettings['noticeItems'] ?? []);
         $footerData = $componentService->getComponentDataForFrontend($siteId, 'Footer') ?? ($siteSettings['footerData'] ?? []);
+        $address = $siteSettings['address'] ?? "";
+        $contactEmail = $siteSettings['contactEmail'] ?? "";
+        $siteTitle = $siteSettings['siteTitle'] ?? "";
+        $atAGlanceData = $siteSettings['atAGlanceData'] ?? null;
+        $latestProjects =  $siteSettings['latest_projects'] ?? null;
+        $techNews =  $siteSettings['tech_news'] ?? null;
 
         // Get news items from database (more authoritative than settings)
         $newsItems = News::forSite($siteId)
@@ -141,7 +147,24 @@ class HomeController extends BaseController
             'noticeItems' => $noticeItems,
             'publicationItems' => $publicationItems,
             'footerData' => $footerData,
+            'address' => $address,
+            'contactEmail' => $contactEmail,
+            'siteTitle' => $siteTitle,
+            'atAGlanceData' => $atAGlanceData,
+            'latestProjects' => $latestProjects,
+            'techNews' => $techNews,
         ];
+
+        // dd(1234567890, $data);
+
+        $subdomain = $request->input('siteData')['subdomain'];
+
+        if ($subdomain) {
+            return Inertia::render('Department', [
+                'message' => '',
+                'data' => $data
+            ]);
+        }
 
         return Inertia::render('University', [
             'message' => 'Welcome to the University',

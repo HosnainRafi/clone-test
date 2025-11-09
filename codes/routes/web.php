@@ -9,12 +9,16 @@ use App\Http\Controllers\Admin\NoticeController as AdminNoticeController;
 use App\Http\Controllers\Admin\PublicationController;
 use App\Http\Controllers\Admin\TenderController as AdminTenderController;
 use App\Http\Controllers\Admin\TeacherController as AdminTeacherController;
+use App\Http\Controllers\Admin\TeacherProfileController;
 use App\Http\Controllers\Admin\MessageFromController;
 use App\Http\Controllers\Admin\HeadlineMarqueeController;
 use App\Http\Controllers\Admin\FacultiesController;
 use App\Http\Controllers\Admin\WelcomeSectionController;
 use App\Http\Controllers\Admin\CampusLifeController;
 use App\Http\Controllers\Admin\FooterController;
+use App\Http\Controllers\Admin\LatestProjectsController;
+use App\Http\Controllers\Admin\TechNewsController;
+use App\Http\Controllers\Admin\AtAGlanceController;
 use App\Http\Controllers\Admin\TopBarController;
 use App\Http\Controllers\Public\HomeController;
 use App\Http\Controllers\Public\NewsController;
@@ -71,7 +75,9 @@ Route::middleware(['web', 'subdomain'])->group(function () {
     // ==========================================
     // ADMIN CONTENT MANAGEMENT ROUTES
     // ==========================================
-    Route::prefix('admin')->group(function () {
+
+    // Define admin routes for all site types (university, department, faculty, and legacy)
+    $adminRoutes = function () {
         // Menu Management
         Route::get('/menu', [MenuController::class, 'index'])->name('admin.menu');
         Route::post('/menu', [MenuController::class, 'save'])->name('admin.menu.save');
@@ -83,10 +89,6 @@ Route::middleware(['web', 'subdomain'])->group(function () {
         // Topbar Management
         Route::get('/topbar', [TopBarController::class, 'index'])->name('admin.topbar.index');
         Route::post('/topbar', [TopBarController::class, 'save'])->name('admin.topbar.save');
-
-        // Hero Carousel Management
-        Route::get('/hero-carousel', [HeroCarouselController::class, 'index'])->name('admin.hero-carousel');
-        Route::post('/hero-carousel', [HeroCarouselController::class, 'save'])->name('admin.hero-carousel.save');
 
         // Hero Carousel Management
         Route::get('/hero-carousel', [HeroCarouselController::class, 'index'])->name('admin.hero-carousel');
@@ -117,6 +119,33 @@ Route::middleware(['web', 'subdomain'])->group(function () {
     Route::post('/teachers', [AdminTeacherController::class, 'save'])->name('admin.teachers.save');
     Route::post('/teachers/upload-image', [AdminTeacherController::class, 'uploadImage'])->name('admin.teachers.upload-image');
 
+    // Teacher Profile Management (Individual Teacher Edit)
+    Route::prefix('teacher/profile')->name('teacher.profile.')->group(function () {
+        Route::get('/', [TeacherProfileController::class, 'index'])->name('index');
+        Route::get('/basic-info', [TeacherProfileController::class, 'basicInfo'])->name('basic-info');
+        Route::post('/basic-info', [TeacherProfileController::class, 'updateBasicInfo'])->name('basic-info.update');
+        Route::get('/about', [TeacherProfileController::class, 'about'])->name('about');
+        Route::post('/about', [TeacherProfileController::class, 'updateAbout'])->name('about.update');
+        Route::get('/research-interests', [TeacherProfileController::class, 'researchInterests'])->name('research-interests');
+        Route::post('/research-interests', [TeacherProfileController::class, 'updateResearchInterests'])->name('research-interests.update');
+        Route::get('/education', [TeacherProfileController::class, 'education'])->name('education');
+        Route::post('/education', [TeacherProfileController::class, 'updateEducation'])->name('education.update');
+        Route::get('/experience', [TeacherProfileController::class, 'experience'])->name('experience');
+        Route::post('/experience', [TeacherProfileController::class, 'updateExperience'])->name('experience.update');
+        Route::get('/publications', [TeacherProfileController::class, 'publications'])->name('publications');
+        Route::post('/publications', [TeacherProfileController::class, 'updatePublications'])->name('publications.update');
+        Route::get('/projects', [TeacherProfileController::class, 'projects'])->name('projects');
+        Route::post('/projects', [TeacherProfileController::class, 'updateProjects'])->name('projects.update');
+        Route::get('/courses', [TeacherProfileController::class, 'courses'])->name('courses');
+        Route::post('/courses', [TeacherProfileController::class, 'updateCourses'])->name('courses.update');
+        Route::get('/awards', [TeacherProfileController::class, 'awards'])->name('awards');
+        Route::post('/awards', [TeacherProfileController::class, 'updateAwards'])->name('awards.update');
+        Route::get('/social-links', [TeacherProfileController::class, 'socialLinks'])->name('social-links');
+        Route::post('/social-links', [TeacherProfileController::class, 'updateSocialLinks'])->name('social-links.update');
+        Route::post('/upload-image', [TeacherProfileController::class, 'uploadImage'])->name('upload-image');
+        Route::delete('/', [TeacherProfileController::class, 'destroy'])->name('destroy');
+    });
+
         // Campus Glance Management
         Route::get('/campus-glance', [CampusLifeController::class, 'glance'])->name('admin.campus-glance.index');
         Route::post('/campus-glance', [CampusLifeController::class, 'saveGlance'])->name('admin.campus-glance.save');
@@ -141,6 +170,18 @@ Route::middleware(['web', 'subdomain'])->group(function () {
         Route::get('/footer-section', [FooterController::class, 'index'])->name('admin.footer.admin');
         Route::post('/footer-section', [FooterController::class, 'save'])->name('admin.footer.save');
 
+        // At A Glance Management
+        Route::get('/ataglance-section', [AtAGlanceController::class, 'index'])->name('admin.ataglance.admin');
+        Route::post('/ataglance-section', [AtAGlanceController::class, 'save'])->name('admin.ataglance.save');
+
+        // Latest Projects Management
+        Route::get('/latest-projects-section', [LatestProjectsController::class, 'index'])->name('admin.latest-projects.admin');
+        Route::post('/latest-projects-section', [LatestProjectsController::class, 'save'])->name('admin.latest-projects.save');
+
+        // Tech News Management
+        Route::get('/tech-news-section', [TechNewsController::class, 'index'])->name('admin.tech-news.admin');
+        Route::post('/tech-news-section', [TechNewsController::class, 'save'])->name('admin.tech-news.save');
+
         // Dashboard
         Route::get('/dashboard', function () {
             return Inertia::render('Dashboard/Index');
@@ -154,8 +195,13 @@ Route::middleware(['web', 'subdomain'])->group(function () {
         Route::get('/settings', function () {
             return Inertia::render('Settings/SettingsView');
         })->name('admin.settings');
-    });
-    }); // End admin routes group
+    };
+
+    // Register routes for all site types
+    Route::prefix('admin')->group($adminRoutes);
+    Route::prefix('admin/university')->group($adminRoutes);
+    Route::prefix('admin/department')->group($adminRoutes);
+    Route::prefix('admin/faculty')->group($adminRoutes);
 
     // ==========================================
     // INERTIA/VUE PAGE ROUTES (MOVED INSIDE MIDDLEWARE)
@@ -169,22 +215,6 @@ Route::middleware(['web', 'subdomain'])->group(function () {
     Route::get('/signup', function () {
         return Inertia::render('Authentication/SignupView');
     })->name('signup');
-
-    // Admin Routes Group
-    Route::prefix('admin')->group(function () {
-        // Dashboard
-        Route::get('/dashboard', function () {
-            return Inertia::render('Dashboard/Index');
-        })->name('admin.dashboard');
-
-        // Profile and Settings
-        Route::get('/profile', function () {
-            return Inertia::render('Profile/ProfileView');
-        })->name('admin.profile');
-
-        Route::get('/settings', function () {
-            return Inertia::render('Settings/SettingsView');
-        })->name('admin.settings');
 
 }); // END OF SUBDOMAIN MIDDLEWARE GROUP
 

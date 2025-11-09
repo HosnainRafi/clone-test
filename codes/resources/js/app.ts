@@ -1,10 +1,12 @@
 import '../css/app.css';
+import 'vue-toastification/dist/index.css';
 
 import { createInertiaApp } from '@inertiajs/vue3';
 import { resolvePageComponent } from 'laravel-vite-plugin/inertia-helpers';
 import type { DefineComponent } from 'vue';
 import { createApp, h } from 'vue';
-import { createPinia } from 'pinia'
+import { createPinia } from 'pinia';
+import Toast from 'vue-toastification';
 
 const appName = import.meta.env.VITE_APP_NAME || 'Laravel';
 
@@ -16,6 +18,23 @@ createInertiaApp({
         createApp({ render: () => h(App, props) })
             .use(plugin)
             .use(pinia)
+            .use(Toast, {
+                position: 'top-right',
+                timeout: 3000,
+                closeOnClick: true,
+                pauseOnFocusLoss: true,
+                pauseOnHover: true,
+                draggable: true,
+                draggablePercent: 0.6,
+                showCloseButtonOnHover: false,
+                hideProgressBar: false,
+                closeButton: 'button',
+                icon: true,
+                rtl: false,
+                transition: 'Vue-Toastification__bounce',
+                maxToasts: 5,
+                newestOnTop: true
+            })
             .mount(el);
     },
     progress: {

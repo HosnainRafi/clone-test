@@ -1,17 +1,34 @@
 <script setup lang="ts">
+import { useAdminRoutes } from '@/composables/useAdminRoutes';
 import { useSidebarStore } from '@/stores/sidebar';
-import { Link } from '@inertiajs/vue3';
+import { Link, usePage } from '@inertiajs/vue3';
 import { onClickOutside } from '@vueuse/core';
-import { ref } from 'vue';
+import { computed, ref } from 'vue';
 import SidebarItem from './SidebarItem.vue';
 
 const target = ref(null);
 
 const sidebarStore = useSidebarStore();
+const { adminRoute } = useAdminRoutes();
 
 onClickOutside(target, () => {
     sidebarStore.isSidebarOpen = false;
 });
+
+interface Props {
+    siteData?: any;
+}
+
+const props = withDefaults(defineProps<Props>(), {
+    siteData: null,
+});
+
+const page = usePage();
+const siteData = computed(() => {
+    return props.siteData || page.props.siteData || null;
+});
+
+console.log('Sidebar siteData:', siteData.value);
 
 // Helper: return small inline SVG strings mapped to routes or labels
 const iconFor = (key: string) => {
@@ -66,32 +83,51 @@ const iconFor = (key: string) => {
     return `<svg class="fill-current" width="18" height="18" viewBox="0 0 24 24"><path d="M4 6h16M4 12h16M4 18h16" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" fill="none"/></svg>`;
 };
 
+const departmentMenuItems = computed(() => [
+    { label: 'Dashboard', route: adminRoute('dashboard'), icon: iconFor('dashboard') },
+    { label: 'Topbar', route: adminRoute('topbar'), icon: iconFor('menu') },
+    { label: 'Menu', route: adminRoute('menu'), icon: iconFor('menu') },
+    { label: 'Hero Slides', route: adminRoute('hero-carousel'), icon: iconFor('hero-carousel') },
+    { label: 'Headline Marquee', route: adminRoute('headline-marquee'), icon: iconFor('headline-marquee') },
+    { label: 'Message From', route: adminRoute('message-from'), icon: iconFor('message-from') },
+    { label: 'News Section', route: adminRoute('news-section'), icon: iconFor('news-section') },
+    { label: 'Events Section', route: adminRoute('events-section'), icon: iconFor('events-section') },
+    { label: 'Notices Section', route: adminRoute('notices-section'), icon: iconFor('notices-section') },
+    { label: 'Publications Section', route: adminRoute('publications-section'), icon: iconFor('publications-section') },
+    { label: 'At a glance Section', route: adminRoute('ataglance-section'), icon: iconFor('ataglance-section') },
+    { label: 'Tech News Section', route: adminRoute('tech-news-section'), icon: iconFor('tech-news-section') },
+    { label: 'Latest Projects Section', route: adminRoute('latest-projects-section'), icon: iconFor('latest-projects-section') },
+    { label: 'Footer Section', route: adminRoute('footer-section'), icon: iconFor('footer-section') },
+    { label: 'Pages', route: adminRoute('pages'), icon: iconFor('pages') },
+]);
+
 const menuGroups = ref([
     {
         name: 'MENU',
-        menuItems: [
-            { label: 'Dashboard', route: '/admin/dashboard', icon: iconFor('dashboard') },
-            { label: 'Topbar', route: '/admin/topbar', icon: iconFor('menu') },
-            { label: 'Menu', route: '/admin/menu', icon: iconFor('menu') },
-            { label: 'Hero Slides', route: '/admin/hero-carousel', icon: iconFor('hero-carousel') },
-            { label: 'Headline Marquee', route: '/admin/headline-marquee', icon: iconFor('headline-marquee') },
-            { label: 'Message From', route: '/admin/message-from', icon: iconFor('message-from') },
-            { label: 'Welcome video', route: '/admin/welcome-section', icon: iconFor('welcome-section') },
-            { label: 'Campus Life', route: '/admin/campus-life-section', icon: iconFor('campus-life-section') },
-            { label: 'Campus Glance', route: '/admin/campus-glance', icon: iconFor('campus-glance') },
-            { label: 'News Section', route: '/admin/news-section', icon: iconFor('news-section') },
-            { label: 'Events Section', route: '/admin/events-section', icon: iconFor('events-section') },
-            { label: 'Notices Section', route: '/admin/notices-section', icon: iconFor('notices-section') },
-            { label: 'Tender Section', route: '/admin/tenders-section', icon: iconFor('news-section') },
-            { label: 'Publications Section', route: '/admin/publications-section', icon: iconFor('publications-section') },
-            { label: 'Footer Section', route: '/admin/footer-section', icon: iconFor('footer-section') },
-            { label: 'Teachers', route: '/admin/teachers', icon: iconFor('teacher') },
-            { label: 'Pages', route: '/admin/pages', icon: iconFor('pages') },
-            { label: 'Themes', route: '/admin/themes', icon: iconFor('pages') },
-
-            { label: 'Settings', route: '/admin/settings', icon: iconFor('settings') },
-            {
-                icon: `<svg
+        menuItems: siteData.value
+            ? departmentMenuItems.value
+            : [
+                  { label: 'Dashboard', route: adminRoute('dashboard'), icon: iconFor('dashboard') },
+                  { label: 'Topbar', route: adminRoute('topbar'), icon: iconFor('menu') },
+                  { label: 'Menu', route: adminRoute('menu'), icon: iconFor('menu') },
+                  { label: 'Hero Slides', route: adminRoute('hero-carousel'), icon: iconFor('hero-carousel') },
+                  { label: 'Headline Marquee', route: adminRoute('headline-marquee'), icon: iconFor('headline-marquee') },
+                  { label: 'Message From', route: adminRoute('message-from'), icon: iconFor('message-from') },
+                  { label: 'Welcome video', route: adminRoute('welcome-section'), icon: iconFor('welcome-section') },
+                  { label: 'Campus Life', route: adminRoute('campus-life-section'), icon: iconFor('campus-life-section') },
+                  { label: 'Campus Glance', route: adminRoute('campus-glance'), icon: iconFor('campus-glance') },
+                  { label: 'News Section', route: adminRoute('news-section'), icon: iconFor('news-section') },
+                  { label: 'Events Section', route: adminRoute('events-section'), icon: iconFor('events-section') },
+                  { label: 'Notices Section', route: adminRoute('notices-section'), icon: iconFor('notices-section') },
+                  { label: 'Tender Section', route: adminRoute('tenders-section'), icon: iconFor('news-section') },
+                  { label: 'Publications Section', route: adminRoute('publications-section'), icon: iconFor('publications-section') },
+                  { label: 'Footer Section', route: adminRoute('footer-section'), icon: iconFor('footer-section') },
+                  { label: 'Teachers', route: adminRoute('teachers'), icon: iconFor('teacher') },
+                  { label: 'Pages', route: adminRoute('pages'), icon: iconFor('pages') },
+                  { label: 'Themes', route: adminRoute('themes'), icon: iconFor('pages') },
+                  { label: 'Settings', route: adminRoute('settings'), icon: iconFor('settings') },
+                  {
+                      icon: `<svg
                         class="fill-current"
                         width="18"
                         height="18"
@@ -108,10 +144,10 @@ const menuGroups = ref([
                           fill=""
                         />
                       </svg>`,
-                label: 'Site',
-                route: '/admin/sites',
-            },
-        ],
+                      label: 'Site',
+                      route: adminRoute('sites'),
+                  },
+              ],
     },
 ]);
 </script>
@@ -128,7 +164,13 @@ const menuGroups = ref([
         <!-- SIDEBAR HEADER -->
         <div class="flex items-center justify-between gap-2 px-6 py-5.5 lg:py-6.5">
             <Link to="/">
-                <img src="@/assets/images/logo/logo.svg" alt="Logo" />
+                <div class="flex items-center justify-between">
+                    <img height="60px" width="60px" src="@/assets/images/MBSTU_logo.png" alt="Logo" />
+                    <div class="ml-3">
+                        <h1 class="text-left text-white">{{ siteData?.name || 'MBSTU' }}</h1>
+                        <p class="text-left text-white">{{ siteData?.name ? 'MBSTU' : 'University' }}</p>
+                    </div>
+                </div>
             </Link>
 
             <button class="block lg:hidden" @click="sidebarStore.isSidebarOpen = false">
