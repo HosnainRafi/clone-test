@@ -201,7 +201,50 @@ Route::middleware(['web', 'subdomain'])->group(function () {
     Route::prefix('admin')->group($adminRoutes);
     Route::prefix('admin/university')->group($adminRoutes);
     Route::prefix('admin/department')->group($adminRoutes);
-    Route::prefix('admin/faculty')->group($adminRoutes);
+
+    // Faculty routes - Teachers edit their OWN profile (no teacher_id needed)
+    Route::prefix('admin/faculty')->group(function () {
+        // Dashboard
+        Route::get('/dashboard', function () {
+            return Inertia::render('Dashboard/Index');
+        })->name('admin.dashboard');
+
+        // Profile routes for the logged-in teacher (no teacher/profile prefix)
+        Route::prefix('profile')->name('teacher.profile.')->group(function () {
+            Route::get('/', [TeacherProfileController::class, 'index'])->name('index');
+            Route::get('/basic-info', [TeacherProfileController::class, 'basicInfo'])->name('basic-info');
+            Route::post('/basic-info', [TeacherProfileController::class, 'updateBasicInfo'])->name('basic-info.update');
+            Route::get('/about', [TeacherProfileController::class, 'about'])->name('about');
+            Route::post('/about', [TeacherProfileController::class, 'updateAbout'])->name('about.update');
+            Route::get('/research-interests', [TeacherProfileController::class, 'researchInterests'])->name('research-interests');
+            Route::post('/research-interests', [TeacherProfileController::class, 'updateResearchInterests'])->name('research-interests.update');
+            Route::get('/education', [TeacherProfileController::class, 'education'])->name('education');
+            Route::post('/education', [TeacherProfileController::class, 'updateEducation'])->name('education.update');
+            Route::get('/experience', [TeacherProfileController::class, 'experience'])->name('experience');
+            Route::post('/experience', [TeacherProfileController::class, 'updateExperience'])->name('experience.update');
+            Route::get('/publications', [TeacherProfileController::class, 'publications'])->name('publications');
+            Route::post('/publications', [TeacherProfileController::class, 'updatePublications'])->name('publications.update');
+            Route::get('/projects', [TeacherProfileController::class, 'projects'])->name('projects');
+            Route::post('/projects', [TeacherProfileController::class, 'updateProjects'])->name('projects.update');
+            Route::get('/courses', [TeacherProfileController::class, 'courses'])->name('courses');
+            Route::post('/courses', [TeacherProfileController::class, 'updateCourses'])->name('courses.update');
+            Route::get('/awards', [TeacherProfileController::class, 'awards'])->name('awards');
+            Route::post('/awards', [TeacherProfileController::class, 'updateAwards'])->name('awards.update');
+            Route::get('/social-links', [TeacherProfileController::class, 'socialLinks'])->name('social-links');
+            Route::post('/social-links', [TeacherProfileController::class, 'updateSocialLinks'])->name('social-links.update');
+            Route::post('/upload-image', [TeacherProfileController::class, 'uploadImage'])->name('upload-image');
+            Route::delete('/', [TeacherProfileController::class, 'destroy'])->name('destroy');
+        });
+
+        // Profile and Settings (same as other admin types)
+        Route::get('/profile', function () {
+            return Inertia::render('Profile/ProfileView');
+        })->name('admin.profile');
+
+        Route::get('/settings', function () {
+            return Inertia::render('Settings/SettingsView');
+        })->name('admin.settings');
+    });
 
     // ==========================================
     // INERTIA/VUE PAGE ROUTES (MOVED INSIDE MIDDLEWARE)

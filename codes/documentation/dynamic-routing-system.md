@@ -143,7 +143,9 @@ Teacher profile navigation now adapts to site type:
 const { adminRoute, siteType } = useAdminRoutes();
 
 const menuItems = computed(() => {
-    const profilePrefix = siteType.value === 'faculty' ? 'teacher/profile' : 'teacher/profile';
+    // For faculty: simplified routes /admin/faculty/profile/*
+    // For university/department: full routes /admin/{type}/teacher/profile/*
+    const profilePrefix = siteType.value === 'faculty' ? 'profile' : 'teacher/profile';
 
     return [
         { name: 'Basic Info', path: adminRoute(`${profilePrefix}/basic-info`) },
@@ -153,6 +155,12 @@ const menuItems = computed(() => {
 });
 </script>
 ```
+
+**Faculty Route Behavior:**
+
+- When `siteType === 'faculty'`, routes are simplified to `/admin/faculty/profile/*`
+- No `teacher_id` parameter needed - controller gets ID from authenticated user
+- Teachers can only edit their own profile (enforced in controller)
 
 ## Route Examples
 
@@ -176,11 +184,19 @@ const menuItems = computed(() => {
 
 ### Faculty Site (when logged in as teacher)
 
-| Page         | Old Route                             | New Route                     |
-| ------------ | ------------------------------------- | ----------------------------- |
-| Profile      | `/admin/teacher/profile/basic-info`   | `/admin/faculty/basic-info`   |
-| About        | `/admin/teacher/profile/about`        | `/admin/faculty/about`        |
-| Publications | `/admin/teacher/profile/publications` | `/admin/faculty/publications` |
+| Page         | New Route                             | Notes                          |
+| ------------ | ------------------------------------- | ------------------------------ |
+| Dashboard    | `/admin/faculty/dashboard`            | Teacher's personal dashboard   |
+| Basic Info   | `/admin/faculty/profile/basic-info`   | No teacher_id parameter needed |
+| About        | `/admin/faculty/profile/about`        | Edits own profile only         |
+| Education    | `/admin/faculty/profile/education`    | Edits own education            |
+| Publications | `/admin/faculty/profile/publications` | Edits own publications         |
+
+**Key Differences for Faculty Routes:**
+
+- No `teacher/` prefix in routes (simplified from `/admin/faculty/teacher/profile/*` to `/admin/faculty/profile/*`)
+- No `teacher_id` query parameter required (uses authenticated user's ID)
+- Teachers can ONLY edit their own profile (not other teachers)
 
 ## Updating Existing Links
 
@@ -238,17 +254,102 @@ Route::prefix('admin/faculty')->group(function () {
 
 - Visit: `http://localhost:8000/admin/university/dashboard`
 - Check sidebar links use `/admin/university/*` prefix
+- Teachers list should show ALL teachers from all departments
 
 ### 2. Test Department Site
 
 - Visit: `http://cse.localhost:8000/admin/department/dashboard`
 - Check sidebar links use `/admin/department/*` prefix
+- Teachers list should show ONLY CSE department teachers (filtered by site_id)
 
 ### 3. Test Faculty Site
 
-- Login as a teacher
-- Visit teacher profile pages
-- Check links use `/admin/faculty/*` prefix
+- Set localhost site to faculty type: `UPDATE sites SET site_type = 'faculty' WHERE domain = 'localhost';`
+- Visit: `http://localhost:8000/admin/faculty/dashboard`
+- Visit: `http://localhost:8000/admin/faculty/profile/basic-info`
+- Profile should load without requiring `teacher_id` parameter
+- Teacher can only edit their own profile
+
+## Teacher Management Logic
+
+### University Admin
+
+- **Route:** `/admin/university/teachers`
+- **Access:** View and edit ALL teachers across all departments
+- **Query:** No site filtering applied
+- **Use Case:** University-wide teacher management
+
+### Department Admin
+
+- **Route:** `/admin/department/teachers`
+- **Access:** View and edit ONLY teachers from their department
+- **Query:** Filtered by `site_id` of the department
+- **Use Case:** Department-specific teacher management
+
+### Faculty (Teacher)
+
+- **Route:** `/admin/faculty/profile/*`
+- **Access:** Edit ONLY their own profile
+- **Query:** Uses authenticated teacher's ID (no `teacher_id` parameter)
+- **Use Case:** Individual teacher profile self-management
+
+### Controller Logic (TeacherProfileController)
+
+```php
+private function getTeacherProfile(Request $request)
+{
+    $siteType = $request->get('siteType', 'university');
+
+    if ($siteType === 'faculty') {
+        // Faculty: Teacher editing their own profile
+        $teacherId = $request->session()->get('teacher_id') ?? 1;
+        $teacher = Teacher::where('id', $teacherId)->first();
+    } else {
+        // University/Department: Admin editing a teacher's profile
+        $teacherId = $request->query('teacher_id');
+
+        if (!$teacherId) {
+            abort(400, 'teacher_id parameter is required for admin access');
+        }
+
+        if ($siteType === 'department') {
+            // Department admin can only edit teachers from their department
+            $teacher = Teacher::where('id', $teacherId)
+                ->where('site_id', $siteId)
+                ->first();
+        } else {
+            // University admin can edit any teacher
+            $teacher = Teacher::where('id', $teacherId)->first();
+        }
+    }
+
+    return $teacher;
+}
+```
+
+### Controller Logic (TeacherController - Index)
+
+```php
+public function index(Request $request)
+{
+    $siteType = $request->get('siteType', 'university');
+    $query = Teacher::query();
+
+    if ($siteType === 'university') {
+        // University admin sees ALL teachers
+        $query->orderBy('site_id', 'asc');
+    } elseif ($siteType === 'department') {
+        // Department admin sees only their department's teachers
+        $query->forSite($siteId);
+    } else {
+        // Faculty shouldn't access this route
+        $query->where('id', -1); // No results
+    }
+
+    $teachers = $query->get();
+    // ...
+}
+```
 
 ## Configuration
 

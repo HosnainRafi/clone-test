@@ -18,22 +18,38 @@ class TeacherProfileController extends BaseController
     {
         $siteData = $this->getSiteData($request);
         $siteId = $siteData['id'] ?? 1;
+        $siteType = $request->get('siteType', 'university');
 
-        // TODO: Replace with actual authentication when login system is implemented
-        // For now, get the first teacher or a specific one
-        $teacherId = $request->query('teacher_id') ?? $request->session()->get('teacher_id');
+        // Determine teacher_id based on site type
+        if ($siteType === 'faculty') {
+            // Faculty: Teacher editing their own profile
+            // TODO: Replace with actual authentication (Auth::user()->teacher_id)
+            // For now, get from session or use a default
+            $teacherId = $request->session()->get('teacher_id') ?? 1; // Default to teacher ID 1 for testing
 
-        if ($teacherId) {
-            $teacher = Teacher::where('id', $teacherId)
-                ->where('site_id', $siteId)
-                ->first();
+            $teacher = Teacher::where('id', $teacherId)->first();
         } else {
-            // Get first teacher for testing purposes
-            $teacher = Teacher::where('site_id', $siteId)->first();
+            // University/Department: Admin editing a teacher's profile
+            // Require teacher_id in query parameter
+            $teacherId = $request->query('teacher_id');
+
+            if (!$teacherId) {
+                abort(400, 'teacher_id parameter is required for admin access');
+            }
+
+            if ($siteType === 'department') {
+                // Department admin can only edit teachers from their department
+                $teacher = Teacher::where('id', $teacherId)
+                    ->where('site_id', $siteId)
+                    ->first();
+            } else {
+                // University admin can edit any teacher
+                $teacher = Teacher::where('id', $teacherId)->first();
+            }
         }
 
         if (!$teacher) {
-            abort(404, 'Teacher profile not found. Please create a teacher first in /admin/teachers');
+            abort(404, 'Teacher profile not found.');
         }
 
         // Store teacher_id in session for subsequent requests

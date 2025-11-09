@@ -19,57 +19,63 @@ const page = usePage();
 
 // Generate menu items with dynamic routes based on site type
 const menuItems = computed(() => {
-    const profilePrefix = siteType.value === 'faculty' ? 'teacher/profile' : 'teacher/profile';
+    // For faculty (teacher login), use simplified routes: /admin/faculty/profile/*
+    // For university/department (admin editing teacher), use: /admin/{type}/teacher/profile/*
+    const profilePrefix = siteType.value === 'faculty' ? 'profile' : 'teacher/profile';
+
+    // For university/department, append teacher_id query parameter
+    const teacherId = props.teacher?.id;
+    const queryParam = siteType.value !== 'faculty' && teacherId ? `?teacher_id=${teacherId}` : '';
 
     return [
         {
             name: 'Basic Info',
-            path: adminRoute(`${profilePrefix}/basic-info`),
+            path: `${adminRoute(`${profilePrefix}/basic-info`)}${queryParam}`,
             icon: User,
         },
         {
             name: 'About Me',
-            path: adminRoute(`${profilePrefix}/about`),
+            path: `${adminRoute(`${profilePrefix}/about`)}${queryParam}`,
             icon: FileText,
         },
         {
             name: 'Research Interests',
-            path: adminRoute(`${profilePrefix}/research-interests`),
+            path: `${adminRoute(`${profilePrefix}/research-interests`)}${queryParam}`,
             icon: Lightbulb,
         },
         {
             name: 'Education',
-            path: adminRoute(`${profilePrefix}/education`),
+            path: `${adminRoute(`${profilePrefix}/education`)}${queryParam}`,
             icon: GraduationCap,
         },
         {
             name: 'Experience',
-            path: adminRoute(`${profilePrefix}/experience`),
+            path: `${adminRoute(`${profilePrefix}/experience`)}${queryParam}`,
             icon: Briefcase,
         },
         {
             name: 'Publications',
-            path: adminRoute(`${profilePrefix}/publications`),
+            path: `${adminRoute(`${profilePrefix}/publications`)}${queryParam}`,
             icon: BookOpen,
         },
         {
             name: 'Projects',
-            path: adminRoute(`${profilePrefix}/projects`),
+            path: `${adminRoute(`${profilePrefix}/projects`)}${queryParam}`,
             icon: FolderOpen,
         },
         {
             name: 'Courses Taught',
-            path: adminRoute(`${profilePrefix}/courses`),
+            path: `${adminRoute(`${profilePrefix}/courses`)}${queryParam}`,
             icon: BookMarked,
         },
         {
             name: 'Awards & Honors',
-            path: adminRoute(`${profilePrefix}/awards`),
+            path: `${adminRoute(`${profilePrefix}/awards`)}${queryParam}`,
             icon: Award,
         },
         {
             name: 'Social & Academic Links',
-            path: adminRoute(`${profilePrefix}/social-links`),
+            path: `${adminRoute(`${profilePrefix}/social-links`)}${queryParam}`,
             icon: Link2,
         },
     ];

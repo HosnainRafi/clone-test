@@ -32,6 +32,8 @@ interface TeacherItem {
 interface PageProps {
     teachers: TeacherItem[];
     siteId: number | null;
+    siteType?: string;
+    departments: Array<{ id: number; name: string; subdomain: string }>;
 }
 
 const props = defineProps<PageProps>();
@@ -71,11 +73,11 @@ const slugify = (text: string) =>
 
 const defaultTeacher = (): TeacherItem => ({
     id: Date.now(),
-    site_id: props.siteId || 1,
+    site_id: props.siteId || (props.departments && props.departments.length > 0 ? props.departments[0].id : null),
     slug: '',
     name: '',
     designation: '',
-    department: '',
+    department: props.departments && props.departments.length > 0 ? props.departments[0].name : '',
     profile_image: '',
     email: '',
     phone_number: '',
@@ -147,8 +149,18 @@ const validateAndSave = async () => {
     if (!props.siteId) return showMessage('Site ID missing.', 'error');
     isSaving.value = true;
     try {
+        // Determine the correct route based on site type
+        const siteType = props.siteType || 'university';
+        let saveRoute = '/admin/teachers'; // Legacy fallback
+
+        if (siteType === 'university') {
+            saveRoute = '/admin/university/teachers';
+        } else if (siteType === 'department') {
+            saveRoute = '/admin/department/teachers';
+        }
+
         const csrf = document.querySelector('meta[name="csrf-token"]')?.getAttribute('content') || '';
-        const response = await fetch('/admin/teachers', {
+        const response = await fetch(saveRoute, {
             method: 'POST',
             headers: { 'Content-Type': 'application/json', 'X-CSRF-TOKEN': csrf, Accept: 'application/json' },
             body: JSON.stringify({ teachers: teacherData.value }),
@@ -200,6 +212,14 @@ const onClickAddInterest = () => {
     if (interestInput.value) interestInput.value.value = '';
 };
 
+const updateDepartmentName = () => {
+    if (!editingItem.value) return;
+    const selectedDept = props.departments.find((d) => d.id === editingItem.value!.site_id);
+    if (selectedDept) {
+        editingItem.value.department = selectedDept.name;
+    }
+};
+
 const onProfileImageSelected = async (e: Event) => {
     uploadError.value = '';
     if (!props.siteId) {
@@ -211,10 +231,20 @@ const onProfileImageSelected = async (e: Event) => {
     if (!file) return;
     uploading.value = true;
     try {
+        // Determine the correct route based on site type
+        const siteType = props.siteType || 'university';
+        let uploadRoute = '/admin/teachers/upload-image'; // Legacy fallback
+
+        if (siteType === 'university') {
+            uploadRoute = '/admin/university/teachers/upload-image';
+        } else if (siteType === 'department') {
+            uploadRoute = '/admin/department/teachers/upload-image';
+        }
+
         const form = new FormData();
         form.append('file', file);
         const csrf = document.querySelector('meta[name="csrf-token"]')?.getAttribute('content') || '';
-        const res = await fetch('/admin/teachers/upload-image', {
+        const res = await fetch(uploadRoute, {
             method: 'POST',
             headers: { 'X-CSRF-TOKEN': csrf },
             body: form,
@@ -286,7 +316,8 @@ const onProfileImageSelected = async (e: Event) => {
                                     <p class="text-black dark:text-white">{{ item.designation }}</p>
                                 </td>
                                 <td class="border-b border-[#eee] px-4 py-5 dark:border-strokedark">
-                                    <p class="text-black dark:text-white">{{ item.department }}</p>
+                                    <p class="text-black dark:text-white">{{ item.department || 'N/A' }}</p>
+                                    <p v-if="item.site_id" class="text-xs text-gray-500">Site ID: {{ item.site_id }}</p>
                                 </td>
                                 <!-- <td class="border-b border-[#eee] px-4 py-5 dark:border-strokedark">
                                     <span
@@ -338,8 +369,14 @@ const onProfileImageSelected = async (e: Event) => {
                             <input v-model="editingItem.designation" type="text" class="form-input" />
                         </div>
                         <div>
-                            <label class="form-label">Department</label>
-                            <input v-model="editingItem.department" type="text" class="form-input" />
+                            <label class="form-label">Department *</label>
+                            <select v-model.number="editingItem.site_id" class="form-input" @change="updateDepartmentName">
+                                <option value="" disabled>Select Department</option>
+                                <option v-for="dept in departments" :key="dept.id" :value="dept.id">
+                                    {{ dept.name }}
+                                </option>
+                            </select>
+                            <p v-if="editingItem.site_id" class="mt-1 text-xs text-gray-500">Site ID: {{ editingItem.site_id }}</p>
                         </div>
                         <div>
                             <label class="form-label">Profile Image URL</label>

@@ -15,8 +15,23 @@ class TeacherController extends BaseController
     {
         $siteData = $this->getSiteData($request);
         $siteId = $siteData['id'] ?? 1;
+        $siteType = $request->get('siteType', 'university');
 
-        $teachers = Teacher::forSite($siteId)
+        // Build the query based on site type
+        $query = Teacher::query();
+
+        if ($siteType === 'university') {
+            // University admin sees ALL teachers
+            $query->orderBy('site_id', 'asc');
+        } elseif ($siteType === 'department') {
+            // Department admin sees only teachers from their department/site
+            $query->forSite($siteId);
+        } else {
+            // Faculty shouldn't access this route, but if they do, show nothing
+            $query->where('id', -1); // No results
+        }
+
+        $teachers = $query
             ->orderBy('sort_order', 'asc')
             ->orderBy('name', 'asc')
             ->get()
@@ -48,16 +63,33 @@ class TeacherController extends BaseController
             })
             ->toArray();
 
+        // Get department sites for dropdown
+        $departments = \App\Models\Site::where('site_type', 'department')
+            ->where('is_active', true)
+            ->orderBy('name', 'asc')
+            ->get()
+            ->map(function ($site) {
+                return [
+                    'id' => $site->id,
+                    'name' => $site->name,
+                    'subdomain' => $site->subdomain,
+                ];
+            })
+            ->toArray();
+
         return Inertia::render('Teacher/Index', [
             'teachers' => $teachers,
             'siteId' => $siteId,
+            'siteType' => $siteType,
+            'departments' => $departments,
         ]);
     }
 
     public function save(Request $request)
     {
         $siteData = $this->getSiteData($request);
-        $siteId = $siteData['id'] ?? 1;
+        $currentSiteId = $siteData['id'] ?? 1;
+        $siteType = $request->get('siteType', 'university');
 
         $payload = $request->input('teachers', []);
         if (is_string($payload)) {
@@ -91,8 +123,12 @@ class TeacherController extends BaseController
                 }
 
                 $id = isset($item['id']) ? (int) $item['id'] : null;
+
+                // Use the site_id from the item (selected department) or current site
+                $teacherSiteId = isset($item['site_id']) ? (int) $item['site_id'] : $currentSiteId;
+
                 $data = [
-                    'site_id' => $siteId,
+                    'site_id' => $teacherSiteId,
                     'name' => $item['name'],
                     'designation' => $item['designation'] ?? null,
                     'department' => $item['department'] ?? null,
@@ -116,7 +152,15 @@ class TeacherController extends BaseController
                 ];
 
                 if ($id) {
-                    $existing = Teacher::forSite($siteId)->where('id', $id)->first();
+                    // For updates, find the teacher by ID (no site restriction for university admin)
+                    $query = Teacher::where('id', $id);
+
+                    // Department admin can only update their own department's teachers
+                    if ($siteType === 'department') {
+                        $query->where('site_id', $currentSiteId);
+                    }
+
+                    $existing = $query->first();
                     if ($existing) {
                         $existing->update($data);
                         $saved = $existing;
@@ -134,11 +178,24 @@ class TeacherController extends BaseController
                 $incomingIds[] = $saved->id;
             }
 
-            // Remove teachers not present in payload (for this site)
+            // Remove teachers not present in payload
+            // For university: delete any teacher not in the list
+            // For department: only delete teachers from current department
+            $deleteQuery = Teacher::whereNotIn('id', $incomingIds);
+
+            if ($siteType === 'department') {
+                $deleteQuery->where('site_id', $currentSiteId);
+            }
+
             if (count($incomingIds) > 0) {
-                Teacher::forSite($siteId)->whereNotIn('id', $incomingIds)->delete();
+                $deleteQuery->delete();
             } else {
-                Teacher::forSite($siteId)->delete();
+                // If no teachers in payload, delete all (based on site type)
+                if ($siteType === 'department') {
+                    Teacher::where('site_id', $currentSiteId)->delete();
+                } else {
+                    Teacher::truncate();
+                }
             }
 
             \DB::commit();
